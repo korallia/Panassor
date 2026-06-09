@@ -1,4 +1,4 @@
-import Navbar from "./Navbar";
+import Navbar from "../layout/Navbar";
 function PanassorHero() {
   return (
     <div className="min-h-screen bg-[#080504] text-[#f7ead2]">

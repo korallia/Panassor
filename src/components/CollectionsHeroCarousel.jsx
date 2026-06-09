@@ -57,7 +57,7 @@ function CollectionsHeroCarousel() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#080504] px-6 py-24 text-[#f3e7cf]">
+    <section className="relative overflow-hidden bg-[#080504] px-6 py-31 text-[#f3e7cf]">
       <div className="relative mx-auto max-w-[88rem]">
         <div className="mb-10 text-center">
           <p className="mb-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">

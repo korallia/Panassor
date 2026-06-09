@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 const products = [
   {
@@ -59,19 +59,17 @@ const products = [
   },
 ];
 
-function ProductCard({ product, onPreviewStart, onPreviewEnd }) {
+function ProductCard({ product }) {
   return (
-    <article
-      onMouseEnter={() => onPreviewStart(product)}
-      onMouseLeave={onPreviewEnd}
-      className="group min-w-[300px] snap-start overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_14px_36px_rgba(0,0,0,0.45)] transition duration-300 hover:border-[#c89b3c]/85 hover:shadow-[0_20px_54px_rgba(0,0,0,0.65)] sm:min-w-[360px] lg:min-w-[calc(25%-1.125rem)]"
-    >
+    <article className="group min-w-[300px] snap-start overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_14px_36px_rgba(0,0,0,0.45)] transition duration-300 hover:border-[#c89b3c]/85 hover:shadow-[0_20px_54px_rgba(0,0,0,0.65)] sm:min-w-[360px] lg:min-w-[calc(25%-1.125rem)]">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#0b0704]">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-full w-full object-cover brightness-[0.82] contrast-[1.08] transition duration-500 group-hover:scale-[1.04] group-hover:brightness-[0.95]"
-        />
+       <img
+  src={product.image}
+  alt={product.name}
+  loading="lazy"
+  decoding="async"
+  className="h-full w-full object-cover brightness-[0.82] contrast-[1.08] transition duration-500 group-hover:scale-[1.04] group-hover:brightness-[0.95]"
+/>
 
         <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/80 via-transparent to-transparent" />
 
@@ -103,10 +101,8 @@ function ProductCard({ product, onPreviewStart, onPreviewEnd }) {
   );
 }
 
-function ProductCarousel() {
+function FeaturedProductsCarousel() {
   const railRef = useRef(null);
-  const hoverTimeoutRef = useRef(null);
-  const [previewProduct, setPreviewProduct] = useState(null);
 
   const scrollLeft = () => {
     railRef.current?.scrollBy({
@@ -120,19 +116,6 @@ function ProductCarousel() {
       left: 520,
       behavior: "smooth",
     });
-  };
-
-  const handlePreviewStart = (product) => {
-    clearTimeout(hoverTimeoutRef.current);
-
-    hoverTimeoutRef.current = setTimeout(() => {
-      setPreviewProduct(product);
-    }, 250);
-  };
-
-  const handlePreviewEnd = () => {
-    clearTimeout(hoverTimeoutRef.current);
-    setPreviewProduct(null);
   };
 
   return (
@@ -174,51 +157,12 @@ function ProductCarousel() {
 
         <div
           ref={railRef}
-          onMouseLeave={handlePreviewEnd}
           className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
         >
           {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onPreviewStart={handlePreviewStart}
-              onPreviewEnd={handlePreviewEnd}
-            />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
-
-        {previewProduct && (
-          <div className="pointer-events-none fixed inset-0 z-50 hidden items-center justify-center bg-[#080504]/45 backdrop-blur-[2px] md:flex">
-            <div className="relative w-[min(920px,76vw)] border border-[#c89b3c]/80 bg-[#120c07] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.75)]">
-              <div className="absolute -left-3 -top-3 h-16 w-16 border-l-2 border-t-2 border-[#c89b3c]" />
-              <div className="absolute -right-3 -top-3 h-16 w-16 border-r-2 border-t-2 border-[#c89b3c]" />
-              <div className="absolute -bottom-3 -left-3 h-16 w-16 border-b-2 border-l-2 border-[#c89b3c]" />
-              <div className="absolute -bottom-3 -right-3 h-16 w-16 border-b-2 border-r-2 border-[#c89b3c]" />
-
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#080504]">
-                <img
-                  src={previewProduct.image}
-                  alt={previewProduct.name}
-                  className="h-full w-full object-cover brightness-[0.92] contrast-[1.08]"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/85 via-transparent to-transparent" />
-
-                <div className="absolute bottom-0 left-0 p-8">
-                  <div className="mb-4 h-px w-24 bg-[#c89b3c]" />
-
-                  <h3 className="font-['IM_Fell_English_SC'] text-6xl uppercase leading-none text-[#fff1d2]">
-                    {previewProduct.name}
-                  </h3>
-
-                  <p className="mt-3 max-w-2xl font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/90">
-                    {previewProduct.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div className="mt-8 flex justify-center">
           <a
@@ -233,4 +177,4 @@ function ProductCarousel() {
   );
 }
 
-export default ProductCarousel;
+export default FeaturedProductsCarousel;

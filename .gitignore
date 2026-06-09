@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Videos locales lourdes
+public/video/
+public/videos/
+*.mp4
+*.mov
+*.webm

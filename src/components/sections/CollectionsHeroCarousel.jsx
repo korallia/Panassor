@@ -32,7 +32,7 @@ function CollectionsHeroCarousel() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#080504] px-6 py-31 text-[#f3e7cf]">
+    <section className="relative overflow-hidden bg-[#080504] px-6 pt-20 pb-32 text-[#f3e7cf]">
       <div className="relative mx-auto max-w-[88rem]">
         <SectionTitle
   eyebrow="Explorer Panassor"
@@ -41,7 +41,7 @@ function CollectionsHeroCarousel() {
   className="mb-10"
 />
 
-        <div className="relative min-h-[620px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
+        <div className="relative min-h-[780px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
           <img
             key={activeCollection.image}
             src={activeCollection.image}
@@ -55,7 +55,7 @@ function CollectionsHeroCarousel() {
 
           <CornerFrame size="lg" />
 
-          <div className="relative z-10 flex min-h-[620px] items-center px-8 py-16 md:px-16">
+          <div className="relative z-10 flex min-h-[780px] items-center px-8 py-16 md:px-16">
             <div className="max-w-2xl">
               <div className="mb-5 flex items-center gap-4">
                 <div className="h-px w-16 bg-[#c89b3c]" />

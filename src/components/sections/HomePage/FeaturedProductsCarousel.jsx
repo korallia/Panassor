@@ -1,12 +1,11 @@
 import { useRef } from "react";
 
-import { FeaturedProducts } from "../data/FeaturedProducts";
-import ProductCard from "../ui/ProductCard";
-import CarouselArrow from "../ui/CarouselArrow";
-import SectionTitle from "../ui/SectionTitle";
-import GoldButton from "../ui/GoldButton";
+import ProductCard from "../../ui/ProductCard";
+import CarouselArrow from "../../ui/CarouselArrow";
+import SectionTitle from "../../ui/SectionTitle";
+import GoldButton from "../../ui/GoldButton";
 
-function FeaturedProductsCarousel() {
+function FeaturedProductsCarousel({ collection }) {
   const railRef = useRef(null);
 
   const scrollCarousel = (direction) => {
@@ -22,10 +21,10 @@ function FeaturedProductsCarousel() {
 
       <div className="relative z-10 mx-auto max-w-[88rem]">
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-         <SectionTitle
-  eyebrow="Produits de la collection"
-  title="Le kit du chirurgien"
-/>
+          <SectionTitle
+            eyebrow={collection.productsSection.eyebrow}
+            title={collection.productsSection.title}
+          />
 
           <div className="flex items-center gap-3">
             <CarouselArrow
@@ -46,13 +45,13 @@ function FeaturedProductsCarousel() {
           ref={railRef}
           className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
         >
-          {FeaturedProducts.map((product) => (
+          {collection.products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
         <div className="mt-8 flex justify-center">
-          <GoldButton>Voir toute la collection</GoldButton>
+          <GoldButton href={collection.url}>Voir toute la collection</GoldButton>
         </div>
       </div>
     </section>

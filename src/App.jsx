@@ -1,18 +1,20 @@
-import "./index.css";
-import PanassorHero from "./components/sections/PanassorHero";
-import FeaturedProductsCarousel from "./components/sections/FeaturedProductsCarousel";
-import FeatureVideo from "./components/sections/FeatureVIdeoPlayer";
-import CollectionsHeroCarousel from "./components/sections/CollectionsHeroCarousel";
-import Footer from "./components/layout/Footer";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import HomePage from "./pages/HomePage";
+import CollectionPage from "./pages/CollectionPage";
+import RouteReset from "./components/RouteReset";
+
 function App() {
   return (
-    <>
-      <PanassorHero />
-      <FeaturedProductsCarousel />
-      <FeatureVideo />
-      <CollectionsHeroCarousel />
-         <Footer />
-    </>
+      <>
+       <RouteReset />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/collections/:slug" element={<CollectionPage />} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+      </>
   );
 }
 

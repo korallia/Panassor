@@ -13,7 +13,7 @@ function CollectionsPage() {
       <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
         <section className="relative h-[430px] overflow-hidden bg-[#120c07]">
           <img
-            src="/images/collections-hero.jpg"
+            src="/images/collections-hero.png"
             alt="Collections Panassor"
             className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.68] contrast-[1.08] saturate-[0.95]"
           />

@@ -28,3 +28,4 @@ public/videos/
 *.mp4
 *.mov
 *.webm
+.vercel

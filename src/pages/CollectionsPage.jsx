@@ -9,7 +9,6 @@ function CollectionsPage() {
   return (
     <>
       <Navbar />
-
       <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
         <section className="relative h-[430px] overflow-hidden bg-[#120c07]">
           <img

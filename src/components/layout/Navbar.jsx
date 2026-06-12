@@ -1,8 +1,34 @@
+import { useNavigate } from "react-router-dom";
+import { collectionsList } from "../../data/panassorCollections";
+
 function Navbar() {
+  const navigate = useNavigate();
+
+  const dropdownItems = [
+    {
+      id: "all-collections",
+      title: "Toutes les collections",
+      url: "/collections",
+      image: "/images/hero-kit-chirurgien.jpg",
+      eyebrow: "Explorer",
+    },
+    ...collectionsList.map((collection) => ({
+      id: collection.id,
+      title: collection.title,
+      url: collection.url,
+      image: collection.thumbnail || collection.image,
+      eyebrow: collection.eyebrow,
+    })),
+  ];
+
   return (
-    <header className="relative z-20 border-b-2 border-[#c89b3c]/75 bg-[#090604]/85 backdrop-blur-sm">
+    <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/85 backdrop-blur-sm">
       <div className="mx-auto grid h-24 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6">
-        <div className="flex items-center gap-3 justify-self-start">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="flex items-center gap-3 justify-self-start text-left"
+        >
           <img
             src="/images/IconPanassor.png"
             alt="Logo Panassor"
@@ -18,24 +44,101 @@ function Navbar() {
               Kits médiévaux uniques
             </div>
           </div>
-        </div>
+        </button>
 
         <nav className="hidden items-center gap-7 justify-self-center font-['IM_Fell_English_SC'] text-2xl tracking-[0.03em] text-[#f7ead2]/85 md:flex">
-          <a href="#" className="transition hover:text-[#d8a24c]">
-            Collections
-          </a>
+          <div className="group relative">
+            <button
+              type="button"
+              onClick={() => navigate("/collections")}
+              className="transition hover:text-[#d8a24c]"
+            >
+              Collections
+            </button>
+
+            <div className="invisible absolute left-1/2 top-full z-50 w-[27rem] -translate-x-1/2 pt-5 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100">
+              <div className="relative overflow-hidden border border-[#6f5423]/80 bg-[linear-gradient(180deg,#1b1008_0%,#0b0603_100%)] p-3 shadow-[0_22px_58px_rgba(0,0,0,0.82),0_0_34px_rgba(200,155,60,0.1)] backdrop-blur">
+                <div className="pointer-events-none absolute inset-1 border border-[#c89b3c]/10" />
+                <div className="pointer-events-none absolute left-1/2 top-[-0.45rem] h-4 w-4 -translate-x-1/2 rotate-45 border-l border-t border-[#6f5423]/80 bg-[#1b1008]" />
+
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(200,155,60,0.13),transparent_42%)]" />
+
+                <div className="relative z-10 mb-2 flex items-center justify-center gap-3 px-4 py-2 text-[#c89b3c]">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/45" />
+                  <span className="text-sm">✦</span>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/45" />
+                </div>
+
+                {dropdownItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => navigate(item.url)}
+                    className="group/item relative flex w-full items-center gap-4 border-b border-[#6f5423]/40 px-3 py-3 text-left transition last:border-b-0 hover:bg-[#c89b3c]/10"
+                  >
+                    <span className="absolute left-0 top-1/2 h-10 w-px -translate-y-1/2 bg-[#c89b3c]/0 transition group-hover/item:bg-[#c89b3c]/85" />
+
+                    <span className="relative h-16 w-24 shrink-0 overflow-hidden border border-[#6f5423]/65 bg-[#080504]">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-full w-full object-cover brightness-[0.72] contrast-[1.08] saturate-[0.95] transition duration-300 group-hover/item:scale-[1.04] group-hover/item:brightness-[0.9]"
+                      />
+
+                      <span className="absolute inset-0 bg-gradient-to-t from-[#080504]/55 via-transparent to-transparent" />
+                      <span className="absolute inset-0 shadow-[inset_0_0_22px_rgba(8,5,4,0.55)]" />
+                    </span>
+
+                    <span className="relative z-10 min-w-0">
+                      <span className="mb-1 block font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.24em] text-[#c89b3c]/80">
+                        {item.eyebrow}
+                      </span>
+
+                      <span className="block font-['IM_Fell_English_SC'] text-xl uppercase leading-none tracking-[0.06em] text-[#fff1d2] transition group-hover/item:text-[#e7c97b]">
+                        {item.title}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+
+                <div className="relative z-10 mt-2 flex items-center justify-center gap-3 px-4 py-2 text-[#c89b3c]">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/35" />
+                  <span className="text-xs">✦</span>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/35" />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <span className="text-sm text-[#8a5a2b]">✦</span>
-          <a href="#" className="transition hover:text-[#d8a24c]">
+
+          <button
+            type="button"
+            onClick={() => navigate("/produits")}
+            className="transition hover:text-[#d8a24c]"
+          >
             Produits
-          </a>
+          </button>
+
           <span className="text-sm text-[#8a5a2b]">✦</span>
-          <a href="#" className="transition hover:text-[#d8a24c]">
+
+          <button
+            type="button"
+            onClick={() => navigate("/atelier")}
+            className="transition hover:text-[#d8a24c]"
+          >
             Atelier
-          </a>
+          </button>
+
           <span className="text-sm text-[#8a5a2b]">✦</span>
-          <a href="#" className="transition hover:text-[#d8a24c]">
+
+          <button
+            type="button"
+            onClick={() => navigate("/contact")}
+            className="transition hover:text-[#d8a24c]"
+          >
             Contact
-          </a>
+          </button>
         </nav>
 
         <div className="flex items-center gap-5 justify-self-end text-[#d8a24c]">

@@ -1,4 +1,7 @@
-import { getFeaturedCollection, panassorCollections } from "../data/panassorCollections";
+import {
+  getFeaturedCollection,
+  collectionsList,
+} from "../data/panassorCollections";
 
 import PanassorHero from "../components/sections/HomePage/PanassorHero";
 import FeaturedProductsCarousel from "../components/sections/HomePage/FeaturedProductsCarousel";
@@ -17,7 +20,7 @@ function HomePage() {
 
       <VideoPlayer video={featuredCollection.video} />
 
-      <CollectionsHeroCarousel collections={panassorCollections} />
+      <CollectionsHeroCarousel collections={collectionsList} />
 
       <Footer />
     </>

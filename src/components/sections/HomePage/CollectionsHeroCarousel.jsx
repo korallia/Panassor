@@ -1,19 +1,17 @@
-import {  useState } from "react";
-import { collections } from "../data/FeaturedCollections";
-import SectionTitle from "../ui/SectionTitle";
-import CornerFrame from "../ui/CornerFrame";
-import GoldButton from "../ui/GoldButton";
-import GreenButton from "../ui/GreenButton";
-import CarouselArrow from "../ui/CarouselArrow";
+import { useState } from "react";
 
+import SectionTitle from "../../ui/SectionTitle";
+import CornerFrame from "../../ui/CornerFrame";
+import GoldButton from "../../ui/GoldButton";
+import GreenButton from "../../ui/GreenButton";
+import CarouselArrow from "../../ui/CarouselArrow";
 
-
-function CollectionsHeroCarousel() {
+function CollectionsHeroCarousel({ collections }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const activeCollection = collections[activeIndex];
+  if (!collections?.length) return null;
 
- 
+  const activeCollection = collections[activeIndex];
 
   const goPrevious = () => {
     setActiveIndex((current) =>
@@ -35,11 +33,11 @@ function CollectionsHeroCarousel() {
     <section className="relative overflow-hidden bg-[#080504] px-6 pt-20 pb-32 text-[#f3e7cf]">
       <div className="relative mx-auto max-w-[88rem]">
         <SectionTitle
-  eyebrow="Explorer Panassor"
-  title="Nos collections"
-  align="center"
-  className="mb-10"
-/>
+          eyebrow="Explorer Panassor"
+          title="Nos collections"
+          align="center"
+          className="mb-10"
+        />
 
         <div className="relative min-h-[780px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
           <img
@@ -78,15 +76,17 @@ function CollectionsHeroCarousel() {
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <GoldButton>{activeCollection.cta}</GoldButton>
+                <GoldButton href={activeCollection.url}>
+                  {activeCollection.cta}
+                </GoldButton>
 
-               <GreenButton>Voir tous les produits</GreenButton>
+                <GreenButton href="#produits">Voir tous les produits</GreenButton>
               </div>
             </div>
           </div>
 
           <div className="absolute bottom-8 right-8 z-20 flex items-center gap-3">
-             <CarouselArrow
+            <CarouselArrow
               direction="previous"
               onClick={goPrevious}
               label="Collection précédente"
@@ -97,7 +97,6 @@ function CollectionsHeroCarousel() {
               onClick={goNext}
               label="Collection suivante"
             />
-
           </div>
 
           <div className="absolute bottom-9 left-1/2 z-20 flex -translate-x-1/2 gap-3">

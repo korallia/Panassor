@@ -7,7 +7,7 @@ import Footer from "../components/layout/Footer";
 
 import CollectionIntro from "../components/sections/CollectionIntro";
 import CollectionProductsGrid from "../components/sections/CollectionProductsGrid";
-import FeatureVideoPlayer from "../components/sections/VIdeoPlayer";
+import FeatureVideoPlayer from "../components/sections/VideoPlayer";
 
 function CollectionPage() {
   const { slug } = useParams();

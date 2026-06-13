@@ -135,7 +135,11 @@ function KitProductContainer() {
           opacity={0.65}
         />
       </section>
-      <CollectionsHeroCarousel collections={collectionsList} />
+      <CollectionsHeroCarousel collections={collectionsList}
+       eyebrow="Explorer le reste de Panassor"
+  title="D’autres univers à faire vivre"
+ 
+ />
     </main>
   );
 }

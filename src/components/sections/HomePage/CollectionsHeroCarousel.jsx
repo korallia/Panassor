@@ -5,8 +5,16 @@ import CornerFrame from "../../ui/CornerFrame";
 import GoldButton from "../../ui/GoldButton";
 import GreenButton from "../../ui/GreenButton";
 import CarouselArrow from "../../ui/CarouselArrow";
+import OrnamentDivider from "../../ui/OrnamentDivider";
 
-function CollectionsHeroCarousel({ collections }) {
+function CollectionsHeroCarousel({
+  collections,
+  eyebrow = "Explorer Panassor",
+  title = "Nos collections",
+  description,
+  secondaryHref = "#produits",
+  secondaryLabel = "Voir tous les produits",
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!collections?.length) return null;
@@ -30,14 +38,31 @@ function CollectionsHeroCarousel({ collections }) {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#080504] px-6 pt-20 pb-32 text-[#f3e7cf]">
+    <section className="relative overflow-hidden bg-[#080504] px-6 pt-12 pb-32 text-[#f3e7cf]">
       <div className="relative mx-auto max-w-[88rem]">
-        <SectionTitle
-          eyebrow="Explorer Panassor"
-          title="Nos collections"
-          align="center"
-          className="mb-10"
-        />
+        <div className="mx-auto mb-12 max-w-4xl text-center">
+          <SectionTitle
+            eyebrow={eyebrow}
+            title={title}
+            align="center"
+            showDivider={false}
+            className="mb-0"
+          />
+           <div className="mx-auto mt-6 h-px w-72 bg-gradient-to-r from-transparent via-[#c89b3c]/85 to-transparent" />
+          {description && (
+            <p className="mx-auto mt-7 max-w-3xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/82">
+              {description}
+            </p>
+          )}
+
+          {description && (
+            <OrnamentDivider
+              className="mt-9"
+              width={112}
+              opacity={0.65}
+            />
+          )}
+        </div>
 
         <div className="relative min-h-[780px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
           <img
@@ -80,7 +105,9 @@ function CollectionsHeroCarousel({ collections }) {
                   {activeCollection.cta}
                 </GoldButton>
 
-                <GreenButton href="#produits">Voir tous les produits</GreenButton>
+                <GreenButton href={secondaryHref}>
+                  {secondaryLabel}
+                </GreenButton>
               </div>
             </div>
           </div>
@@ -103,6 +130,7 @@ function CollectionsHeroCarousel({ collections }) {
             {collections.map((collection, index) => (
               <button
                 key={collection.id}
+                type="button"
                 onClick={() => selectCollection(index)}
                 className={`h-3 w-3 rounded-full border transition ${
                   index === activeIndex

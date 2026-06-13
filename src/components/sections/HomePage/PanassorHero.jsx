@@ -1,36 +1,36 @@
 import { useNavigate } from "react-router-dom";
 
-import Navbar from "../../layout/Navbar";
 
+
+import CornerFrame from "../../ui/CornerFrame";
 function PanassorHero({ collection }) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#080504] text-[#f7ead2]">
-      <section className="relative min-h-screen overflow-hidden bg-[#0b0704]">
+    <div className="h-[calc(100vh-5rem)] bg-[#080504] text-[#f7ead2]">
+      <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-[#0b0704]">
         <img
           src={collection.heroImage}
           alt={collection.title}
-          className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.78] contrast-[1.12] saturate-[0.92]"
+          className="absolute inset-0 h-[calc(100vh-5rem)] w-full object-cover object-center brightness-[0.78] contrast-[1.12] saturate-[0.92]"
         />
 
         <div className="absolute inset-0 bg-black/15" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/90 via-[#080504]/45 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/85 via-transparent to-[#080504]/55" />
 
-        <div className="pointer-events-none absolute left-4 top-28 z-10 h-20 w-20 border-l-2 border-t-2 border-[#c89b3c]/85" />
-        <div className="pointer-events-none absolute right-4 top-28 z-10 h-20 w-20 border-r-2 border-t-2 border-[#c89b3c]/85" />
-        <div className="pointer-events-none absolute bottom-4 left-4 z-10 h-20 w-20 border-b-2 border-l-2 border-[#c89b3c]/85" />
-        <div className="pointer-events-none absolute bottom-4 right-4 z-10 h-20 w-20 border-b-2 border-r-2 border-[#c89b3c]/85" />
+       <CornerFrame inset="hero" size="lg" thickness="strong" color="gold" />
 
-        <div className="pointer-events-none absolute left-8 top-32 z-10 h-10 w-10 border-l border-t border-[#f3d58b]/65" />
-        <div className="pointer-events-none absolute right-8 top-32 z-10 h-10 w-10 border-r border-t border-[#f3d58b]/65" />
-        <div className="pointer-events-none absolute bottom-8 left-8 z-10 h-10 w-10 border-b border-l border-[#f3d58b]/65" />
-        <div className="pointer-events-none absolute bottom-8 right-8 z-10 h-10 w-10 border-b border-r border-[#f3d58b]/65" />
+<CornerFrame
+  inset="heroInner"
+  size="sm"
+  thickness="subtle"
+  color="paleGold"
+/>
 
-        <Navbar />
+     
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl items-center px-6 py-16">
+       <div className="relative z-20 mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl items-center px-6 py-12">
           <div className="max-w-2xl">
             <div className="mb-6 flex items-center gap-4">
               <div className="h-px w-16 bg-[#d8a24c]/70" />

@@ -62,6 +62,7 @@ export const panassorCollections = {
         description:
           "Un outil de manipulation simple pour enrichir les examens et les interventions en scène.",
         featured: false,
+        customizable: true,
       },
       {
         id: "pince",
@@ -75,6 +76,7 @@ export const panassorCollections = {
         description:
           "Un accessoire médical visuel pour manipuler, examiner et intervenir avec précision.",
         featured: false,
+        customizable: false,
       },
       {
         id: "curette",
@@ -88,6 +90,7 @@ export const panassorCollections = {
         description:
           "Une pièce spécialisée pour donner plus de réalisme aux scènes de soin et d’intervention.",
         featured: false,
+        customizable: true,
       },
       {
         id: "crochet",
@@ -101,6 +104,7 @@ export const panassorCollections = {
         description:
           "Un outil fin pour appuyer les manipulations délicates et les scènes médicales tendues.",
         featured: false,
+        customizable: true,
       },
       {
         id: "scalpel",
@@ -114,6 +118,7 @@ export const panassorCollections = {
         description:
           "Un accessoire immersif pour les interventions délicates et les scènes chirurgicales.",
         featured: false,
+        customizable: true,
       },
       {
         id: "aiguilles-suture",
@@ -127,6 +132,7 @@ export const panassorCollections = {
         description:
           "Des pièces visuelles pour enrichir les scènes de couture, de soin et d’intervention.",
         featured: false,
+         customizable: false,
       },
       {
         id: "bandage",
@@ -140,6 +146,7 @@ export const panassorCollections = {
         description:
           "Un élément simple et efficace pour appuyer les blessures et les premiers soins sur le terrain.",
         featured: false,
+           customizable: false,
       },
     ],
   },
@@ -207,6 +214,7 @@ export const panassorCollections = {
         description:
           "Deux longues aiguilles visuelles pour accentuer les scènes de menace, d’intimidation et d’interrogatoire.",
         featured: false,
+         customizable: true,
       },
       {
         id: "redresseur",
@@ -220,6 +228,7 @@ export const panassorCollections = {
         description:
           "Un outil de scène au nom évocateur, pensé pour imposer une présence froide et inquiétante.",
         featured: false,
+         customizable: true,
       },
       {
         id: "correcteur",
@@ -233,6 +242,7 @@ export const panassorCollections = {
         description:
           "Un accessoire théâtral pour appuyer les scènes de discipline, de menace et de confrontation.",
         featured: false,
+         customizable: true,
       },
       {
         id: "dernier-argument",
@@ -246,6 +256,7 @@ export const panassorCollections = {
         description:
           "Un outil narratif au nom dramatique, parfait pour faire monter la tension avant une décision finale.",
         featured: false,
+         customizable: true,
       },
       {
         id: "pacificateur",
@@ -259,6 +270,7 @@ export const panassorCollections = {
         description:
           "Un accessoire sombre et ironique pour les personnages qui imposent le silence par leur seule présence.",
         featured: false,
+         customizable: true,
       },
     ],
   },
@@ -293,4 +305,18 @@ export function formatPrice(price, currency = "CAD") {
     style: "currency",
     currency,
   }).format(price);
+}
+export function getProductBySlug(slug) {
+  for (const collection of collectionsList) {
+    const product = collection.products.find((item) => item.slug === slug);
+
+    if (product) {
+      return {
+        ...product,
+        collection,
+      };
+    }
+  }
+
+  return null;
 }

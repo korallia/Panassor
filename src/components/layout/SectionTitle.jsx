@@ -1,4 +1,10 @@
-function SectionTitle({ eyebrow, title, align = "left", className = "" }) {
+function SectionTitle({
+  eyebrow,
+  title,
+  align = "left",
+  className = "",
+  showDivider = true,
+}) {
   const isCentered = align === "center";
 
   return (
@@ -19,13 +25,15 @@ function SectionTitle({ eyebrow, title, align = "left", className = "" }) {
         {title}
       </h2>
 
-      <div
-        className={`mt-5 h-px w-52 ${
-          isCentered
-            ? "mx-auto bg-gradient-to-r from-transparent via-[#c89b3c] to-transparent"
-            : "bg-gradient-to-r from-[#c89b3c] to-transparent"
-        }`}
-      />
+      {showDivider && (
+        <div
+          className={`mt-5 h-px w-52 ${
+            isCentered
+              ? "mx-auto bg-gradient-to-r from-transparent via-[#c89b3c] to-transparent"
+              : "bg-gradient-to-r from-[#c89b3c] to-transparent"
+          }`}
+        />
+      )}
     </div>
   );
 }

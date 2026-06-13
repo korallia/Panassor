@@ -1,3 +1,6 @@
+import CornerFrame from "../../ui/CornerFrame";
+import OrnamentDivider from "../../ui/OrnamentDivider";
+
 function CollectionIntro({ collection }) {
   return (
     <section className="relative h-[430px] overflow-hidden bg-[#120c07] text-[#f3e7cf]">
@@ -16,31 +19,31 @@ function CollectionIntro({ collection }) {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-b from-transparent via-[#080504]/70 to-[#080504]" />
 
-      <div className="pointer-events-none absolute inset-0 z-20">
-        <div className="absolute left-14 top-10 h-10 w-10 border-l border-t border-[#f3d58b]/65" />
-        <div className="absolute right-14 top-10 h-10 w-10 border-r border-t border-[#f3d58b]/65" />
-
-        <div className="absolute bottom-18 left-14 h-10 w-10 border-b border-l border-[#f3d58b]/65" />
-        <div className="absolute bottom-18 right-14 h-10 w-10 border-b border-r border-[#f3d58b]/65" />
-      </div>
+      <CornerFrame
+        inset="collectionIntro"
+        size="sm"
+        thickness="subtle"
+        color="paleGold"
+        className="z-20"
+      />
 
       <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-6 lg:grid-cols-2">
         <div className="-translate-y-6 flex flex-col items-start text-left">
-          <div className="mb-6 flex items-center justify-start gap-4 text-[#d8a24c]">
-            <div className="h-px w-24 bg-[#d8a24c]/70" />
-            <span className="text-xl">✦</span>
-            <div className="h-px w-24 bg-[#d8a24c]/70" />
-          </div>
+          <OrnamentDivider
+            className="mb-6 justify-start"
+            width={96}
+            opacity={0.7}
+          />
 
           <h1 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.88] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-7xl xl:text-8xl">
             {collection.title}
           </h1>
 
-          <div className="mt-6 flex items-center justify-start gap-4 text-[#d8a24c]">
-            <div className="h-px w-24 bg-[#d8a24c]/70" />
-            <span className="text-xl">✦</span>
-            <div className="h-px w-24 bg-[#d8a24c]/70" />
-          </div>
+          <OrnamentDivider
+            className="mt-6 justify-start"
+            width={96}
+            opacity={0.7}
+          />
         </div>
 
         <div className="hidden lg:block" />

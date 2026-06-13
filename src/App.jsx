@@ -1,24 +1,27 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 
 import HomePage from "./pages/HomePage";
-import CollectionPage from "./pages/CollectionPage";
-import RouteReset from "./components/RouteReset";
 import CollectionsPage from "./pages/CollectionsPage";
+import CollectionPage from "./pages/CollectionPage";
 import ProductPage from "./pages/ProductPage";
 
 function App() {
   return (
-      <>
-       <RouteReset />
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/collections" element={<CollectionsPage />} />
-      <Route path="/collections/:slug" element={<CollectionPage />} />
-      <Route path="/produits/:slug" element={<ProductPage />} />
+    <div className="min-h-screen bg-[#080504] text-[#f3e7cf]">
+      <Navbar />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-      </>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/collections" element={<CollectionsPage />} />
+        <Route path="/collections/:slug" element={<CollectionPage />} />
+        <Route path="/produits/:slug" element={<ProductPage />} />
+      </Routes>
+
+      <Footer />
+    </div>
   );
 }
 

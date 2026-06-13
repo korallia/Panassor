@@ -334,141 +334,210 @@ function ProductPage() {
           </div>
         </section>
 
+{/* DECORATIVE SEPARATOR BEFORE NARRATIVE */}
+<section className="relative px-6 pt-10 pb-8">
+  <div className="mx-auto flex max-w-[88rem] items-center justify-center gap-6 text-[#c89b3c]">
+    <div className="h-px w-72 bg-[#c89b3c]/65" />
+
+    <span className="font-['IM_Fell_English_SC'] text-xl leading-none text-[#d8b56f]">
+      ✦
+    </span>
+
+    <div className="h-px w-72 bg-[#c89b3c]/65" />
+  </div>
+</section>
+
         {/* NARRATIVE BANNER */}
-        <section className="relative px-6 pb-8">
+        <section className="relative px-6 pb-4">
           <div className="relative mx-auto max-w-[88rem] overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
             <img
               src={collection.heroImage ?? collection.image}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover brightness-[0.36] contrast-[1.15] saturate-[0.88]"
+              className="absolute inset-0 h-full w-full object-cover brightness-[0.3] contrast-[1.15] saturate-[0.88]"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/96 via-[#080504]/74 to-[#080504]/34" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/35 via-transparent to-[#080504]/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/96 via-[#080504]/80 to-[#080504]/42" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/45 via-transparent to-[#080504]/32" />
             <div className="absolute inset-0 shadow-[inset_0_0_70px_rgba(0,0,0,0.78)]" />
 
             <CornerFrame size="md" />
 
-            <div className="relative z-10 grid min-h-[205px] items-center gap-8 px-10 py-8 md:grid-cols-[0.95fr_1fr]">
-              <div className="max-w-lg">
-                <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
-                  Dans l’univers ✧
-                </p>
+            <div className="relative z-10 grid min-h-[260px] gap-8 px-8 py-9 md:grid-cols-[1fr_205px] md:px-12">
+              <div className="flex max-w-3xl flex-col justify-center">
+                <div className="mb-5 flex w-64 max-w-full items-center gap-4 text-[#c89b3c]">
+                  <div className="h-px flex-1 bg-[#c89b3c]/65" />
 
-                <h2 className="mt-2 font-['IM_Fell_English_SC'] text-4xl uppercase tracking-[0.14em] text-[#e4bf75] md:text-5xl">
-                  {collection.name}
+                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.24em] text-[#c89b3c]">
+                    L’atelier Panassor
+                  </span>
+
+                  <div className="h-px flex-1 bg-[#c89b3c]/65" />
+                </div>
+
+                <h2 className="font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] md:text-5xl">
+                  Pensé pour le jeu, façonné pour durer.
                 </h2>
 
-                <p className="mt-3 font-['EB_Garamond'] text-lg leading-6 text-[#d8c7a3]/90">
-                  {collection.longDescription}
+                <p className="mt-5 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/88">
+                  Chaque pièce de la collection {collection.name} est conçue pour
+                  soutenir les scènes sans voler la place aux joueurs. Le kit
+                  existe pour enrichir l’ambiance, donner du poids aux gestes et
+                  faire sentir qu’un objet a vraiment sa place dans l’univers.
                 </p>
 
-                <div className="mt-7 flex flex-wrap gap-5">
-                  {[
-                    ["◌", "Matières nobles"],
-                    ["✋", "Fait main en petite série"],
-                    ["♢", "Conçu pour durer"],
-                  ].map(([icon, label]) => (
-                    <div key={label} className="flex items-center gap-3">
-                      <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#c89b3c]/70 bg-[#080504]/65 font-['IM_Fell_English_SC'] text-xl text-[#d8b56f]">
-                        {icon}
-                      </span>
-
-                      <span className="max-w-[120px] font-['IM_Fell_English_SC'] text-[0.7rem] uppercase leading-4 tracking-[0.12em] text-[#d8c7a3]">
-                        {label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <Link
+                  to="/atelier"
+                  className="mt-7 inline-flex w-fit items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
+                >
+                  Voir l’atelier
+                </Link>
               </div>
 
-              <div className="hidden h-full md:block" />
+              <div className="flex flex-col justify-center gap-4">
+                {[
+                  ["⚜", "100% québécois"],
+                  ["✦", "Fait pour durer"],
+                  ["◌", "Petite série"],
+                ].map(([icon, label]) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-4 border border-[#6f5423]/70 bg-[#080504]/60 px-4 py-4"
+                  >
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/80 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a]">
+                      {icon}
+                    </span>
+
+                    <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b]">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* OTHER UNIVERSES */}
-        {otherCollections.length > 0 && (
-          <section className="relative px-6 pb-20 pt-2">
-            <div className="mx-auto max-w-[88rem]">
-              <div className="mb-4 flex items-center justify-center gap-5">
-                <div className="h-px w-24 bg-gradient-to-l from-[#6f5423] to-transparent" />
+{/* DECORATIVE SEPARATOR AFTER NARRATIVE */}
+<section className="relative px-6 pt-8 pb-8">
+  <div className="mx-auto flex max-w-[88rem] items-center justify-center gap-6 text-[#c89b3c]">
+    <div className="h-px w-72 bg-[#c89b3c]/65" />
 
-                <p className="font-['IM_Fell_English_SC'] text-xl uppercase tracking-[0.38em] text-[#d8b56f]">
-                  Explorez nos autres univers
+    <span className="font-['IM_Fell_English_SC'] text-xl leading-none text-[#d8b56f]">
+      ✦
+    </span>
+
+    <div className="h-px w-72 bg-[#c89b3c]/65" />
+  </div>
+</section>
+        {/* OTHER COLLECTIONS */}
+        {otherCollections.length > 0 && (
+          <section className="relative px-6 pb-28 pt-4">
+            <div className="relative z-10 mx-auto max-w-[88rem]">
+              <div className="mb-10 text-center">
+                <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.35em] text-[#c89b3c]">
+                  Explorer Panassor
                 </p>
 
-                <div className="h-px w-24 bg-gradient-to-r from-[#6f5423] to-transparent" />
+                <h2 className="mt-3 font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2] md:text-7xl">
+                  Nos collections
+                </h2>
+
+                <div className="mx-auto mt-6 flex w-56 items-center justify-center gap-4 text-[#c89b3c]">
+                  <div className="h-px flex-1 bg-[#c89b3c]/55" />
+
+                  <span className="text-lg">✦</span>
+
+                  <div className="h-px flex-1 bg-[#c89b3c]/55" />
+                </div>
               </div>
 
-              <div className="grid grid-cols-[42px_1fr_42px] items-center gap-4">
-                <CarouselArrow
-                  direction="previous"
-                  label="Univers précédent"
-                  onClick={() => {}}
-                />
+              <div className="relative mx-auto max-w-[72rem]">
+                {otherCollections.slice(0, 1).map((item) => {
+                  const featuredProduct =
+                    item.products?.find((product) => product.featured) ??
+                    item.products?.[0];
 
-                <div className="grid gap-4 lg:grid-cols-[0.8fr_1.35fr_0.8fr]">
-                  {otherCollections.slice(0, 3).map((item, index) => (
+                  return (
                     <Link
                       key={item.id}
-                      to={item.url}
-                      className={`group relative min-h-[145px] overflow-hidden border bg-[#120c07] shadow-[0_14px_38px_rgba(0,0,0,0.5)] transition hover:border-[#c89b3c]/85 ${
-                        index === 1
-                          ? "border-[#c89b3c]/80 lg:min-h-[165px]"
-                          : "border-[#6f5423]/70"
-                      }`}
+                      to={featuredProduct?.url ?? item.url}
+                      className="group relative block min-h-[360px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.68)] transition duration-300 hover:border-[#c89b3c]/90"
                     >
                       <img
                         src={item.thumbnail ?? item.image ?? item.heroImage}
-                        alt={item.name}
-                        className="absolute inset-0 h-full w-full object-cover brightness-[0.56] contrast-[1.12] saturate-[0.9] transition duration-500 group-hover:scale-[1.035] group-hover:brightness-[0.68]"
+                        alt={item.title}
+                        className="absolute inset-0 h-full w-full object-cover brightness-[0.52] contrast-[1.12] saturate-[0.92] transition duration-700 group-hover:scale-[1.035] group-hover:brightness-[0.62]"
                       />
 
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/88 via-[#080504]/55 to-transparent" />
-                      <div className="absolute inset-0 shadow-[inset_0_0_35px_rgba(0,0,0,0.7)]" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/94 via-[#080504]/68 to-[#080504]/18" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/76 via-transparent to-[#080504]/20" />
+                      <div className="absolute inset-0 shadow-[inset_0_0_65px_rgba(0,0,0,0.78)]" />
 
-                      {index === 1 && <CornerFrame size="sm" />}
+                      <CornerFrame size="lg" />
 
-                      <div
-                        className={`relative z-10 flex h-full flex-col justify-center p-7 ${
-                          index === 1 ? "lg:pl-[44%]" : ""
-                        }`}
-                      >
-                        <h3 className="font-['IM_Fell_English_SC'] text-3xl uppercase tracking-[0.16em] text-[#fff1d2] transition group-hover:text-[#e7c97b]">
-                          {item.name}
+                      <div className="relative z-10 flex min-h-[360px] flex-col justify-center px-8 py-10 md:px-12">
+                        <div className="mb-6 flex w-56 items-center gap-4 text-[#c89b3c]">
+                          <div className="h-px flex-1 bg-[#c89b3c]/65" />
+
+                          <span className="text-lg">✦</span>
+
+                          <div className="h-px flex-1 bg-[#c89b3c]/65" />
+                        </div>
+
+                        <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.3em] text-[#c89b3c]">
+                          {item.eyebrow}
+                        </p>
+
+                        <h3 className="mt-4 max-w-2xl font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.88] text-[#fff1d2] transition duration-300 group-hover:text-[#e7c97b] md:text-7xl">
+                          {item.title}
                         </h3>
 
-                        <p className="mt-2 max-w-sm font-['EB_Garamond'] text-lg leading-6 text-[#d8c7a3]/90">
+                        <p className="mt-6 max-w-2xl font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88">
                           {item.description}
                         </p>
 
-                        {index === 1 && (
-                          <span className="mt-5 w-fit border border-[#b88736] px-8 py-2 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.18em] text-[#d8b56f] transition group-hover:bg-[#c89b3c] group-hover:text-[#100805]">
+                        <div className="mt-8 flex flex-wrap gap-4">
+                          <span className="inline-flex items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition group-hover:bg-[#2a4630] group-hover:text-[#f7ead2]">
+                            Voir le kit
+                          </span>
+
+                          <span className="inline-flex items-center justify-center border border-[#c89b3c] bg-[#24170d]/80 px-7 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e7c97b] transition group-hover:bg-[#c89b3c] group-hover:text-[#100805]">
                             Découvrir l’univers
                           </span>
-                        )}
+                        </div>
                       </div>
                     </Link>
-                  ))}
-                </div>
+                  );
+                })}
 
-                <CarouselArrow
-                  direction="next"
-                  label="Univers suivant"
-                  onClick={() => {}}
-                />
-              </div>
+                {otherCollections.length > 1 && (
+                  <>
+                    <div className="absolute bottom-7 right-7 z-20 flex gap-3">
+                      <CarouselArrow
+                        direction="previous"
+                        label="Collection précédente"
+                        onClick={() => {}}
+                      />
 
-              <div className="mt-5 flex justify-center gap-4">
-                {[0, 1, 2, 3, 4].map((dot) => (
-                  <span
-                    key={dot}
-                    className={`h-3 w-3 rounded-full ${
-                      dot === 0 ? "bg-[#d8b56f]" : "bg-[#3d372b]"
-                    }`}
-                  />
-                ))}
+                      <CarouselArrow
+                        direction="next"
+                        label="Collection suivante"
+                        onClick={() => {}}
+                      />
+                    </div>
+
+                    <div className="mt-7 flex justify-center gap-4">
+                      {otherCollections.map((item, index) => (
+                        <span
+                          key={item.id}
+                          className={`h-3 w-3 rounded-full ${
+                            index === 0 ? "bg-[#d8b56f]" : "bg-[#3d372b]"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </section>

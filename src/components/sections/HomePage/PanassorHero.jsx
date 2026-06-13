@@ -7,12 +7,12 @@ function PanassorHero({ collection }) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#080504] text-[#f7ead2]">
-      <section className="relative min-h-screen overflow-hidden bg-[#0b0704]">
+    <div className="h-[calc(100vh-5rem)] bg-[#080504] text-[#f7ead2]">
+      <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-[#0b0704]">
         <img
           src={collection.heroImage}
           alt={collection.title}
-          className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.78] contrast-[1.12] saturate-[0.92]"
+          className="absolute inset-0 h-[calc(100vh-5rem)] w-full object-cover object-center brightness-[0.78] contrast-[1.12] saturate-[0.92]"
         />
 
         <div className="absolute inset-0 bg-black/15" />
@@ -30,7 +30,7 @@ function PanassorHero({ collection }) {
 
      
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl items-center px-6 py-16">
+       <div className="relative z-20 mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl items-center px-6 py-12">
           <div className="max-w-2xl">
             <div className="mb-6 flex items-center gap-4">
               <div className="h-px w-16 bg-[#d8a24c]/70" />

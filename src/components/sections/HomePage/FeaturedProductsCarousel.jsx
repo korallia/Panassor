@@ -2,9 +2,9 @@ import { useRef } from "react";
 
 import ProductCard from "../../ui/ProductCard";
 import CarouselArrow from "../../ui/CarouselArrow";
-import SectionTitle from "../../ui/SectionTitle";
+import SectionTitle from "../../layout/SectionTitle";
 import GoldButton from "../../ui/GoldButton";
-import SectionAtmosphere from "../../ui/SectionAtmosphere";
+import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
 function FeaturedProductsCarousel({ collection }) {

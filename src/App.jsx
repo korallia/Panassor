@@ -4,8 +4,8 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
 import HomePage from "./pages/HomePage";
-import CollectionsPage from "./pages/CollectionsPage";
-import CollectionPage from "./pages/CollectionPage";
+import CollectionProductsPage from "../src/pages/CollectionProductsPage"
+import CollectionsPage from "../src/pages/CollectionsPage"
 import ProductPage from "./pages/ProductPage";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/collections" element={<CollectionsPage />} />
-        <Route path="/collections/:slug" element={<CollectionPage />} />
+        <Route path="/collections/:slug" element={<CollectionProductsPage />} />
         <Route path="/produits/:slug" element={<ProductPage />} />
       </Routes>
 

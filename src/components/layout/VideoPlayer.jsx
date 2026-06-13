@@ -8,10 +8,7 @@ function VideoPlayer({ video }) {
 
  if (!video) return null;
   return (
-    <section
-      id="video"
-      className="relative overflow-hidden bg-[#0b0704] px-6 pt-32 pb-20 text-[#f3e7cf]"
-    >
+   <section className="relative overflow-hidden bg-[#080504] px-6 pt-20 pb-32 text-[#f3e7cf]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_40%,rgba(35,72,40,0.22),transparent_35%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(200,155,60,0.12),transparent_30%)]" />
 

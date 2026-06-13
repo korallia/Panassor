@@ -30,6 +30,18 @@ function CornerFrame({
       bottom: "bottom-14",
       left: "left-14",
     },
+    collectionIntro: {
+  top: "top-10",
+  right: "right-14",
+  bottom: "bottom-[4.5rem]",
+  left: "left-14",
+},
+cardImage: {
+  top: "top-5",
+  right: "right-5",
+  bottom: "bottom-5",
+  left: "left-5",
+},
   };
 
   const sizeClasses = {
@@ -57,6 +69,8 @@ function CornerFrame({
     gold: "border-[#c89b3c]/85",
     paleGold: "border-[#f3d58b]/65",
   };
+
+
 
   const pos = insetClasses[inset] ?? insetClasses.default;
   const cornerSize = sizeClasses[size] ?? sizeClasses.md;

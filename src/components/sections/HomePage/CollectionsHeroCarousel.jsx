@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import SectionTitle from "../../ui/SectionTitle";
+import SectionTitle from "../../layout/SectionTitle";
 import CornerFrame from "../../ui/CornerFrame";
 import GoldButton from "../../ui/GoldButton";
 import GreenButton from "../../ui/GreenButton";

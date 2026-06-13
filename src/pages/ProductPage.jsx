@@ -120,112 +120,111 @@ function ProductPage() {
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,12,7,0.84),rgba(8,5,4,0.96)_32%,#080504)]" />
 
           <div className="relative mx-auto max-w-[88rem]">
-            <nav className="mb-5 flex flex-wrap items-center gap-2 font-['IM_Fell_English_SC'] text-[0.7rem] uppercase tracking-[0.18em] text-[#8d6c34]">
-              <Link to="/" className="transition hover:text-[#c89b3c]">
-                Accueil
-              </Link>
+           <nav className="mb-6 flex flex-wrap items-center gap-2 font-['IM_Fell_English_SC'] text-[0.78rem] uppercase tracking-[0.2em] text-[#a47b36]">
+  <Link to="/" className="transition hover:text-[#c89b3c]">
+    Accueil
+  </Link>
 
-              <span>›</span>
+  <span className="text-[#6f5423]">›</span>
 
-              <Link to="/boutique" className="transition hover:text-[#c89b3c]">
-                Boutique
-              </Link>
+  <Link to="/boutique" className="transition hover:text-[#c89b3c]">
+    Boutique
+  </Link>
 
-              <span>›</span>
+  <span className="text-[#6f5423]">›</span>
 
-              <Link
-                to={collection.url}
-                className="transition hover:text-[#c89b3c]"
-              >
-                {collection.name}
-              </Link>
+  <Link
+    to={collection.url}
+    className="transition hover:text-[#c89b3c]"
+  >
+    {collection.name}
+  </Link>
 
-              <span>›</span>
+  <span className="text-[#6f5423]">›</span>
 
-              <span className="text-[#b88b45]">{product.name}</span>
-            </nav>
+  <span className="text-[#c89b3c]">{product.name}</span>
+</nav>
+           <div className="grid gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
+           {/* LEFT CARD */}
+<div className="relative h-full">
+  <div className="relative flex h-full flex-col overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.68)]">
+    {/* MAIN IMAGE / VIDEO */}
+    <div className="relative min-h-[520px] flex-1 overflow-hidden md:min-h-[620px] lg:min-h-[0px]">
+      {selectedMedia?.type === "video" ? (
+        <video
+          src={selectedMedia.src}
+          poster={selectedMedia.poster}
+          controls
+          className="h-full w-full object-cover brightness-[0.78] contrast-[1.1] saturate-[0.92]"
+        />
+      ) : (
+        <img
+          src={selectedMedia?.src}
+          alt={selectedMedia?.alt ?? product.name}
+          className="h-full w-full object-cover brightness-[0.78] contrast-[1.1] saturate-[0.92]"
+        />
+      )}
 
-            <div className="grid gap-10 lg:grid-cols-[1.28fr_0.72fr] lg:items-start">
-              {/* LEFT CARD */}
-              <div className="relative">
-                <div className="relative overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.68)]">
-                  <div className="relative h-[470px] overflow-hidden md:h-[610px]">
-                    {selectedMedia?.type === "video" ? (
-                      <video
-                        src={selectedMedia.src}
-                        poster={selectedMedia.poster}
-                        controls
-                        className="h-full w-full object-cover brightness-[0.78] contrast-[1.1] saturate-[0.92]"
-                      />
-                    ) : (
-                      <img
-                        src={selectedMedia?.src}
-                        alt={selectedMedia?.alt ?? product.name}
-                        className="h-full w-full object-cover brightness-[0.78] contrast-[1.1] saturate-[0.92]"
-                      />
-                    )}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080504]/35 via-transparent to-[#080504]/12" />
+      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_70px_rgba(0,0,0,0.68)]" />
 
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080504]/35 via-transparent to-[#080504]/12" />
-                    <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_70px_rgba(0,0,0,0.68)]" />
+      <CornerFrame size="lg" />
+    </div>
 
-                    <CornerFrame size="lg" />
-                  </div>
+    {/* BOTTOM MEDIA RAIL */}
+    <div className="shrink-0 border-t border-[#6f5423]/55 bg-[#0b0705]/92 px-5 py-5">
+      <div className="grid grid-cols-[34px_1fr_34px] items-center gap-4">
+        <button
+          type="button"
+          onClick={goPreviousMedia}
+          aria-label="Image précédente"
+          className="flex h-9 w-9 items-center justify-center font-['IM_Fell_English_SC'] text-3xl text-[#c89b3c] transition hover:text-[#fff1d2]"
+        >
+          ‹
+        </button>
 
-                  <div className="border-t border-[#6f5423]/55 bg-[#0b0705]/92 px-5 py-5">
-                    <div className="grid grid-cols-[34px_1fr_34px] items-center gap-4">
-                      <button
-                        type="button"
-                        onClick={goPreviousMedia}
-                        aria-label="Image précédente"
-                        className="flex h-9 w-9 items-center justify-center font-['IM_Fell_English_SC'] text-3xl text-[#c89b3c] transition hover:text-[#fff1d2]"
-                      >
-                        ‹
-                      </button>
+        <div className="grid grid-cols-5 gap-3">
+          {productMedia.slice(0, 5).map((media, index) => (
+            <button
+              key={`${media.src}-${index}`}
+              type="button"
+              onClick={() => setSelectedMediaIndex(index)}
+              className={`relative h-[92px] overflow-hidden border bg-[#120c07] transition ${
+                selectedMediaIndex === index
+                  ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
+                  : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
+              }`}
+            >
+              <img
+                src={media.type === "video" ? media.poster : media.src}
+                alt=""
+                className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
+              />
 
-                      <div className="grid grid-cols-5 gap-3">
-                        {productMedia.slice(0, 5).map((media, index) => (
-                          <button
-                            key={`${media.src}-${index}`}
-                            type="button"
-                            onClick={() => setSelectedMediaIndex(index)}
-                            className={`relative h-[78px] overflow-hidden border bg-[#120c07] transition ${
-                              selectedMediaIndex === index
-                                ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
-                                : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
-                            }`}
-                          >
-                            <img
-                              src={
-                                media.type === "video" ? media.poster : media.src
-                              }
-                              alt=""
-                              className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
-                            />
+              {media.type === "video" && (
+                <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
+                  Vidéo
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
 
-                            {media.type === "video" && (
-                              <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
-                                Vidéo
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={goNextMedia}
-                        aria-label="Image suivante"
-                        className="flex h-9 w-9 items-center justify-center font-['IM_Fell_English_SC'] text-3xl text-[#c89b3c] transition hover:text-[#fff1d2]"
-                      >
-                        ›
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <button
+          type="button"
+          onClick={goNextMedia}
+          aria-label="Image suivante"
+          className="flex h-9 w-9 items-center justify-center font-['IM_Fell_English_SC'] text-3xl text-[#c89b3c] transition hover:text-[#fff1d2]"
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
               {/* RIGHT PANEL */}
-              <aside>
+              <aside className="h-full">
                 <div className="group relative overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] px-8 py-9 text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:border-[#c89b3c]/90 md:px-10 md:py-10">
                   <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 

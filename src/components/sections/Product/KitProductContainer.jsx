@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
-
+import IndividualProductPage from "./IndividualProductPage";
 import ProductMediaGallery from "./ProductMediaGallery";
 import ProductPurchasePanel from "./ProductPurchasePanel";
 import ProductNarrativeBanner from "./ProductNarrativeBanner";
@@ -73,6 +73,25 @@ function KitProductContainer() {
     { name: "Noir", value: "#141414" },
   ];
 
+  const relatedProducts = collection.products
+    .filter((item) => item.slug !== product.slug)
+    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+
+  const relatedCollections = collectionsList.filter(
+    (item) => item.slug !== collection.slug
+  );
+
+  if (!product.featured) {
+    return (
+      <IndividualProductPage
+        product={product}
+        collection={collection}
+        productMedia={productMedia}
+        relatedProducts={relatedProducts}
+      />
+    );
+  }
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">
       <section className="relative px-6 pt-9 pb-8">
@@ -135,11 +154,12 @@ function KitProductContainer() {
           opacity={0.65}
         />
       </section>
-      <CollectionsHeroCarousel collections={collectionsList}
-       eyebrow="Explorer le reste de Panassor"
-  title="D’autres univers à faire vivre"
- 
- />
+
+      <CollectionsHeroCarousel
+        collections={relatedCollections}
+        eyebrow="Explorer le reste de Panassor"
+        title="D’autres univers à faire vivre"
+      />
     </main>
   );
 }

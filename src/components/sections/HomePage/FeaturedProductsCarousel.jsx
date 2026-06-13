@@ -4,10 +4,14 @@ import ProductCard from "../../ui/ProductCard";
 import CarouselArrow from "../../ui/CarouselArrow";
 import SectionTitle from "../../layout/SectionTitle";
 import GoldButton from "../../ui/GoldButton";
-import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import OrnamentDivider from "../../ui/OrnamentDivider";
+import SectionAtmosphere from "../../layout/SectionAtmosphere";
 
-function FeaturedProductsCarousel({ collection }) {
+function FeaturedProductsCarousel({
+  collection,
+  className = "py-20",
+  showCollectionButton = true,
+}) {
   const railRef = useRef(null);
 
   const scrollCarousel = (direction) => {
@@ -18,7 +22,9 @@ function FeaturedProductsCarousel({ collection }) {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#080504] px-6 pt-24 pb-32 text-[#f3e7cf]">
+    <section
+      className={`relative overflow-hidden bg-[#080504] px-6 text-[#f3e7cf] ${className}`}
+    >
       <SectionAtmosphere variant="featured" />
 
       <div className="relative z-10 mx-auto max-w-[88rem]">
@@ -30,7 +36,7 @@ function FeaturedProductsCarousel({ collection }) {
             showDivider={false}
           />
 
-          <OrnamentDivider className="mt-6 mb-12" />
+          <OrnamentDivider className="mt-6 mb-12" width={112} opacity={0.65} />
 
           <div className="flex justify-center gap-3 md:absolute md:right-0 md:top-[7.5rem]">
             <CarouselArrow
@@ -52,17 +58,17 @@ function FeaturedProductsCarousel({ collection }) {
           className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
         >
           {collection.products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              variant="carousel"
-            />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <GoldButton href={collection.url}>Voir toute la collection</GoldButton>
-        </div>
+        {showCollectionButton && (
+          <div className="mt-8 flex justify-center">
+            <GoldButton href={collection.url}>
+              Voir toute la collection
+            </GoldButton>
+          </div>
+        )}
       </div>
     </section>
   );

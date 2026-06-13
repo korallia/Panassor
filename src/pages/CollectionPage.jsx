@@ -2,8 +2,7 @@ import { Navigate, useParams } from "react-router-dom";
 
 import { getCollectionBySlug } from "../data/panassorCollections";
 
-import Navbar from "../components/layout/Navbar";
-import Footer from "../components/layout/Footer";
+
 
 import CollectionIntro from "../components/sections/CollectionIntro";
 import CollectionProductsGrid from "../components/sections/CollectionProductsGrid";
@@ -20,7 +19,8 @@ function CollectionPage() {
 
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
-      <Navbar />
+
+
 
       <CollectionIntro collection={collection} />
 
@@ -32,7 +32,6 @@ function CollectionPage() {
 
       <FeatureVideoPlayer video={collection.video} />
 
-      <Footer />
     </main>
   );
 }

@@ -1,14 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { collectionsList } from "../data/panassorCollections";
-import Navbar from "../components/layout/Navbar";
-import Footer from "../components/layout/Footer";
+
 
 function CollectionsPage() {
   const navigate = useNavigate();
 
   return (
-    <>
-      <Navbar />
+
       <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
         <section className="relative h-[430px] overflow-hidden bg-[#120c07]">
           <img
@@ -155,8 +153,7 @@ function CollectionsPage() {
         </section>
       </main>
 
-      <Footer />
-    </>
+      
   );
 }
 

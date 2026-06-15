@@ -30,7 +30,7 @@ function ToolSelectionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080504]/82 px-6 backdrop-blur-sm">
-      <div className="relative max-h-[90vh] w-full max-w-[68rem] overflow-y-auto border border-[#6f5423]/80 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] p-7 shadow-[0_26px_90px_rgba(0,0,0,0.86)]">
+      <div className="relative max-h-[90vh] w-full max-w-[68rem] overflow-y-auto border border-[#6f5423]/80 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] p-7 shadow-[0_26px_90px_rgba(0,0,0,0.86)] [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#120c07] [&::-webkit-scrollbar-thumb]:bg-[#c89b3c] [&::-webkit-scrollbar-thumb]:rounded-none">
         <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
         <div className="relative z-10">

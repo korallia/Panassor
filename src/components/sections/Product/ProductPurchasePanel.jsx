@@ -129,6 +129,8 @@ function ProductPurchasePanel({
   collection,
   leatherColors = [],
   customizableItems = [],
+   selectedColorIndex = 0,
+  onSelectColor,
 }) {
   const [selectedItems, setSelectedItems] = useState(customizableItems);
   const [activeItemIndex, setActiveItemIndex] = useState(null);
@@ -191,7 +193,11 @@ function ProductPurchasePanel({
             opacity={0.5}
           />
 
-          <ProductColorOptions colors={leatherColors} />
+        <ProductColorOptions
+  colors={leatherColors}
+  selectedIndex={selectedColorIndex}
+  onSelectColor={(_, index) => onSelectColor?.(index)}
+/>
 
           {selectedItems.length > 0 && (
             <>

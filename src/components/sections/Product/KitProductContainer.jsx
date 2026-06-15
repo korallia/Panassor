@@ -1,4 +1,5 @@
 import { Link, Navigate, useParams } from "react-router-dom";
+import { useState } from "react";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import IndividualProductPage from "./IndividualProductPage";
@@ -12,6 +13,7 @@ import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
 function KitProductContainer() {
   const { slug } = useParams();
+    const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
   let productMatch = null;
 
@@ -30,10 +32,17 @@ function KitProductContainer() {
 
   const { product, collection } = productMatch;
 
+
+const kitImagesByColor = [
+  "/images/hero-kit-chirurgien.jpg",
+  "/images/PlaceHolderRouge.png",
+  "/images/PlaceHolderNoir.png",
+];
+
   const productMedia = [
     {
       type: "image",
-      src: product.image,
+       src: kitImagesByColor[selectedColorIndex] ?? product.image,
       alt: product.name,
     },
     ...(product.gallery ?? []).map((image) => ({
@@ -123,6 +132,7 @@ function KitProductContainer() {
 
           <div className="grid gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <ProductMediaGallery
+              key={selectedColorIndex}
               media={productMedia}
               productName={product.name}
             />
@@ -132,6 +142,8 @@ function KitProductContainer() {
               collection={collection}
               leatherColors={leatherColors}
               customizableItems={customizableItems}
+               selectedColorIndex={selectedColorIndex}
+                onSelectColor={setSelectedColorIndex}
             />
           </div>
         </div>

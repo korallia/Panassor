@@ -22,7 +22,7 @@ function ProductCard({ product, variant = "carousel" }) {
       className={articleClass}
       role="button"
       tabIndex={0}
-      onClick={navigate(product.url)}
+      onClick={() => navigate(product.url)}
     >
       <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 

@@ -1,4 +1,13 @@
+import { useNavigate } from "react-router-dom";
+
 function Footer() {
+  const navigate = useNavigate();
+
+  const footerLinkClass = "text-left transition hover:text-[#d8a24c]";
+
+  const iconButtonClass =
+    "flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
+
   return (
     <footer className="relative overflow-hidden border-t-2 border-[#c89b3c]/70 bg-[#070403] px-6 pt-20 pb-8 text-[#f3e7cf]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(200,155,60,0.12),transparent_34%)]" />
@@ -40,24 +49,40 @@ function Footer() {
 
             <ul className="space-y-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/85">
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/")}
+                  className={footerLinkClass}
+                >
                   Accueil
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/collections")}
+                  className={footerLinkClass}
+                >
                   Produits
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/collections")}
+                  className={footerLinkClass}
+                >
                   Collections
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/atelier")}
+                  className={footerLinkClass}
+                >
                   Atelier
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -69,24 +94,40 @@ function Footer() {
 
             <ul className="space-y-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/85">
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/collections/chirurgien")}
+                  className={footerLinkClass}
+                >
                   Chirurgien
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/collections/tortionnaire")}
+                  className={footerLinkClass}
+                >
                   Tortionnaire
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/collections")}
+                  className={footerLinkClass}
+                >
                   Voleur
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="transition hover:text-[#d8a24c]">
+                <button
+                  type="button"
+                  onClick={() => navigate("/collections")}
+                  className={footerLinkClass}
+                >
                   Collections à venir
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -109,29 +150,30 @@ function Footer() {
             </a>
 
             <div className="mt-7 flex gap-3">
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]"
+              <button
+                type="button"
+                className={iconButtonClass}
                 aria-label="Instagram"
               >
                 ✦
-              </a>
+              </button>
 
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]"
+              <button
+                type="button"
+                className={iconButtonClass}
                 aria-label="Facebook"
               >
                 f
-              </a>
+              </button>
 
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]"
+              <button
+                type="button"
+                onClick={() => navigate("/collections")}
+                className={iconButtonClass}
                 aria-label="Boutique"
               >
                 ⌂
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -140,12 +182,21 @@ function Footer() {
           <p>© {new Date().getFullYear()} Panassor. Tous droits réservés.</p>
 
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <a href="#" className="transition hover:text-[#d8a24c]">
+            <button
+              type="button"
+              onClick={() => navigate("/confidentialite")}
+              className={footerLinkClass}
+            >
               Politique de confidentialité
-            </a>
-            <a href="#" className="transition hover:text-[#d8a24c]">
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/conditions")}
+              className={footerLinkClass}
+            >
               Conditions d’utilisation
-            </a>
+            </button>
           </div>
         </div>
       </div>

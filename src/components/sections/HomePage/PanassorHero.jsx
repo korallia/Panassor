@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-
-
 import CornerFrame from "../../ui/CornerFrame";
+
 function PanassorHero({ collection }) {
   const navigate = useNavigate();
 
@@ -19,18 +18,16 @@ function PanassorHero({ collection }) {
         <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/90 via-[#080504]/45 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/85 via-transparent to-[#080504]/55" />
 
-       <CornerFrame inset="hero" size="lg" thickness="strong" color="gold" />
+        <CornerFrame inset="hero" size="lg" thickness="strong" color="gold" />
 
-<CornerFrame
-  inset="heroInner"
-  size="sm"
-  thickness="subtle"
-  color="paleGold"
-/>
+        <CornerFrame
+          inset="heroInner"
+          size="sm"
+          thickness="subtle"
+          color="paleGold"
+        />
 
-     
-
-       <div className="relative z-20 mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl items-center px-6 py-12">
+        <div className="relative z-20 mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl items-center px-6 py-12">
           <div className="max-w-2xl">
             <div className="mb-6 flex items-center gap-4">
               <div className="h-px w-16 bg-[#d8a24c]/70" />
@@ -68,12 +65,17 @@ function PanassorHero({ collection }) {
                 {collection.cta}
               </button>
 
-              <a
-                href="#video"
+              <button
+                type="button"
+                onClick={() =>
+                  document
+                    .getElementById("video")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
                 className="inline-flex items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
               >
                 Voir l’atelier
-              </a>
+              </button>
             </div>
           </div>
         </div>

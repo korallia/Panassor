@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import SectionTitle from "../../layout/SectionTitle";
 import CornerFrame from "../../ui/CornerFrame";
 import GoldButton from "../../ui/GoldButton";
@@ -15,6 +15,7 @@ function CollectionsHeroCarousel({
   secondaryHref = "#produits",
   secondaryLabel = "Voir tous les produits",
 }) {
+   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!collections?.length) return null;
@@ -101,11 +102,11 @@ function CollectionsHeroCarousel({
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <GoldButton href={activeCollection.url}>
+                <GoldButton onClick={() => navigate(activeCollection.url)}>
                   {activeCollection.cta}
                 </GoldButton>
 
-                <GreenButton href={secondaryHref}>
+                <GreenButton onClick={() => navigate(secondaryHref)}>
                   {secondaryLabel}
                 </GreenButton>
               </div>

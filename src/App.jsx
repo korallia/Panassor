@@ -7,12 +7,13 @@ import HomePage from "./pages/HomePage";
 import CollectionProductsPage from "../src/pages/CollectionProductsPage"
 import CollectionsPage from "../src/pages/CollectionsPage"
 import ProductPage from "./pages/ProductPage";
+import RouteReset from "./components/RouteReset";
 
 function App() {
   return (
     <div className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <Navbar />
-
+  <RouteReset />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/collections" element={<CollectionsPage />} />

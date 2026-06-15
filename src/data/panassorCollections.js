@@ -214,7 +214,7 @@ export const panassorCollections = {
         description:
           "Deux longues aiguilles visuelles pour accentuer les scènes de menace, d’intimidation et d’interrogatoire.",
         featured: false,
-         customizable: true,
+         customizable: false,
       },
       {
         id: "redresseur",

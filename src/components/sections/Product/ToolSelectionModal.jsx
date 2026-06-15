@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import GreenButton from "../../ui/GreenButton";
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
@@ -9,13 +11,26 @@ function ToolSelectionModal({
   onSelectTool,
   onClose,
 }) {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
   if (!isOpen) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080504]/82 px-6 backdrop-blur-sm">
-      <div className="relative max-h-[82vh] w-full max-w-[62rem] overflow-y-auto border border-[#6f5423]/80 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] p-6 shadow-[0_26px_90px_rgba(0,0,0,0.86)] [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]">
+      <div className="relative max-h-[90vh] w-full max-w-[68rem] overflow-y-auto border border-[#6f5423]/80 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] p-7 shadow-[0_26px_90px_rgba(0,0,0,0.86)]">
         <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
         <div className="relative z-10">
@@ -55,11 +70,11 @@ function ToolSelectionModal({
                 key={tool.id}
                 type="button"
                 onClick={() => onSelectTool(tool)}
-                className="group/tool relative flex min-h-[320px] cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78),0_0_34px_rgba(200,155,60,0.08)]"
+                className="group/tool relative flex min-h-[360px] cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78),0_0_34px_rgba(200,155,60,0.08)]"
               >
                 <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
-                <div className="relative aspect-[16/10] overflow-hidden bg-[#0b0704]">
+                <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
                   <img
                     src={tool.image}
                     alt={tool.name}

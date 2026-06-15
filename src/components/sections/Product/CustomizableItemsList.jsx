@@ -7,10 +7,11 @@ function CustomizableItemsList({ items = [], onSelectItem }) {
 
   return (
     <div className="mt-8 space-y-3">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <CustomizableItemButton
-          key={item.id}
+          key={`${item.id}-${index}`}
           item={item}
+          index={index}
           onClick={onSelectItem}
         />
       ))}

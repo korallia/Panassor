@@ -14,7 +14,7 @@ function ToolSelectionModal({
   }
 
   return (
-   <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#080504]/82 px-6 py-8 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080504]/82 px-6 backdrop-blur-sm">
       <div className="relative w-full max-w-[70rem] overflow-hidden border border-[#6f5423]/80 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] p-8 shadow-[0_26px_90px_rgba(0,0,0,0.86)]">
         <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 

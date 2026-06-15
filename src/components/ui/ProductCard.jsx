@@ -1,20 +1,32 @@
+import { useNavigate } from "react-router-dom";
+
 function ProductCard({ product, variant = "carousel" }) {
+  const navigate = useNavigate();
   const isGrid = variant === "grid";
 
   const articleClass = isGrid
-    ? "group relative flex h-full flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78)]"
-    : "group relative flex min-w-[300px] snap-start flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78)] sm:min-w-[360px] lg:min-w-[calc(25%-1.125rem)]";
+    ? "group relative flex h-full cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78)]"
+    : "group relative flex min-w-[300px] cursor-pointer snap-start flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78)] sm:min-w-[360px] lg:min-w-[calc(25%-1.125rem)]";
 
   const imageAspect = isGrid ? "aspect-[5/4]" : "aspect-[4/5]";
   const contentPadding = isGrid ? "p-7" : "p-6";
   const titleHeight = isGrid ? "min-h-[4.5rem]" : "min-h-[5rem]";
   const descHeight = isGrid ? "min-h-[5.5rem]" : "min-h-[6.5rem]";
 
+
+
+
+
   return (
-    <article className={articleClass}>
+    <article
+      className={articleClass}
+      role="button"
+      tabIndex={0}
+      onClick={navigate(product.url)}
+    >
       <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
-      <a href={product.url} className="relative flex h-full flex-col">
+      <div className="relative flex h-full flex-col">
         <div className={`relative overflow-hidden bg-[#0b0704] ${imageAspect}`}>
           <img
             src={product.image}
@@ -55,7 +67,7 @@ function ProductCard({ product, variant = "carousel" }) {
             </span>
           </div>
         </div>
-      </a>
+      </div>
     </article>
   );
 }

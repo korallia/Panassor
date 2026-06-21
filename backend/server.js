@@ -296,5 +296,5 @@ app.get("/api/products/:slug", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Panassor backend running on ${import.meta.env.VITE_API_BASE_URL}:${PORT}`);
+  console.log(`Panassor backend running on http://localhost:${PORT}`);
 });

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import SectionTitle from "../../layout/SectionTitle";
 import CornerFrame from "../../ui/CornerFrame";
 import GoldButton from "../../ui/GoldButton";
@@ -15,7 +16,7 @@ function CollectionsHeroCarousel({
   secondaryHref = "#produits",
   secondaryLabel = "Voir tous les produits",
 }) {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!collections?.length) return null;
@@ -49,7 +50,9 @@ function CollectionsHeroCarousel({
             showDivider={false}
             className="mb-0"
           />
-           <div className="mx-auto mt-6 h-px w-72 bg-gradient-to-r from-transparent via-[#c89b3c]/85 to-transparent" />
+
+          <div className="mx-auto mt-6 h-px w-72 bg-gradient-to-r from-transparent via-[#c89b3c]/85 to-transparent" />
+
           {description && (
             <p className="mx-auto mt-7 max-w-3xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/82">
               {description}
@@ -57,19 +60,15 @@ function CollectionsHeroCarousel({
           )}
 
           {description && (
-            <OrnamentDivider
-              className="mt-9"
-              width={112}
-              opacity={0.65}
-            />
+            <OrnamentDivider className="mt-9" width={112} opacity={0.65} />
           )}
         </div>
 
         <div className="relative min-h-[780px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
           <img
-            key={activeCollection.image}
-            src={activeCollection.image}
-            alt={activeCollection.name}
+            key={activeCollection.hero_image_url}
+            src={activeCollection.hero_image_url}
+            alt={activeCollection.name_fr}
             className="absolute inset-0 h-full w-full object-cover brightness-[0.65] contrast-[1.12] saturate-[0.9] transition-opacity duration-700"
           />
 
@@ -85,25 +84,25 @@ function CollectionsHeroCarousel({
                 <div className="h-px w-16 bg-[#c89b3c]" />
 
                 <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">
-                  {activeCollection.eyebrow}
+                  {activeCollection.eyebrow_fr}
                 </p>
 
                 <div className="hidden h-px w-16 bg-[#c89b3c] sm:block" />
               </div>
 
               <h3 className="font-['IM_Fell_English_SC'] text-6xl uppercase leading-[0.85] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-8xl">
-                {activeCollection.title}
+                {activeCollection.title_fr}
               </h3>
 
               <div className="my-7 h-px w-52 bg-gradient-to-r from-[#c89b3c] to-transparent" />
 
               <p className="max-w-xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/90 md:text-3xl md:leading-10">
-                {activeCollection.description}
+                {activeCollection.description_fr}
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <GoldButton onClick={() => navigate(activeCollection.url)}>
-                  {activeCollection.cta}
+                  Découvrir la collection
                 </GoldButton>
 
                 <GreenButton onClick={() => navigate(secondaryHref)}>
@@ -138,7 +137,7 @@ function CollectionsHeroCarousel({
                     ? "border-[#c89b3c] bg-[#c89b3c]"
                     : "border-[#c89b3c]/60 bg-transparent hover:bg-[#c89b3c]/40"
                 }`}
-                aria-label={`Voir la collection ${collection.name}`}
+                aria-label={`Voir la collection ${collection.name_fr}`}
               />
             ))}
           </div>

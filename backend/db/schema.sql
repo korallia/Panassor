@@ -37,6 +37,7 @@ CREATE TABLE collections (
   hero_image_url TEXT,
   thumbnail_image_url TEXT,
   video_url TEXT,
+  video_poster_url TEXT,
 
   featured BOOLEAN NOT NULL DEFAULT FALSE,
 

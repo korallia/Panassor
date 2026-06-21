@@ -9,8 +9,8 @@ function PanassorHero({ collection }) {
     <div className="h-[calc(100vh-5rem)] bg-[#080504] text-[#f7ead2]">
       <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-[#0b0704]">
         <img
-          src={collection.heroImage}
-          alt={collection.title}
+          src={collection.hero_image_url}
+          alt={collection.title_fr}
           className="absolute inset-0 h-[calc(100vh-5rem)] w-full object-cover object-center brightness-[0.78] contrast-[1.12] saturate-[0.92]"
         />
 
@@ -33,14 +33,14 @@ function PanassorHero({ collection }) {
               <div className="h-px w-16 bg-[#d8a24c]/70" />
 
               <span className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#d8a24c] md:text-base">
-                {collection.eyebrow}
+                {collection.eyebrow_fr}
               </span>
 
               <div className="hidden h-px w-16 bg-[#d8a24c]/70 sm:block" />
             </div>
 
             <h1 className="font-['IM_Fell_English_SC'] text-6xl font-normal uppercase leading-[0.82] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-8xl xl:text-9xl">
-              {collection.title}
+              {collection.title_fr}
             </h1>
 
             <div className="my-7 flex items-center gap-3 text-[#d8a24c]">
@@ -50,7 +50,7 @@ function PanassorHero({ collection }) {
             </div>
 
             <p className="max-w-xl font-['EB_Garamond'] text-2xl leading-9 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)] md:text-3xl md:leading-10">
-              {collection.description}
+              {collection.description_fr}
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -62,7 +62,7 @@ function PanassorHero({ collection }) {
                 <span className="mr-3 text-[#f8edd3] group-hover:text-[#120904]">
                   ✦
                 </span>
-                {collection.cta}
+                Découvrir la collection
               </button>
 
               <button

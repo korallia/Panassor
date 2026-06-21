@@ -52,6 +52,7 @@ app.get("/api/collections", async (req, res) => {
         hero_image_url,
         thumbnail_image_url,
         video_url,
+        video_poster_url,
         featured
       FROM collections
       ORDER BY featured DESC, name_fr ASC;
@@ -91,6 +92,7 @@ app.get("/api/collections/:slug", async (req, res) => {
         hero_image_url,
         thumbnail_image_url,
         video_url,
+        video_poster_url,
         featured
       FROM collections
       WHERE slug = $1;

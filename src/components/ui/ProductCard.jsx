@@ -13,24 +13,20 @@ function ProductCard({ product, variant = "carousel" }) {
   const titleHeight = isGrid ? "min-h-[4.5rem]" : "min-h-[5rem]";
   const descHeight = isGrid ? "min-h-[5.5rem]" : "min-h-[6.5rem]";
 
-
-
-
-
   return (
     <article
       className={articleClass}
       role="button"
       tabIndex={0}
-      onClick={() => navigate(product.url)}
+      onClick={() => navigate(`/produits/${product.slug}`)}
     >
       <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
       <div className="relative flex h-full flex-col">
         <div className={`relative overflow-hidden bg-[#0b0704] ${imageAspect}`}>
           <img
-            src={product.image}
-            alt={product.name}
+            src={product.image_url}
+            alt={product.name_fr}
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover brightness-[0.92] contrast-[1.08] saturate-[1.02] transition duration-500 group-hover:scale-[1.035] group-hover:brightness-[1]"
@@ -52,13 +48,13 @@ function ProductCard({ product, variant = "carousel" }) {
           <h3
             className={`mb-4 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] ${titleHeight}`}
           >
-            {product.name}
+            {product.name_fr}
           </h3>
 
           <p
             className={`mb-7 font-['EB_Garamond'] text-xl leading-7 text-[#d7c8ad]/86 ${descHeight}`}
           >
-            {product.description}
+            {product.description_fr}
           </p>
 
           <div className="mt-auto pt-2">

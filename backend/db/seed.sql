@@ -21,6 +21,7 @@ INSERT INTO collections (
   hero_image_url,
   thumbnail_image_url,
   video_url,
+  video_poster_url,
   featured
 )
 VALUES
@@ -35,6 +36,7 @@ VALUES
   '/images/hero-kit-chirurgien.jpg',
   '/images/hero-kit-chirurgien.jpg',
   '/video/kit-chirurgien-panassor.mp4',
+  '/images/video-kit-chirurgien-poster.jpg',
   TRUE
 ),
 (
@@ -48,6 +50,7 @@ VALUES
   '/images/PhotoSacoche3.png',
   '/images/PhotoSacocheFerme3.png',
   '/video/kit-chirurgien-panassor.mp4',
+  '/images/video-kit-chirurgien-poster.jpg',
   FALSE
 );
 

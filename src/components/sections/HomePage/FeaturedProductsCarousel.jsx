@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
 import ProductCard from "../../ui/ProductCard";
 import CarouselArrow from "../../ui/CarouselArrow";
 import SectionTitle from "../../layout/SectionTitle";
@@ -12,7 +13,7 @@ function FeaturedProductsCarousel({
   className = "py-20",
   showCollectionButton = true,
 }) {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const railRef = useRef(null);
 
   const scrollCarousel = (direction) => {
@@ -31,8 +32,8 @@ function FeaturedProductsCarousel({
       <div className="relative z-10 mx-auto max-w-[88rem]">
         <div className="relative mb-16">
           <SectionTitle
-            eyebrow={collection.productsSection.eyebrow}
-            title={collection.productsSection.title}
+            eyebrow="Produits de la collection"
+            title={collection.title_fr}
             align="center"
             showDivider={false}
           />
@@ -65,7 +66,7 @@ function FeaturedProductsCarousel({
 
         {showCollectionButton && (
           <div className="mt-8 flex justify-center">
-           <GoldButton onClick={() => navigate(collection.url)}>
+            <GoldButton onClick={() => navigate(collection.url)}>
               Voir toute la collection
             </GoldButton>
           </div>

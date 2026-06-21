@@ -63,16 +63,22 @@ function KitProductContainer() {
     return null;
   }
 
-  const kitImagesByColor = [
-    "/images/hero-kit-chirurgien.jpg",
-    "/images/PlaceHolderRouge.png",
-    "/images/PlaceHolderNoir.png",
-  ];
+  const defaultProductImage =
+    product.images?.find((image) => image.is_main)?.url ??
+    product.images?.[0]?.url ??
+    product.image_url;
+
+  const kitImagesByColor =
+    product.slug === "kit-chirurgien"
+      ? [
+          "/images/hero-kit-chirurgien.jpg",
+          "/images/PlaceHolderRouge.png",
+          "/images/PlaceHolderNoir.png",
+        ]
+      : [];
 
   const mainProductImage =
-    kitImagesByColor[selectedColorIndex] ??
-    product.images?.find((image) => image.is_main)?.url ??
-    product.images?.[0]?.url;
+    kitImagesByColor[selectedColorIndex] ?? defaultProductImage;
 
   const productMedia = [
     {

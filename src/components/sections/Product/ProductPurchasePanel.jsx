@@ -1,144 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
-
-import { formatPrice } from "../../../data/panassorCollections";
 
 import ProductPanelTitle from "./ProductPanelTitle";
 import ProductColorOptions from "./ProductColorOptions";
 import CustomizableItemsList from "./CustomizableItemsList";
 import ToolSelectionModal from "./ToolSelectionModal";
 
-const toolOptions = [
-  {
-    id: "spatule",
-    slug: "spatule",
-    name: "Spatule",
-    shortName: "Spatule",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/spatule.jpg",
-    url: "/produits/spatule",
-    description:
-      "Un outil de manipulation simple pour enrichir les examens et les interventions en scène.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "curette",
-    slug: "curette",
-    name: "Curette",
-    shortName: "Curette",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/curette.jpg",
-    url: "/produits/curette",
-    description:
-      "Une pièce spécialisée pour donner plus de réalisme aux scènes de soin et d’intervention.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "crochet",
-    slug: "crochet",
-    name: "Crochet",
-    shortName: "Crochet",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/crochet.jpg",
-    url: "/produits/crochet",
-    description:
-      "Un outil fin pour appuyer les manipulations délicates et les scènes médicales tendues.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "scalpel",
-    slug: "scalpel",
-    name: "Scalpel",
-    shortName: "Scalpel",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/scalpel.jpg",
-    url: "/produits/scalpel",
-    description:
-      "Un accessoire immersif pour les interventions délicates et les scènes chirurgicales.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "redresseur",
-    slug: "redresseur",
-    name: "Le Redresseur",
-    shortName: "Redresseur",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/Redresseur.png",
-    url: "/produits/redresseur",
-    description:
-      "Un outil de scène au nom évocateur, pensé pour imposer une présence froide et inquiétante.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "correcteur",
-    slug: "correcteur",
-    name: "Le Correcteur",
-    shortName: "Correcteur",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/Correcteur.png",
-    url: "/produits/correcteur",
-    description:
-      "Un accessoire théâtral pour appuyer les scènes de discipline, de menace et de confrontation.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "dernier-argument",
-    slug: "dernier-argument",
-    name: "Le Dernier Argument",
-    shortName: "Dernier Argument",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/Dernier_Argument.png",
-    url: "/produits/dernier-argument",
-    description:
-      "Un outil narratif au nom dramatique, parfait pour faire monter la tension avant une décision finale.",
-    featured: false,
-    customizable: true,
-  },
-  {
-    id: "pacificateur",
-    slug: "pacificateur",
-    name: "Le Pacificateur",
-    shortName: "Pacificateur",
-    price: 40.0,
-    currency: "CAD",
-    image: "/images/Pacificateur.png",
-    url: "/produits/pacificateur",
-    description:
-      "Un accessoire sombre et ironique pour les personnages qui imposent le silence par leur seule présence.",
-    featured: false,
-    customizable: true,
-  },
-];
+function formatPrice(priceCents, currency = "CAD") {
+  if (priceCents == null) return "";
+
+  return new Intl.NumberFormat("fr-CA", {
+    style: "currency",
+    currency,
+  }).format(priceCents / 100);
+}
 
 function ProductPurchasePanel({
   product,
   collection,
   leatherColors = [],
   customizableItems = [],
-   selectedColorIndex = 0,
+  selectedColorIndex = 0,
   onSelectColor,
 }) {
   const [selectedItems, setSelectedItems] = useState(customizableItems);
+  const [toolOptions, setToolOptions] = useState([]);
   const [activeItemIndex, setActiveItemIndex] = useState(null);
+
+  useEffect(() => {
+    setSelectedItems(customizableItems);
+  }, [customizableItems]);
+
+  useEffect(() => {
+    async function loadToolOptions() {
+      const response = await fetch(
+        "http://localhost:3001/api/products/customizable"
+      );
+
+      const data = await response.json();
+      setToolOptions(data);
+    }
+
+    loadToolOptions();
+  }, []);
 
   const activeItem =
     activeItemIndex !== null ? selectedItems[activeItemIndex] : null;
 
-  const openToolModal = (item, index) => {
+  const openToolModal = (_, index) => {
     setActiveItemIndex(index);
   };
 
@@ -163,14 +73,14 @@ function ProductPurchasePanel({
 
         <div className="relative z-10">
           <ProductPanelTitle
-            collectionName={collection.name}
-            productName={product.name}
-            description={product.longDescription ?? product.description}
+            collectionName={collection.name_fr}
+            productName={product.name_fr}
+            description={product.long_description_fr ?? product.description_fr}
           />
 
           <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(product.price, product.currency)}
+              {formatPrice(product.price_cents)}
             </p>
 
             <OrnamentDivider
@@ -193,11 +103,11 @@ function ProductPurchasePanel({
             opacity={0.5}
           />
 
-        <ProductColorOptions
-  colors={leatherColors}
-  selectedIndex={selectedColorIndex}
-  onSelectColor={(_, index) => onSelectColor?.(index)}
-/>
+          <ProductColorOptions
+            colors={leatherColors}
+            selectedIndex={selectedColorIndex}
+            onSelectColor={(_, index) => onSelectColor?.(index)}
+          />
 
           {selectedItems.length > 0 && (
             <>

@@ -1,30 +1,38 @@
 import { Link } from "react-router-dom";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
-
 import ProductPanelTitle from "./ProductPanelTitle";
 
-import { formatPrice } from "../../../data/panassorCollections";
+function formatPrice(priceCents, currency = "CAD") {
+  if (priceCents == null) return "";
+
+  return new Intl.NumberFormat("fr-CA", {
+    style: "currency",
+    currency,
+  }).format(priceCents / 100);
+}
 
 function IndividualProductPanel({ product, collection }) {
-  const kitProduct = collection.products?.find((item) => item.featured);
-  const kitUrl = kitProduct?.url ?? collection.url;
+  const kitProduct = collection.products?.find((item) => item.is_kit);
+  const kitUrl = kitProduct
+    ? `/produits/${kitProduct.slug}`
+    : collection.url;
 
   return (
     <aside className="h-full">
-     <div className="group relative flex h-full min-h-[680px] flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] px-8 py-10 text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] hover:border-[#c89b3c]/90 md:px-10 md:py-12">
+      <div className="group relative flex h-full min-h-[680px] flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] px-8 py-10 text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] hover:border-[#c89b3c]/90 md:px-10 md:py-12">
         <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
         <div className="relative z-10 flex h-full flex-col">
           <ProductPanelTitle
-            collectionName={collection.name}
-            productName={product.name}
-            description={product.longDescription ?? product.description}
+            collectionName={collection.name_fr}
+            productName={product.name_fr}
+            description={product.long_description_fr ?? product.description_fr}
           />
 
           <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(product.price, product.currency)}
+              {formatPrice(product.price_cents)}
             </p>
 
             <OrnamentDivider
@@ -47,31 +55,36 @@ function IndividualProductPanel({ product, collection }) {
             opacity={0.5}
           />
 
-<Link
-  to={kitUrl}
-  className="mt-9 block max-w-[360px] overflow-hidden border border-[#6f5423]/75 bg-[#080504]/45 hover:border-[#b8964a] hover:bg-[#102417]/80"
->
-  <div className="grid min-h-[108px] grid-cols-[96px_1fr]">
-    <div className="overflow-hidden border-r border-[#6f5423]/70 bg-[#080504]">
-      <img
-        src={kitProduct?.image ?? collection.thumbnail ?? collection.heroImage}
-        alt=""
-        className="h-full w-full object-contain object-center p-1 brightness-[0.82] contrast-[1.12] saturate-[0.9]"
-      />
-    </div>
+          <Link
+            to={kitUrl}
+            className="mt-9 block max-w-[360px] overflow-hidden border border-[#6f5423]/75 bg-[#080504]/45 hover:border-[#b8964a] hover:bg-[#102417]/80"
+          >
+            <div className="grid min-h-[108px] grid-cols-[96px_1fr]">
+              <div className="overflow-hidden border-r border-[#6f5423]/70 bg-[#080504]">
+                <img
+                  src={
+                    kitProduct?.image_url ??
+                    collection.thumbnail_image_url ??
+                    collection.hero_image_url
+                  }
+                  alt=""
+                  className="h-full w-full object-contain object-center p-1 brightness-[0.82] contrast-[1.12] saturate-[0.9]"
+                />
+              </div>
 
-    <div className="flex flex-col justify-center px-4 py-4">
-      <p className="font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.2em] text-[#c89b3c]">
-        Kit complet
-      </p>
+              <div className="flex flex-col justify-center px-4 py-4">
+                <p className="font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.2em] text-[#c89b3c]">
+                  Kit complet
+                </p>
 
-      <p className="mt-2 font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/84">
-        Voir la trousse complète de la collection {collection.name}, avec les
-        outils pensés pour accompagner cette pièce en jeu.
-      </p>
-    </div>
-  </div>
-</Link>
+                <p className="mt-2 font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/84">
+                  Voir la trousse complète de la collection{" "}
+                  {collection.name_fr}, avec les outils pensés pour accompagner
+                  cette pièce en jeu.
+                </p>
+              </div>
+            </div>
+          </Link>
 
           <div className="flex-1" />
         </div>

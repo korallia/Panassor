@@ -17,30 +17,35 @@ function ProductMediaRail({
         />
 
         <div className="grid grid-cols-5 gap-3">
-          {media.slice(0, 5).map((item, index) => (
-            <button
-              key={`${item.src}-${index}`}
-              type="button"
-              onClick={() => onSelectMedia(index)}
-              className={`relative h-[92px] overflow-hidden border bg-[#120c07] transition ${
-                selectedMediaIndex === index
-                  ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
-                  : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
-              }`}
-            >
-              <img
-                src={item.type === "video" ? item.poster : item.src}
-                alt=""
-                className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
-              />
+          {media.slice(0, 5).map((item, index) => {
+            const thumbnailSrc =
+              item.type === "video" ? item.poster ?? item.src : item.src;
 
-              {item.type === "video" && (
-                <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
-                  Vidéo
-                </span>
-              )}
-            </button>
-          ))}
+            return (
+              <button
+                key={`${item.src}-${index}`}
+                type="button"
+                onClick={() => onSelectMedia(index)}
+                className={`relative h-[92px] overflow-hidden border bg-[#120c07] transition ${
+                  selectedMediaIndex === index
+                    ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
+                    : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
+                }`}
+              >
+                <img
+                  src={thumbnailSrc}
+                  alt=""
+                  className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
+                />
+
+                {item.type === "video" && (
+                  <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
+                    Vidéo
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <CarouselArrow

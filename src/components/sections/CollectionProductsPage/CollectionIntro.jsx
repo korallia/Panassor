@@ -5,8 +5,8 @@ function CollectionIntro({ collection }) {
   return (
     <section className="relative h-[430px] overflow-hidden bg-[#120c07] text-[#f3e7cf]">
       <img
-        src={collection.heroImage}
-        alt={collection.title}
+        src={collection.hero_image_url}
+        alt={collection.title_fr}
         className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.72] contrast-[1.1] saturate-[0.95]"
       />
 
@@ -36,7 +36,7 @@ function CollectionIntro({ collection }) {
           />
 
           <h1 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.88] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-7xl xl:text-8xl">
-            {collection.title}
+            {collection.title_fr}
           </h1>
 
           <OrnamentDivider

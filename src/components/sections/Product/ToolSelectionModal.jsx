@@ -52,7 +52,7 @@ function ToolSelectionModal({
 
               <p className="mt-5 max-w-2xl font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/84">
                 Sélectionne l’outil qui remplacera{" "}
-                {selectedItem?.shortName ?? selectedItem?.name}.
+                {selectedItem?.title_fr ?? selectedItem?.name_fr}.
               </p>
             </div>
 
@@ -76,8 +76,8 @@ function ToolSelectionModal({
 
                 <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
                   <img
-                    src={tool.image}
-                    alt={tool.name}
+                    src={tool.image_url}
+                    alt={tool.name_fr}
                     loading="lazy"
                     decoding="async"
                     className="h-full w-full object-cover brightness-[0.88] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.08] group-hover/tool:-translate-y-1 group-hover/tool:brightness-[1]"
@@ -99,11 +99,11 @@ function ToolSelectionModal({
                   <div className="mb-4 h-px w-20 bg-[#c89b3c]/70" />
 
                   <h3 className="mb-4 min-h-[4.5rem] font-['IM_Fell_English_SC'] text-3xl uppercase leading-none text-[#fff1d2] transition group-hover/tool:text-[#e7c97b]">
-                    {tool.shortName ?? tool.name}
+                    {tool.title_fr ?? tool.name_fr}
                   </h3>
 
                   <p className="mb-5 min-h-[4.75rem] font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/86">
-                    {tool.description}
+                    {tool.description_fr}
                   </p>
 
                   <div className="mt-auto pt-2">

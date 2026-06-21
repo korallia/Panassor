@@ -11,15 +11,15 @@ function CustomizableItemButton({ item, index, onClick }) {
     >
       <div className="h-full min-h-[68px] overflow-hidden border-r border-[#b8964a]/80 bg-[#080504]">
         <img
-          src={item.image}
-          alt={item.name ?? ""}
+          src={item.image_url}
+          alt={item.name_fr ?? ""}
           className="h-full w-full object-cover brightness-[0.86] contrast-[1.1] saturate-[0.9]"
         />
       </div>
 
       <div className="flex items-center justify-between gap-4 px-5 py-4">
         <span className="text-sm tracking-[0.12em]">
-          {item.shortName ?? item.name}
+          {item.title_fr ?? item.name_fr}
         </span>
 
         <span className="font-['IM_Fell_English_SC'] text-[0.6rem] uppercase tracking-[0.18em] text-[#d8b56f]/80 group-hover/item:text-[#f7ead2]/90">

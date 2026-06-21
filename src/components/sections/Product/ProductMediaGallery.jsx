@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ProductMediaViewer from "./ProductMediaViewer";
 import ProductMediaRail from "./ProductMediaRail";
 
 function ProductMediaGallery({ media = [], productName }) {
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+
+  useEffect(() => {
+    setSelectedMediaIndex(0);
+  }, [media]);
 
   const selectedMedia = media[selectedMediaIndex] ?? media[0];
 

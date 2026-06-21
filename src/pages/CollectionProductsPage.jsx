@@ -1,6 +1,5 @@
+import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-
-import { getCollectionBySlug } from "../data/panassorCollections";
 
 import CollectionIntro from "../components/sections/CollectionProductsPage/CollectionIntro";
 import CollectionProductsGrid from "../components/sections/CollectionProductsPage/CollectionProductsGrid";
@@ -8,11 +7,33 @@ import FeatureVideoPlayer from "../components/layout/VideoPlayer";
 
 function CollectionProductsPage() {
   const { slug } = useParams();
+  const [collection, setCollection] = useState(null);
+  const [notFound, setNotFound] = useState(false);
 
-  const collection = getCollectionBySlug(slug);
+  useEffect(() => {
+    async function loadCollection() {
+      const response = await fetch(
+        `http://localhost:3001/api/collections/${slug}`
+      );
+
+      if (response.status === 404) {
+        setNotFound(true);
+        return;
+      }
+
+      const data = await response.json();
+      setCollection(data);
+    }
+
+    loadCollection();
+  }, [slug]);
+
+  if (notFound) {
+    return <Navigate to="/collections" replace />;
+  }
 
   if (!collection) {
-    return <Navigate to="/collections" replace />;
+    return null;
   }
 
   return (
@@ -20,12 +41,18 @@ function CollectionProductsPage() {
       <CollectionIntro collection={collection} />
 
       <CollectionProductsGrid
-        eyebrow={collection.productsSection.eyebrow}
-        title={collection.productsSection.title}
+        eyebrow="Produits de la collection"
+        title={collection.title_fr}
         products={collection.products}
       />
 
-      <FeatureVideoPlayer video={collection.video} />
+      <FeatureVideoPlayer
+        video={{
+          src: collection.video_url,
+          poster: collection.video_poster_url,
+          title: collection.title_fr,
+        }}
+      />
     </main>
   );
 }

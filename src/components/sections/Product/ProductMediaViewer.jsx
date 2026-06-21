@@ -1,9 +1,13 @@
 import CornerFrame from "../../ui/CornerFrame";
 
 function ProductMediaViewer({ selectedMedia, productName }) {
+  if (!selectedMedia?.src) {
+    return null;
+  }
+
   return (
     <div className="relative min-h-[520px] flex-1 overflow-hidden md:min-h-[620px] lg:min-h-[0px]">
-      {selectedMedia?.type === "video" ? (
+      {selectedMedia.type === "video" ? (
         <video
           src={selectedMedia.src}
           poster={selectedMedia.poster}
@@ -12,8 +16,8 @@ function ProductMediaViewer({ selectedMedia, productName }) {
         />
       ) : (
         <img
-          src={selectedMedia?.src}
-          alt={selectedMedia?.alt ?? productName}
+          src={selectedMedia.src}
+          alt={selectedMedia.alt ?? productName}
           className="h-full w-full object-cover brightness-[0.78] contrast-[1.1] saturate-[0.92]"
         />
       )}

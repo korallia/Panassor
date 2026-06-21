@@ -16,11 +16,8 @@ function IndividualProductPage({
 }) {
   const relatedCollection = {
     ...collection,
+    title_fr: "Compléter la trousse",
     products: relatedProducts,
-    productsSection: {
-      eyebrow: `Collection ${collection.name}`,
-      title: "Compléter la trousse",
-    },
   };
 
   return (
@@ -44,24 +41,21 @@ function IndividualProductPage({
             <span className="text-[#6f5423]">›</span>
 
             <Link to={collection.url} className="transition hover:text-[#c89b3c]">
-              {collection.name}
+              {collection.name_fr}
             </Link>
 
             <span className="text-[#6f5423]">›</span>
 
-            <span className="text-[#c89b3c]">{product.name}</span>
+            <span className="text-[#c89b3c]">{product.name_fr}</span>
           </nav>
 
           <div className="grid gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <ProductMediaGallery
               media={productMedia}
-              productName={product.name}
+              productName={product.name_fr}
             />
 
-            <IndividualProductPanel
-              product={product}
-              collection={collection}
-            />
+            <IndividualProductPanel product={product} collection={collection} />
           </div>
         </div>
       </section>

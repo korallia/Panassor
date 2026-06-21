@@ -150,6 +150,48 @@ app.get("/api/collections/:slug", async (req, res) => {
   }
 });
 
+app.get("/api/products/customizable", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.id,
+        p.collection_id,
+        p.slug,
+        p.name_fr,
+        p.name_en,
+        p.title_fr,
+        p.title_en,
+        p.description_fr,
+        p.description_en,
+        p.long_description_fr,
+        p.long_description_en,
+        p.price_cents,
+        p.customizable,
+        p.is_kit,
+        p.featured,
+        c.slug AS collection_slug,
+        c.name_fr AS collection_name_fr,
+        pi.url AS image_url
+      FROM products p
+      JOIN collections c
+        ON c.id = p.collection_id
+      LEFT JOIN product_images pi
+        ON pi.product_id = p.id
+        AND pi.is_main = TRUE
+      WHERE p.customizable = TRUE
+      ORDER BY c.name_fr ASC, p.name_fr ASC;
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Failed to fetch customizable products:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch customizable products",
+    });
+  }
+});
+
 // Get one product by slug
 app.get("/api/products/:slug", async (req, res) => {
   const { slug } = req.params;

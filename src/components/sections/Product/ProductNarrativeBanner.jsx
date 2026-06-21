@@ -4,19 +4,19 @@ import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
 function ProductNarrativeBanner({ collection }) {
- const badges = [
-  ["⚜", "Fabrication québécoise"],
-  ["✦", "Exigence décorum"],
-  ["◌", "Pensé pour le GN"],
-  ["◆", "Sécuritaire en jeu"],
-  ["◇", "Inspiré de l’histoire"],
-];
+  const badges = [
+    ["⚜", "Fabrication québécoise"],
+    ["✦", "Exigence décorum"],
+    ["◌", "Pensé pour le GN"],
+    ["◆", "Sécuritaire en jeu"],
+    ["◇", "Inspiré de l’histoire"],
+  ];
 
   return (
     <section className="relative px-6 pb-4">
       <div className="relative mx-auto max-w-[88rem] overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
         <img
-          src={collection.heroImage ?? collection.image}
+          src={collection.hero_image_url}
           alt=""
           className="absolute inset-0 h-full w-full object-cover brightness-[0.26] contrast-[1.18] saturate-[0.9]"
         />
@@ -41,12 +41,12 @@ function ProductNarrativeBanner({ collection }) {
               </div>
 
               <h2 className="font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] md:text-5xl">
-               Chaque détail doit mériter sa place en jeu.
+                Chaque détail doit mériter sa place en jeu.
               </h2>
             </div>
 
             <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-              La collection {collection.name} est pensée pour les scènes où le
+              La collection {collection.name_fr} est pensée pour les scènes où le
               détail compte. Chaque pièce est conçue pour rester crédible en
               jeu, respecter les exigences du décorum et donner aux joueurs des
               outils qu’ils peuvent manipuler avec fierté.

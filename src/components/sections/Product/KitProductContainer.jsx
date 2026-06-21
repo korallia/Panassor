@@ -1,82 +1,122 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import IndividualProductPage from "./IndividualProductPage";
 import ProductMediaGallery from "./ProductMediaGallery";
 import ProductPurchasePanel from "./ProductPurchasePanel";
 import ProductNarrativeBanner from "./ProductNarrativeBanner";
-
-import { collectionsList } from "../../../data/panassorCollections";
-
 import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
 function KitProductContainer() {
   const { slug } = useParams();
-    const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
-  let productMatch = null;
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+  const [product, setProduct] = useState(null);
+  const [collection, setCollection] = useState(null);
+  const [collections, setCollections] = useState([]);
+  const [notFound, setNotFound] = useState(false);
 
-  for (const collection of collectionsList) {
-    const product = collection.products.find((item) => item.slug === slug);
+  useEffect(() => {
+    async function loadProductPage() {
+      setProduct(null);
+      setCollection(null);
+      setNotFound(false);
+      setSelectedColorIndex(0);
 
-    if (product) {
-      productMatch = { product, collection };
-      break;
+      const productResponse = await fetch(
+        `http://localhost:3001/api/products/${slug}`
+      );
+
+      if (productResponse.status === 404) {
+        setNotFound(true);
+        return;
+      }
+
+      const productData = await productResponse.json();
+
+      const collectionResponse = await fetch(
+        `http://localhost:3001/api/collections/${productData.collection_slug}`
+      );
+
+      const collectionData = await collectionResponse.json();
+
+      const collectionsResponse = await fetch(
+        "http://localhost:3001/api/collections"
+      );
+
+      const collectionsData = await collectionsResponse.json();
+
+      setProduct(productData);
+      setCollection(collectionData);
+      setCollections(collectionsData);
     }
-  }
 
-  if (!productMatch) {
+    loadProductPage();
+  }, [slug]);
+
+  if (notFound) {
     return <Navigate to="/collections" replace />;
   }
 
-  const { product, collection } = productMatch;
+  if (!product || !collection) {
+    return null;
+  }
 
+  const kitImagesByColor = [
+    "/images/hero-kit-chirurgien.jpg",
+    "/images/PlaceHolderRouge.png",
+    "/images/PlaceHolderNoir.png",
+  ];
 
-const kitImagesByColor = [
-  "/images/hero-kit-chirurgien.jpg",
-  "/images/PlaceHolderRouge.png",
-  "/images/PlaceHolderNoir.png",
-];
+  const mainProductImage =
+    kitImagesByColor[selectedColorIndex] ??
+    product.images?.find((image) => image.is_main)?.url ??
+    product.images?.[0]?.url;
 
   const productMedia = [
     {
       type: "image",
-       src: kitImagesByColor[selectedColorIndex] ?? product.image,
-      alt: product.name,
+      src: mainProductImage,
+      alt: product.name_fr,
     },
-    ...(product.gallery ?? []).map((image) => ({
-      type: "image",
-      src: image,
-      alt: product.name,
-    })),
-    ...(collection.video?.src
+    ...(product.images ?? [])
+      .filter((image) => image.url !== mainProductImage)
+      .map((image) => ({
+        type: "image",
+        src: image.url,
+        alt: image.alt_fr ?? product.name_fr,
+      })),
+    ...(collection.video_url
       ? [
           {
             type: "video",
-            src: collection.video.src,
-            poster: collection.video.poster,
-            alt: collection.video.title ?? "Vidéo du produit",
+            src: collection.video_url,
+            poster: collection.video_poster_url,
+            alt: collection.title_fr ?? "Vidéo du produit",
           },
         ]
       : []),
     {
       type: "image",
-      src: collection.heroImage,
-      alt: collection.name,
+      src: collection.hero_image_url,
+      alt: collection.name_fr,
     },
     {
       type: "image",
-      src: collection.thumbnail,
-      alt: collection.name,
+      src: collection.thumbnail_image_url,
+      alt: collection.name_fr,
     },
   ].filter((item) => item.src);
 
-  const kitItems = collection.products.filter((item) => !item.featured);
+  const kitItems =
+    product.kit_items?.length > 0
+      ? product.kit_items
+      : collection.products.filter((item) => !item.is_kit);
 
   const customizableItems = kitItems.filter((item) => item.customizable);
 
-  const leatherColors = product.leatherColors ?? [
+  const leatherColors = [
     { name: "Brun foncé", value: "#2a160c" },
     { name: "Bordeaux", value: "#401918" },
     { name: "Noir", value: "#141414" },
@@ -86,11 +126,11 @@ const kitImagesByColor = [
     .filter((item) => item.slug !== product.slug)
     .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
 
-  const relatedCollections = collectionsList.filter(
+  const relatedCollections = collections.filter(
     (item) => item.slug !== collection.slug
   );
 
-  if (!product.featured) {
+  if (!product.is_kit) {
     return (
       <IndividualProductPage
         product={product}
@@ -122,19 +162,19 @@ const kitImagesByColor = [
             <span className="text-[#6f5423]">›</span>
 
             <Link to={collection.url} className="transition hover:text-[#c89b3c]">
-              {collection.name}
+              {collection.name_fr}
             </Link>
 
             <span className="text-[#6f5423]">›</span>
 
-            <span className="text-[#c89b3c]">{product.name}</span>
+            <span className="text-[#c89b3c]">{product.name_fr}</span>
           </nav>
 
           <div className="grid gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <ProductMediaGallery
               key={selectedColorIndex}
               media={productMedia}
-              productName={product.name}
+              productName={product.name_fr}
             />
 
             <ProductPurchasePanel
@@ -142,8 +182,8 @@ const kitImagesByColor = [
               collection={collection}
               leatherColors={leatherColors}
               customizableItems={customizableItems}
-               selectedColorIndex={selectedColorIndex}
-                onSelectColor={setSelectedColorIndex}
+              selectedColorIndex={selectedColorIndex}
+              onSelectColor={setSelectedColorIndex}
             />
           </div>
         </div>

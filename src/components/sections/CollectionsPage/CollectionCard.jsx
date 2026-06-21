@@ -20,19 +20,19 @@ function CollectionCard({ collection, index = 0, onClick }) {
         />
 
         <p className="mb-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.32em] text-[#c89b3c]">
-          {collection.eyebrow}
+          {collection.eyebrow_fr}
         </p>
 
         <h3 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2] transition group-hover:text-[#e7c97b] md:text-6xl">
-          {collection.title}
+          {collection.title_fr}
         </h3>
 
         <p className="mt-6 max-w-2xl font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/84">
-          {collection.description}
+          {collection.description_fr}
         </p>
 
         <span className="mt-8 inline-flex w-fit items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-lg uppercase tracking-[0.06em] text-[#e7c97b] transition group-hover:bg-[#c89b3c] group-hover:text-[#100805]">
-          {collection.cta}
+          Découvrir la collection
         </span>
       </div>
 
@@ -42,8 +42,8 @@ function CollectionCard({ collection, index = 0, onClick }) {
         }`}
       >
         <img
-          src={collection.thumbnail || collection.image}
-          alt={collection.title}
+          src={collection.thumbnail_image_url || collection.hero_image_url}
+          alt={collection.title_fr}
           loading="lazy"
           decoding="async"
           className="h-full w-full object-cover brightness-[0.82] contrast-[1.08] saturate-[1.02] transition duration-500 group-hover:scale-[1.035] group-hover:brightness-[0.95]"

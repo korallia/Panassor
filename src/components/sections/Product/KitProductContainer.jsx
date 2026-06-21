@@ -24,9 +24,7 @@ function KitProductContainer() {
       setNotFound(false);
       setSelectedColorIndex(0);
 
-      const productResponse = await fetch(
-        `http://localhost:3001/api/products/${slug}`
-      );
+      const productResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/${slug}`)
 
       if (productResponse.status === 404) {
         setNotFound(true);
@@ -36,14 +34,12 @@ function KitProductContainer() {
       const productData = await productResponse.json();
 
       const collectionResponse = await fetch(
-        `http://localhost:3001/api/collections/${productData.collection_slug}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/collections/${productData.collection_slug}`
       );
 
       const collectionData = await collectionResponse.json();
 
-      const collectionsResponse = await fetch(
-        "http://localhost:3001/api/collections"
-      );
+      const collectionsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections`)
 
       const collectionsData = await collectionsResponse.json();
 

@@ -12,9 +12,7 @@ function CollectionProductsPage() {
 
   useEffect(() => {
     async function loadCollection() {
-      const response = await fetch(
-        `http://localhost:3001/api/collections/${slug}`
-      );
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections/${slug}`)
 
       if (response.status === 404) {
         setNotFound(true);

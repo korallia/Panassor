@@ -11,9 +11,7 @@ function HomePage() {
 
   useEffect(() => {
     async function loadHomePage() {
-      const collectionsResponse = await fetch(
-        "http://localhost:3001/api/collections"
-      );
+      const collectionsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections`)
 
       const collectionsData = await collectionsResponse.json();
 
@@ -22,7 +20,7 @@ function HomePage() {
         collectionsData[0];
 
       const featuredResponse = await fetch(
-        `http://localhost:3001/api/collections/${featured.slug}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/collections/${featured.slug}`
       );
 
       const featuredData = await featuredResponse.json();

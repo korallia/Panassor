@@ -34,10 +34,7 @@ function ProductPurchasePanel({
 
   useEffect(() => {
     async function loadToolOptions() {
-      const response = await fetch(
-        "http://localhost:3001/api/products/customizable"
-      );
-
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`)
       const data = await response.json();
       setToolOptions(data);
     }

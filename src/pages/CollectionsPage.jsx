@@ -12,7 +12,7 @@ function CollectionsPage() {
 
   useEffect(() => {
     async function loadCollections() {
-      const response = await fetch("http://localhost:3001/api/collections");
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections`)
       const data = await response.json();
 
       setCollections(data);

@@ -25,7 +25,7 @@ function ProductsPage() {
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <PageHeroBanner
-        image="/images/products-hero.png"
+        image="/images/collections-hero.png"
         alt="Produits Panassor"
         eyebrow="Catalogue Panassor"
         title="Produits"

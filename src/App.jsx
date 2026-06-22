@@ -8,7 +8,7 @@ import CollectionProductsPage from "../src/pages/CollectionProductsPage"
 import CollectionsPage from "../src/pages/CollectionsPage"
 import ProductPage from "./pages/ProductPage";
 import RouteReset from "./components/RouteReset";
-
+import ProductsPage from "./components/sections/ProductsPage/ProductsPage";
 function App() {
   return (
     <div className="min-h-screen bg-[#080504] text-[#f3e7cf]">
@@ -18,6 +18,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/collections" element={<CollectionsPage />} />
         <Route path="/collections/:slug" element={<CollectionProductsPage />} />
+         <Route path="/produits" element={<ProductsPage />} />
         <Route path="/produits/:slug" element={<ProductPage />} />
       </Routes>
 

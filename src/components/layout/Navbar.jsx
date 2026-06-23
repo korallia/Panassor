@@ -1,54 +1,62 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCollections } from "../../context/CollectionsContext";
 
 function Navbar() {
   const navigate = useNavigate();
   const collections = useCollections();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dropdownItems = [
-  {
-    id: "all-collections",
-    title: "Toutes les collections",
-    url: "/collections",
-    image: "/images/hero-kit-chirurgien.jpg",
-    eyebrow: "Explorer",
-  },
-  ...collections.map((collection) => ({
-    id: collection.id,
-    title: collection.title_fr || collection.name_fr,
-    url: `/collections/${collection.slug}`,
-    image: collection.thumbnail_image_url || collection.hero_image_url,
-    eyebrow: collection.eyebrow_fr,
-  })),
-  {
-    id: "coming-soon",
-    title: "Collections à venir",
-    url: "/atelier#sneak-peek",
-    image: "/images/kit_de_voleur.jpg",
-    eyebrow: "Prochainement",
-  },
-];
+    {
+      id: "all-collections",
+      title: "Toutes les collections",
+      url: "/collections",
+      image: "/images/hero-kit-chirurgien.jpg",
+      eyebrow: "Explorer",
+    },
+    ...collections.map((collection) => ({
+      id: collection.id,
+      title: collection.title_fr || collection.name_fr,
+      url: `/collections/${collection.slug}`,
+      image: collection.thumbnail_image_url || collection.hero_image_url,
+      eyebrow: collection.eyebrow_fr,
+    })),
+    {
+      id: "coming-soon",
+      title: "Collections à venir",
+      url: "/atelier#sneak-peek",
+      image: "/images/kit_de_voleur.jpg",
+      eyebrow: "Prochainement",
+    },
+  ];
+
+  const navigateAndClose = (url) => {
+    navigate(url);
+    setIsMenuOpen(false);
+  };
 
   return (
-    <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/85 backdrop-blur-sm">
-      <div className="mx-auto grid h-24 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6">
+    <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/92 backdrop-blur-sm">
+      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
         <button
           type="button"
-          onClick={() => navigate("/")}
-          className="flex items-center gap-3 justify-self-start text-left"
+          onClick={() => navigateAndClose("/")}
+          className="flex min-w-0 items-center gap-3 text-left md:justify-self-start"
+          aria-label="Retourner à l’accueil"
         >
           <img
             src="/images/IconPanassor.png"
             alt="Logo Panassor"
-            className="h-14 w-14 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)]"
+            className="h-14 w-14 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] sm:h-16 sm:w-16 md:h-14 md:w-14"
           />
 
-          <div>
-            <div className="font-['Uncial_Antiqua'] text-4xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] md:text-5xl">
+          <div className="min-w-0">
+            <div className="font-['Uncial_Antiqua'] text-4xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-5xl md:text-5xl">
               Panassor
             </div>
 
-            <div className="mt-1 font-['IM_Fell_English_SC'] text-[0.8rem] uppercase tracking-[0.14em] text-[#d8a24c]">
+            <div className="mt-1 max-w-[12rem] font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-5 tracking-[0.16em] text-[#d8a24c] sm:max-w-none sm:text-[0.8rem] md:text-[0.8rem]">
               Kits médiévaux uniques
             </div>
           </div>
@@ -149,24 +157,135 @@ function Navbar() {
           </button>
         </nav>
 
-        <div className="flex items-center gap-5 justify-self-end text-[#d8a24c]">
-          <button className="font-['IM_Fell_English_SC'] text-2xl tracking-[0.03em] md:hidden">
-            Menu
+        <div className="flex shrink-0 items-center justify-self-end text-[#d8a24c]">
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen((current) => !current)}
+            className="border border-[#6f5423]/80 bg-[#120c07] px-4 py-2 font-['IM_Fell_English_SC'] text-lg uppercase tracking-[0.08em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          >
+            {isMenuOpen ? "Fermer" : "Menu"}
           </button>
 
           <div className="hidden items-center gap-5 md:flex">
-            <button className="text-xl transition hover:text-[#f7ead2]">
+            <button
+              type="button"
+              className="text-xl transition hover:text-[#f7ead2]"
+              aria-label="Compte"
+            >
               ♙
             </button>
-            <button className="text-xl transition hover:text-[#f7ead2]">
+
+            <button
+              type="button"
+              className="text-xl transition hover:text-[#f7ead2]"
+              aria-label="Recherche"
+            >
               ⌕
             </button>
-            <button className="text-xl transition hover:text-[#f7ead2]">
+
+            <button
+              type="button"
+              className="text-xl transition hover:text-[#f7ead2]"
+              aria-label="Panier"
+            >
               ▢
             </button>
           </div>
         </div>
       </div>
+
+      {isMenuOpen && (
+        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-4 pb-6 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] md:hidden">
+          <div className="mx-auto max-w-xl">
+            <div className="mb-5 flex items-center justify-center gap-3 text-[#c89b3c]">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/45" />
+              <span className="text-sm">✦</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/45" />
+            </div>
+
+            <nav className="space-y-2 font-['IM_Fell_English_SC'] text-2xl uppercase tracking-[0.06em] text-[#fff1d2]">
+              <button
+                type="button"
+                onClick={() => navigateAndClose("/")}
+                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+              >
+                Accueil
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigateAndClose("/produits")}
+                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+              >
+                Produits
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigateAndClose("/collections")}
+                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+              >
+                Collections
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigateAndClose("/atelier")}
+                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+              >
+                Atelier
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigateAndClose("/contact")}
+                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+              >
+                Contact
+              </button>
+            </nav>
+
+            <div className="mt-6">
+              <p className="mb-3 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.26em] text-[#c89b3c]/80">
+                Collections
+              </p>
+
+              <div className="space-y-2">
+                {dropdownItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => navigateAndClose(item.url)}
+                    className="group flex w-full items-center gap-3 border border-[#6f5423]/35 bg-[#0f0905] p-2 text-left transition hover:border-[#c89b3c]/70"
+                  >
+                    <span className="relative h-14 w-20 shrink-0 overflow-hidden border border-[#6f5423]/55 bg-[#080504]">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-full w-full object-cover brightness-[0.72] contrast-[1.08] saturate-[0.95]"
+                      />
+
+                      <span className="absolute inset-0 bg-gradient-to-t from-[#080504]/55 via-transparent to-transparent" />
+                    </span>
+
+                    <span className="min-w-0">
+                      <span className="block font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#c89b3c]/80">
+                        {item.eyebrow}
+                      </span>
+
+                      <span className="mt-1 block font-['IM_Fell_English_SC'] text-lg uppercase leading-none tracking-[0.05em] text-[#fff1d2] group-hover:text-[#e7c97b]">
+                        {item.title}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

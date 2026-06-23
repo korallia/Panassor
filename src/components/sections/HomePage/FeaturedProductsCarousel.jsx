@@ -12,10 +12,10 @@ function FeaturedProductsCarousel({
   className = "pt-20 pb-8 md:py-20",
   showCollectionButton = true,
 }) {
-  const railRef = useRef(null);
+  const desktopRailRef = useRef(null);
 
   const scrollCarousel = (direction) => {
-    railRef.current?.scrollBy({
+    desktopRailRef.current?.scrollBy({
       left: direction === "left" ? -520 : 520,
       behavior: "smooth",
     });
@@ -61,20 +61,28 @@ function FeaturedProductsCarousel({
           </div>
         </div>
 
-        <div className="relative left-1/2 w-screen -translate-x-1/2 md:left-auto md:w-auto md:translate-x-0">
-          <div
-            ref={railRef}
-            className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin] md:gap-6"
-          >
+        {/* MOBILE: une carte par écran */}
+        <div className="relative left-1/2 w-screen -translate-x-1/2 md:hidden">
+          <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]">
             {collection.products.map((product) => (
               <div
                 key={product.id}
-                className="w-screen shrink-0 snap-center px-6 md:w-auto md:px-0"
+                className="w-screen shrink-0 snap-center px-6"
               >
                 <ProductCard product={product} />
               </div>
             ))}
           </div>
+        </div>
+
+        {/* DESKTOP: ancien comportement */}
+        <div
+          ref={desktopRailRef}
+          className="hidden snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin] md:flex"
+        >
+          {collection.products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
 
         {showCollectionButton && (

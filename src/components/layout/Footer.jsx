@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useCollections } from "../../context/CollectionsContext";
 
+const contactEmail = "contact@panassor.ca";
+const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
+
 function Footer() {
   const navigate = useNavigate();
   const collections = useCollections();
@@ -8,7 +11,10 @@ function Footer() {
   const footerLinkClass = "text-left transition hover:text-[#d8a24c]";
 
   const iconButtonClass =
-    "flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
+    "flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] font-['IM_Fell_English_SC'] text-lg text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
+
+  const contactButtonClass =
+    "inline-flex items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805]";
 
   return (
     <footer className="relative overflow-hidden border-t-2 border-[#c89b3c]/70 bg-[#070403] px-6 pt-20 pb-8 text-[#f3e7cf]">
@@ -133,39 +139,45 @@ function Footer() {
             </h3>
 
             <p className="mb-6 font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/85">
-              Pour une question, une collaboration ou une demande spéciale,
-              écrivez-nous.
+              Venez nous suivre sur Facebook ou écrivez-nous pour une question,
+              une commande unique ou une demande spéciale.
             </p>
 
             <a
-              href="mailto:contact@panassor.com"
-              className="inline-flex items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805]"
+              href={`mailto:${contactEmail}`}
+              className={contactButtonClass}
             >
+              <span className="mr-3">✦</span>
               Nous contacter
             </a>
 
             <div className="mt-7 flex gap-3">
-              <button
-                type="button"
+              <a
+                href={`mailto:${contactEmail}`}
                 className={iconButtonClass}
-                aria-label="Instagram"
+                aria-label="Nous contacter par courriel"
+                title="Nous contacter"
               >
-                ✦
-              </button>
+                ✉
+              </a>
 
-              <button
-                type="button"
+              <a
+                href={facebookUrl}
+                target="_blank"
+                rel="noreferrer"
                 className={iconButtonClass}
-                aria-label="Facebook"
+                aria-label="Facebook Panassor"
+                title="Facebook Panassor"
               >
                 f
-              </button>
+              </a>
 
               <button
                 type="button"
                 onClick={() => navigate("/collections")}
                 className={iconButtonClass}
-                aria-label="Boutique"
+                aria-label="Voir les collections"
+                title="Voir les collections"
               >
                 ⌂
               </button>
@@ -175,6 +187,21 @@ function Footer() {
 
         <div className="flex flex-col gap-4 pt-7 font-['EB_Garamond'] text-base text-[#d7c8ad]/65 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Panassor. Tous droits réservés.</p>
+
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <a href={`mailto:${contactEmail}`} className="transition hover:text-[#d8a24c]">
+              {contactEmail}
+            </a>
+
+            <a
+              href={facebookUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-[#d8a24c]"
+            >
+              Facebook
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -10,6 +10,7 @@ import ProductPage from "./pages/ProductPage";
 import RouteReset from "./components/RouteReset";
 import ProductsPage from "./pages/ProductsPage";
 import AtelierPage from "./pages/AtelierPage";
+import ContactPage from "./pages/ContactPage";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
          <Route path="/produits" element={<ProductsPage />} />
         <Route path="/produits/:slug" element={<ProductPage />} />
         <Route path="/atelier" element={<AtelierPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
 
       <Footer />

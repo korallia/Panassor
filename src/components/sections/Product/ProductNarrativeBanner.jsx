@@ -16,23 +16,31 @@ function ProductNarrativeBanner({ collection }) {
     return null;
   }
 
+  const backgroundImage =
+    collection.hero_image_url ??
+    collection.thumbnail_image_url ??
+    collection.image_url;
+
   return (
     <>
       {/* MOBILE */}
       <section className="relative px-4 pb-4 md:hidden">
         <div className="relative overflow-hidden border border-[#6f5423]/75 bg-[#120c07] px-5 py-8 shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
-          <img
-            src={collection.hero_image_url}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.3] contrast-[1.18] saturate-[0.95]"
-          />
+          {backgroundImage && (
+            <img
+              src={backgroundImage}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.62] contrast-[1.12] saturate-[0.95]"
+            />
+          )}
 
-          <div className="absolute inset-0 bg-[#080504]/50" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/84 via-[#080504]/64 to-[#080504]/92" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/42 via-transparent to-[#080504]/42" />
-          <div className="absolute inset-0 shadow-[inset_0_0_58px_rgba(0,0,0,0.82)]" />
+          <div className="absolute inset-0 bg-[#080504]/22" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/72 via-[#080504]/34 to-[#080504]/82" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/34 via-transparent to-[#080504]/34" />
+          <div className="absolute inset-0 shadow-[inset_0_0_54px_rgba(0,0,0,0.78)]" />
 
-          <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/10" />
+          <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/12" />
+          <div className="pointer-events-none absolute inset-6 border border-[#6f5423]/18" />
 
           <div className="relative z-10">
             <div className="mb-7 text-center">
@@ -42,7 +50,7 @@ function ProductNarrativeBanner({ collection }) {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
               </div>
 
-              <p className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.28em] text-[#c89b3c]">
+              <p className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.28em] text-[#c89b3c] drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">
                 L’empreinte Panassor
               </p>
             </div>
@@ -51,13 +59,13 @@ function ProductNarrativeBanner({ collection }) {
               {badges.map(([icon, label]) => (
                 <div
                   key={label}
-                  className="flex items-center gap-4 border border-[#6f5423]/65 bg-[#080504]/58 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)]"
+                  className="flex items-center gap-4 border border-[#6f5423]/65 bg-[#080504]/34 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)] backdrop-blur-[1px]"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/80 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a]">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/86 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a] shadow-[0_0_16px_rgba(0,0,0,0.42)]">
                     {icon}
                   </span>
 
-                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.15em] text-[#e7c97b]">
+                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.15em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
                     {label}
                   </span>
                 </div>
@@ -70,11 +78,13 @@ function ProductNarrativeBanner({ collection }) {
       {/* DESKTOP */}
       <section className="relative hidden px-6 pb-4 md:block">
         <div className="relative mx-auto max-w-[88rem] overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
-          <img
-            src={collection.hero_image_url}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover brightness-[0.26] contrast-[1.18] saturate-[0.9]"
-          />
+          {backgroundImage && (
+            <img
+              src={backgroundImage}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover brightness-[0.26] contrast-[1.18] saturate-[0.9]"
+            />
+          )}
 
           <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/97 via-[#080504]/82 to-[#080504]/38" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/50 via-transparent to-[#080504]/34" />

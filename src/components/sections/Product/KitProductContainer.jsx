@@ -86,68 +86,41 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,12,7,0.84),rgba(8,5,4,0.96)_32%,#080504)]" />
 
         <div className="relative mx-auto max-w-[88rem]">
-          <div className="mb-7 md:mb-6">
-            {/* MOBILE BREADCRUMB */}
-            <div className="md:hidden">
-              <nav
-                aria-label="Fil d’Ariane"
-                className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.18em] text-[#a47b36]"
-              >
-                <Link
-                  to="/produits"
-                  className="shrink-0 transition hover:text-[#c89b3c]"
-                >
-                  Produits
-                </Link>
-
-                <span className="shrink-0 text-[#6f5423]">›</span>
-
-                <Link
-                  to={`/collections/${collection.slug}`}
-                  className="shrink-0 transition hover:text-[#c89b3c]"
-                >
-                  {collection.name_fr}
-                </Link>
-              </nav>
-
-              <div className="mt-4 flex min-w-0 items-center gap-3 text-[#c89b3c]">
-                <div className="h-px w-12 shrink-0 bg-gradient-to-r from-[#c89b3c]/70 to-transparent" />
-
-                <p className="min-w-0 font-['IM_Fell_English_SC'] text-[0.82rem] uppercase tracking-[0.22em] text-[#c89b3c]">
-                  {product.name_fr}
-                </p>
-              </div>
-            </div>
-
-            {/* DESKTOP BREADCRUMB */}
-            <nav
-              aria-label="Fil d’Ariane"
-              className="hidden min-w-0 flex-wrap items-center gap-2 font-['IM_Fell_English_SC'] text-[0.78rem] uppercase tracking-[0.2em] text-[#a47b36] md:flex"
+          <nav
+            aria-label="Fil d’Ariane"
+            className="mb-7 flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap pb-1 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.18em] text-[#a47b36] [scrollbar-width:none] md:mb-6 md:flex-wrap md:overflow-visible md:pb-0 md:text-[0.78rem] md:tracking-[0.2em] [&::-webkit-scrollbar]:hidden"
+          >
+            <Link
+              to="/"
+              className="hidden shrink-0 transition hover:text-[#c89b3c] md:inline"
             >
-              <Link to="/" className="transition hover:text-[#c89b3c]">
-                Accueil
-              </Link>
+              Accueil
+            </Link>
 
-              <span className="text-[#6f5423]">›</span>
+            <span className="hidden shrink-0 text-[#6f5423] md:inline">›</span>
 
-              <Link to="/produits" className="transition hover:text-[#c89b3c]">
-                Produits
-              </Link>
+            <Link
+              to="/produits"
+              className="shrink-0 transition hover:text-[#c89b3c]"
+            >
+              Produits
+            </Link>
 
-              <span className="text-[#6f5423]">›</span>
+            <span className="shrink-0 text-[#6f5423]">›</span>
 
-              <Link
-                to={`/collections/${collection.slug}`}
-                className="transition hover:text-[#c89b3c]"
-              >
-                {collection.name_fr}
-              </Link>
+            <Link
+              to={`/collections/${collection.slug}`}
+              className="shrink-0 transition hover:text-[#c89b3c]"
+            >
+              {collection.name_fr}
+            </Link>
 
-              <span className="text-[#6f5423]">›</span>
+            <span className="shrink-0 text-[#6f5423]">›</span>
 
-              <span className="text-[#c89b3c]">{product.name_fr}</span>
-            </nav>
-          </div>
+            <span className="shrink-0 text-[#c89b3c]">
+              {product.name_fr}
+            </span>
+          </nav>
 
           <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <div className="min-w-0">

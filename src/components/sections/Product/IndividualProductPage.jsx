@@ -34,13 +34,16 @@ function IndividualProductPage({
 
             <span className="text-[#6f5423]">›</span>
 
-            <Link to="/boutique" className="transition hover:text-[#c89b3c]">
-              Boutique
+            <Link to="/produits" className="transition hover:text-[#c89b3c]">
+              Produits
             </Link>
 
             <span className="text-[#6f5423]">›</span>
 
-            <Link to={collection.url} className="transition hover:text-[#c89b3c]">
+            <Link
+              to={`/collections/${collection.slug}`}
+              className="transition hover:text-[#c89b3c]"
+            >
               {collection.name_fr}
             </Link>
 

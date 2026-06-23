@@ -1,63 +1,18 @@
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
-import IndividualProductPage from "./IndividualProductPage";
 import ProductMediaGallery from "./ProductMediaGallery";
 import ProductPurchasePanel from "./ProductPurchasePanel";
 import ProductNarrativeBanner from "./ProductNarrativeBanner";
 import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
-function KitProductContainer() {
-  const { slug } = useParams();
-
+function KitProductContainer({ product, collection, relatedCollections = [] }) {
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-  const [product, setProduct] = useState(null);
-  const [collection, setCollection] = useState(null);
-  const [collections, setCollections] = useState([]);
-  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    async function loadProductPage() {
-      setProduct(null);
-      setCollection(null);
-      setNotFound(false);
-      setSelectedColorIndex(0);
-
-      const productResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/${slug}`)
-
-      if (productResponse.status === 404) {
-        setNotFound(true);
-        return;
-      }
-
-      const productData = await productResponse.json();
-
-      const collectionResponse = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/collections/${productData.collection_slug}`
-      );
-
-      const collectionData = await collectionResponse.json();
-
-      const collectionsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections`)
-
-      const collectionsData = await collectionsResponse.json();
-
-      setProduct(productData);
-      setCollection(collectionData);
-      setCollections(collectionsData);
-    }
-
-    loadProductPage();
-  }, [slug]);
-
-  if (notFound) {
-    return <Navigate to="/collections" replace />;
-  }
-
-  if (!product || !collection) {
-    return null;
-  }
+    setSelectedColorIndex(0);
+  }, [product.slug]);
 
   const defaultProductImage =
     product.images?.find((image) => image.is_main)?.url ??
@@ -114,7 +69,7 @@ function KitProductContainer() {
   const kitItems =
     product.kit_items?.length > 0
       ? product.kit_items
-      : collection.products.filter((item) => !item.is_kit);
+      : (collection.products ?? []).filter((item) => !item.is_kit);
 
   const customizableItems = kitItems.filter((item) => item.customizable);
 
@@ -123,25 +78,6 @@ function KitProductContainer() {
     { name: "Bordeaux", value: "#401918" },
     { name: "Noir", value: "#141414" },
   ];
-
-  const relatedProducts = collection.products
-    .filter((item) => item.slug !== product.slug)
-    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
-
-  const relatedCollections = collections.filter(
-    (item) => item.slug !== collection.slug
-  );
-
-  if (!product.is_kit) {
-    return (
-      <IndividualProductPage
-        product={product}
-        collection={collection}
-        productMedia={productMedia}
-        relatedProducts={relatedProducts}
-      />
-    );
-  }
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">
@@ -157,13 +93,16 @@ function KitProductContainer() {
 
             <span className="text-[#6f5423]">›</span>
 
-            <Link to="/boutique" className="transition hover:text-[#c89b3c]">
-              Boutique
+            <Link to="/produits" className="transition hover:text-[#c89b3c]">
+              Produits
             </Link>
 
             <span className="text-[#6f5423]">›</span>
 
-            <Link to={collection.url} className="transition hover:text-[#c89b3c]">
+            <Link
+              to={`/collections/${collection.slug}`}
+              className="transition hover:text-[#c89b3c]"
+            >
               {collection.name_fr}
             </Link>
 

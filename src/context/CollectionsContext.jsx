@@ -10,7 +10,7 @@ import {
 import {
   getCollections,
   getCollectionBySlug,
-} from "../api/panassorApi";
+} from "../../backend/panassorApi";
 
 const CollectionsContext = createContext(null);
 

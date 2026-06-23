@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useCollections } from "../../context/CollectionsContext";
 
 function Footer() {
   const navigate = useNavigate();
+  const collections = useCollections();
 
   const footerLinkClass = "text-left transition hover:text-[#d8a24c]";
 
@@ -60,7 +62,7 @@ function Footer() {
               <li>
                 <button
                   type="button"
-                  onClick={() => navigate("/collections")}
+                  onClick={() => navigate("/produits")}
                   className={footerLinkClass}
                 >
                   Produits
@@ -93,41 +95,26 @@ function Footer() {
             </h3>
 
             <ul className="space-y-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/85">
+              {collections.map((collection) => (
+                <li key={collection.id}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/collections/${collection.slug}`)}
+                    className={footerLinkClass}
+                  >
+                    {collection.name_fr}
+                  </button>
+                </li>
+              ))}
+
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/collections/chirurgien")}
-                  className={footerLinkClass}
-                >
-                  Chirurgien
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/collections/tortionnaire")}
-                  className={footerLinkClass}
-                >
-                  Tortionnaire
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/collections")}
-                  className={footerLinkClass}
-                >
-                  Voleur
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/collections")}
-                  className={footerLinkClass}
-                >
-                  Collections à venir
-                </button>
+               <button
+  type="button"
+  onClick={() => navigate("/atelier#sneak-peek")}
+  className={footerLinkClass}
+>
+  Collections à venir
+</button>
               </li>
             </ul>
           </div>
@@ -180,24 +167,6 @@ function Footer() {
 
         <div className="flex flex-col gap-4 pt-7 font-['EB_Garamond'] text-base text-[#d7c8ad]/65 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Panassor. Tous droits réservés.</p>
-
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <button
-              type="button"
-              onClick={() => navigate("/confidentialite")}
-              className={footerLinkClass}
-            >
-              Politique de confidentialité
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/conditions")}
-              className={footerLinkClass}
-            >
-              Conditions d’utilisation
-            </button>
-          </div>
         </div>
       </div>
     </footer>

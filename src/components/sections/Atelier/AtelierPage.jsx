@@ -90,7 +90,7 @@ function AtelierPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#080504] px-6 pt-16 pb-32 text-[#f3e7cf]">
+      <section   id="sneak-peek" className="relative overflow-hidden bg-[#080504] px-6 pt-16 pb-32 text-[#f3e7cf]">
         <SectionAtmosphere variant="featured" />
 
         <div className="relative z-10 mx-auto max-w-[88rem]">

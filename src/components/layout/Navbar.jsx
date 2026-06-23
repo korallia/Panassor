@@ -1,25 +1,33 @@
 import { useNavigate } from "react-router-dom";
-import { collectionsList } from "../../data/panassorCollections";
+import { useCollections } from "../../context/CollectionsContext";
 
 function Navbar() {
   const navigate = useNavigate();
+  const collections = useCollections();
 
   const dropdownItems = [
-    {
-      id: "all-collections",
-      title: "Toutes les collections",
-      url: "/collections",
-      image: "/images/hero-kit-chirurgien.jpg",
-      eyebrow: "Explorer",
-    },
-    ...collectionsList.map((collection) => ({
-      id: collection.id,
-      title: collection.title,
-      url: collection.url,
-      image: collection.thumbnail || collection.image,
-      eyebrow: collection.eyebrow,
-    })),
-  ];
+  {
+    id: "all-collections",
+    title: "Toutes les collections",
+    url: "/collections",
+    image: "/images/hero-kit-chirurgien.jpg",
+    eyebrow: "Explorer",
+  },
+  ...collections.map((collection) => ({
+    id: collection.id,
+    title: collection.title_fr || collection.name_fr,
+    url: `/collections/${collection.slug}`,
+    image: collection.thumbnail_image_url || collection.hero_image_url,
+    eyebrow: collection.eyebrow_fr,
+  })),
+  {
+    id: "coming-soon",
+    title: "Collections à venir",
+    url: "/atelier#sneak-peek",
+    image: "/images/kit_de_voleur.jpg",
+    eyebrow: "Prochainement",
+  },
+];
 
   return (
     <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/85 backdrop-blur-sm">

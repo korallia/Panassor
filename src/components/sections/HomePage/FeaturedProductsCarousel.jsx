@@ -66,9 +66,7 @@ function FeaturedProductsCarousel({
 
         {showCollectionButton && (
           <div className="mt-8 flex justify-center">
-            <GoldButton onClick={() => navigate(collection.url)}>
-              Voir toute la collection
-            </GoldButton>
+              <GoldButton collection_url={collection.url}/>
           </div>
         )}
       </div>

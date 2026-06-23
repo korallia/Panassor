@@ -1,0 +1,36 @@
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+
+async function request(path) {
+  const response = await fetch(`${API_BASE_URL}${path}`);
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+
+    throw new Error(
+      errorBody?.message || `API request failed: ${response.status}`
+    );
+  }
+
+  return response.json();
+}
+
+export function getCollections() {
+  return request("/api/collections");
+}
+
+export function getCollectionBySlug(slug) {
+  return request(`/api/collections/${slug}`);
+}
+
+export function getProducts() {
+  return request("/api/products");
+}
+
+export function getProductBySlug(slug) {
+  return request(`/api/products/${slug}`);
+}
+
+export function getCustomizableProducts() {
+  return request("/api/products/customizable");
+}

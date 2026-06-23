@@ -13,8 +13,6 @@ function CollectionsHeroCarousel({
   eyebrow = "Explorer Panassor",
   title = "Nos collections",
   description,
-  secondaryHref = "#produits",
-  secondaryLabel = "Voir tous les produits",
 }) {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -101,13 +99,8 @@ function CollectionsHeroCarousel({
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <GoldButton onClick={() => navigate(activeCollection.url)}>
-                  Découvrir la collection
-                </GoldButton>
-
-                <GreenButton onClick={() => navigate(secondaryHref)}>
-                  {secondaryLabel}
-                </GreenButton>
+                 <GoldButton collection_url={activeCollection.url}/>
+                <GreenButton/>
               </div>
             </div>
           </div>

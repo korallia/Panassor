@@ -10,8 +10,10 @@ import ProductPage from "./pages/ProductPage";
 import RouteReset from "./components/RouteReset";
 import ProductsPage from "./components/sections/ProductsPage/ProductsPage";
 import AtelierPage from "./components/sections/Atelier/AtelierPage";
+import  { CollectionsProvider } from "../src/context/CollectionsContext"
 function App() {
   return (
+      <CollectionsProvider>
     <div className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <Navbar />
   <RouteReset />
@@ -26,6 +28,7 @@ function App() {
 
       <Footer />
     </div>
+    </CollectionsProvider>
   );
 }
 

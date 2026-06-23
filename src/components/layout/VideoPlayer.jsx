@@ -7,8 +7,6 @@ function VideoPlayer({
   eyebrow = "Vidéo du produit",
   title = "Voir le kit en action",
   description = "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Cette vidéo présente le contenu du kit, sa logique de rangement et son usage en scène.",
-  buttonLabel = "Découvrir l’atelier",
-  buttonTo = "/atelier",
 }) {
   if (!video?.src) return null;
 
@@ -36,7 +34,7 @@ function VideoPlayer({
             {description}
           </p>
 
-          <GreenButton to={buttonTo}>{buttonLabel}</GreenButton>
+          <GreenButton/>
         </div>
 
         <div className="relative border border-[#c89b3c]/70 bg-[#120c07] p-5 shadow-[0_26px_70px_rgba(0,0,0,0.7)]">

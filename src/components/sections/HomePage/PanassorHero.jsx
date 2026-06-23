@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom";
+
+import GreenButton from "../../ui/GreenButton";
+import GoldButton from "../../ui/GoldButton";
 
 import CornerFrame from "../../ui/CornerFrame";
 
 function PanassorHero({ collection }) {
-  const navigate = useNavigate();
+
 
   return (
     <div className="h-[calc(100vh-5rem)] bg-[#080504] text-[#f7ead2]">
@@ -54,28 +56,9 @@ function PanassorHero({ collection }) {
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => navigate(collection.url)}
-                className="group relative inline-flex items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
-              >
-                <span className="mr-3 text-[#f8edd3] group-hover:text-[#120904]">
-                  ✦
-                </span>
-                Découvrir la collection
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  document
-                    .getElementById("video")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
-                }
-                className="inline-flex items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
-              >
-                Voir l’atelier
-              </button>
+             <GoldButton collection_url={collection.url}/>
+              <GreenButton/>
+             
             </div>
           </div>
         </div>

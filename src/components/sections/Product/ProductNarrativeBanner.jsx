@@ -24,11 +24,12 @@ function ProductNarrativeBanner({ collection }) {
           <img
             src={collection.hero_image_url}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover brightness-[0.18] contrast-[1.18] saturate-[0.9]"
+            className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.3] contrast-[1.18] saturate-[0.95]"
           />
 
-          <div className="absolute inset-0 bg-[#080504]/70" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/92 via-[#080504]/82 to-[#080504]/96" />
+          <div className="absolute inset-0 bg-[#080504]/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/84 via-[#080504]/64 to-[#080504]/92" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/42 via-transparent to-[#080504]/42" />
           <div className="absolute inset-0 shadow-[inset_0_0_58px_rgba(0,0,0,0.82)]" />
 
           <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/10" />

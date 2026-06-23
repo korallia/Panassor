@@ -92,15 +92,13 @@ function ToolSelectionModal({
                     className="h-full w-full object-cover brightness-[0.82] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.05] group-hover/tool:brightness-[0.95]"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/70 via-transparent to-[#080504]/10" />
-                  <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(8,5,4,0.58)]" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/58 via-transparent to-[#080504]/8" />
+                  <div className="absolute inset-0 shadow-[inset_0_0_26px_rgba(8,5,4,0.58)]" />
 
-                  <CornerFrame
-                    inset="cardImage"
-                    size="md"
-                    thickness="subtle"
-                    color="gold"
-                  />
+                  <div className="pointer-events-none absolute left-3 top-3 h-10 w-10 border-l border-t border-[#c89b3c]/80" />
+                  <div className="pointer-events-none absolute right-3 top-3 h-10 w-10 border-r border-t border-[#c89b3c]/80" />
+                  <div className="pointer-events-none absolute bottom-3 left-3 h-10 w-10 border-b border-l border-[#c89b3c]/80" />
+                  <div className="pointer-events-none absolute bottom-3 right-3 h-10 w-10 border-b border-r border-[#c89b3c]/80" />
                 </div>
 
                 <div className="relative z-10 flex min-w-0 flex-col px-4 py-4">

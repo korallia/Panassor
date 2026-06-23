@@ -37,6 +37,11 @@ function Navbar() {
       title: "Produits",
       url: "/produits",
     },
+    {
+      id: "all-collections",
+      title: "Toutes les collections",
+      url: "/collections",
+    },
     ...collections.map((collection) => ({
       id: collection.id,
       title: collection.title_fr || collection.name_fr,

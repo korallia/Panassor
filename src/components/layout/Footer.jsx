@@ -18,7 +18,12 @@ function Footer() {
       <div className="relative z-10 mx-auto max-w-[88rem]">
         <div className="grid gap-12 border-b border-[#6f5423]/60 pb-14 md:grid-cols-[1.25fr_0.75fr_0.75fr_0.85fr]">
           <div>
-            <div className="mb-5 flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="mb-5 flex items-center gap-4 text-left"
+              aria-label="Retourner à l’accueil"
+            >
               <img
                 src="/images/IconPanassor.png"
                 alt="Logo Panassor"
@@ -34,7 +39,7 @@ function Footer() {
                   Kits médiévaux uniques
                 </div>
               </div>
-            </div>
+            </button>
 
             <p className="max-w-md font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/85">
               Accessoires immersifs faits main pour enrichir les scènes, les
@@ -59,6 +64,7 @@ function Footer() {
                   Accueil
                 </button>
               </li>
+
               <li>
                 <button
                   type="button"
@@ -68,6 +74,7 @@ function Footer() {
                   Produits
                 </button>
               </li>
+
               <li>
                 <button
                   type="button"
@@ -77,6 +84,7 @@ function Footer() {
                   Collections
                 </button>
               </li>
+
               <li>
                 <button
                   type="button"
@@ -108,13 +116,13 @@ function Footer() {
               ))}
 
               <li>
-               <button
-  type="button"
-  onClick={() => navigate("/atelier#sneak-peek")}
-  className={footerLinkClass}
->
-  Collections à venir
-</button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/atelier#sneak-peek")}
+                  className={footerLinkClass}
+                >
+                  Collections à venir
+                </button>
               </li>
             </ul>
           </div>

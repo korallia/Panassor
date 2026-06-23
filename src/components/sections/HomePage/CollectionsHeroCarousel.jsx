@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import SectionTitle from "../../layout/SectionTitle";
@@ -17,19 +17,37 @@ function CollectionsHeroCarousel({
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  if (!collections?.length) return null;
+  const carouselCollections = useMemo(() => {
+    if (!collections?.length) return [];
 
-  const activeCollection = collections[activeIndex];
+    const regularCollections = collections.filter(
+      (collection) => !collection.featured
+    );
+
+    const featuredCollections = collections.filter(
+      (collection) => collection.featured
+    );
+
+    return [...regularCollections, ...featuredCollections];
+  }, [collections]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [carouselCollections.length]);
+
+  if (!carouselCollections.length) return null;
+
+  const activeCollection = carouselCollections[activeIndex];
 
   const goPrevious = () => {
     setActiveIndex((current) =>
-      current === 0 ? collections.length - 1 : current - 1
+      current === 0 ? carouselCollections.length - 1 : current - 1
     );
   };
 
   const goNext = () => {
     setActiveIndex((current) =>
-      current === collections.length - 1 ? 0 : current + 1
+      current === carouselCollections.length - 1 ? 0 : current + 1
     );
   };
 
@@ -99,8 +117,8 @@ function CollectionsHeroCarousel({
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                 <GoldButton collection_url={activeCollection.url}/>
-                <GreenButton/>
+                <GoldButton collection_url={activeCollection.url} />
+                <GreenButton />
               </div>
             </div>
           </div>
@@ -120,7 +138,7 @@ function CollectionsHeroCarousel({
           </div>
 
           <div className="absolute bottom-9 left-1/2 z-20 flex -translate-x-1/2 gap-3">
-            {collections.map((collection, index) => (
+            {carouselCollections.map((collection, index) => (
               <button
                 key={collection.id}
                 type="button"

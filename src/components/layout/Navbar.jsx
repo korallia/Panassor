@@ -36,9 +36,15 @@ function Navbar() {
     setIsMenuOpen(false);
   };
 
+  const mobileMainLinkClass =
+    "block w-full border-y border-[#6f5423]/45 py-5 text-left font-['IM_Fell_English_SC'] text-3xl uppercase tracking-[0.08em] text-[#fff1d2] transition hover:text-[#d8a24c]";
+
+  const mobileCollectionLinkClass =
+    "block w-full border-b border-[#6f5423]/30 py-3 text-left font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88 transition last:border-b-0 hover:text-[#d8a24c]";
+
   return (
-    <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/92 backdrop-blur-sm">
-      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
+    <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/94 backdrop-blur-sm">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 md:grid md:h-24 md:grid-cols-[1fr_auto_1fr] md:px-6">
         <button
           type="button"
           onClick={() => navigateAndClose("/")}
@@ -48,15 +54,15 @@ function Navbar() {
           <img
             src="/images/IconPanassor.png"
             alt="Logo Panassor"
-            className="h-14 w-14 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] sm:h-16 sm:w-16 md:h-14 md:w-14"
+            className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] md:h-14 md:w-14"
           />
 
           <div className="min-w-0">
-            <div className="font-['Uncial_Antiqua'] text-4xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-5xl md:text-5xl">
+            <div className="font-['Uncial_Antiqua'] text-3xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-4xl md:text-5xl">
               Panassor
             </div>
 
-            <div className="mt-1 max-w-[12rem] font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-5 tracking-[0.16em] text-[#d8a24c] sm:max-w-none sm:text-[0.8rem] md:text-[0.8rem]">
+            <div className="mt-1 max-w-[10rem] font-['IM_Fell_English_SC'] text-[0.62rem] uppercase leading-4 tracking-[0.14em] text-[#d8a24c] sm:max-w-none sm:text-[0.72rem] md:text-[0.8rem]">
               Kits médiévaux uniques
             </div>
           </div>
@@ -161,7 +167,7 @@ function Navbar() {
           <button
             type="button"
             onClick={() => setIsMenuOpen((current) => !current)}
-            className="border border-[#6f5423]/80 bg-[#120c07] px-4 py-2 font-['IM_Fell_English_SC'] text-lg uppercase tracking-[0.08em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
+            className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
@@ -197,27 +203,19 @@ function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-4 pb-6 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] md:hidden">
-          <div className="mx-auto max-w-xl">
+        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-5 pb-7 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] md:hidden">
+          <div className="mx-auto max-w-md">
             <div className="mb-5 flex items-center justify-center gap-3 text-[#c89b3c]">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/45" />
-              <span className="text-sm">✦</span>
+              <span className="text-xs">✦</span>
               <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/45" />
             </div>
 
-            <nav className="space-y-2 font-['IM_Fell_English_SC'] text-2xl uppercase tracking-[0.06em] text-[#fff1d2]">
-              <button
-                type="button"
-                onClick={() => navigateAndClose("/")}
-                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
-              >
-                Accueil
-              </button>
-
+            <nav className="space-y-0">
               <button
                 type="button"
                 onClick={() => navigateAndClose("/produits")}
-                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+                className={mobileMainLinkClass}
               >
                 Produits
               </button>
@@ -225,60 +223,26 @@ function Navbar() {
               <button
                 type="button"
                 onClick={() => navigateAndClose("/collections")}
-                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
+                className={mobileMainLinkClass}
               >
                 Collections
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateAndClose("/atelier")}
-                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
-              >
-                Atelier
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateAndClose("/contact")}
-                className="block w-full border border-[#6f5423]/45 bg-[#120c07] px-4 py-3 text-left transition hover:border-[#c89b3c] hover:text-[#e7c97b]"
-              >
-                Contact
               </button>
             </nav>
 
-            <div className="mt-6">
-              <p className="mb-3 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.26em] text-[#c89b3c]/80">
+            <div className="mt-7">
+              <p className="mb-4 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c]/80">
                 Collections
               </p>
 
-              <div className="space-y-2">
+              <div className="border-y border-[#6f5423]/45 py-2">
                 {dropdownItems.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => navigateAndClose(item.url)}
-                    className="group flex w-full items-center gap-3 border border-[#6f5423]/35 bg-[#0f0905] p-2 text-left transition hover:border-[#c89b3c]/70"
+                    className={mobileCollectionLinkClass}
                   >
-                    <span className="relative h-14 w-20 shrink-0 overflow-hidden border border-[#6f5423]/55 bg-[#080504]">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="h-full w-full object-cover brightness-[0.72] contrast-[1.08] saturate-[0.95]"
-                      />
-
-                      <span className="absolute inset-0 bg-gradient-to-t from-[#080504]/55 via-transparent to-transparent" />
-                    </span>
-
-                    <span className="min-w-0">
-                      <span className="block font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#c89b3c]/80">
-                        {item.eyebrow}
-                      </span>
-
-                      <span className="mt-1 block font-['IM_Fell_English_SC'] text-lg uppercase leading-none tracking-[0.05em] text-[#fff1d2] group-hover:text-[#e7c97b]">
-                        {item.title}
-                      </span>
-                    </span>
+                    {item.title}
                   </button>
                 ))}
               </div>

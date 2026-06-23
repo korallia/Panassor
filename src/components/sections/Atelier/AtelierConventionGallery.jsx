@@ -43,7 +43,102 @@ function AtelierConventionGallery() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-[#080504] px-6 pt-12 pb-32 text-[#f3e7cf]">
+      {/* MOBILE */}
+      <section className="relative overflow-hidden bg-[#080504] px-4 pt-10 pb-24 text-[#f3e7cf] md:hidden">
+        <SectionAtmosphere variant="featured" />
+
+        <div className="relative z-10">
+          <div className="mx-auto mb-9 max-w-[26rem] text-center">
+            <div className="mx-auto mb-5 flex max-w-[15rem] items-center justify-center gap-3 text-[#c89b3c]">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
+              <span className="text-lg">✦</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
+            </div>
+
+            <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.3em] text-[#c89b3c]">
+              Galerie
+            </p>
+
+            <h2 className="font-['IM_Fell_English_SC'] text-[clamp(2.65rem,11vw,4rem)] uppercase leading-[0.9] text-[#fff1d2]">
+              Panassor en convention
+            </h2>
+
+            <p className="mt-5 font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/84">
+              Une première rencontre avec la communauté, les kits sur table, et
+              l’univers Panassor hors de l’atelier.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setSelectedImage(conventionImages[0])}
+            className="relative block h-[72svh] min-h-[540px] w-full overflow-hidden border border-[#c89b3c]/55 bg-[#120c07] text-left shadow-[0_24px_70px_rgba(0,0,0,0.72)]"
+            aria-label="Ouvrir l’image du kiosque Panassor en plein écran"
+          >
+            <img
+              src={conventionImages[0].src}
+              alt={conventionImages[0].alt}
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.78] contrast-[1.08] saturate-[0.92]"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/20 via-transparent to-[#080504]/92" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/40 via-transparent to-[#080504]/34" />
+            <div className="absolute inset-0 shadow-[inset_0_0_58px_rgba(8,5,4,0.72)]" />
+
+            <div className="pointer-events-none absolute inset-4 border border-[#c89b3c]/16" />
+            <div className="pointer-events-none absolute left-6 top-6 h-14 w-14 border-l border-t border-[#c89b3c]/70" />
+            <div className="pointer-events-none absolute right-6 top-6 h-14 w-14 border-r border-t border-[#c89b3c]/70" />
+            <div className="pointer-events-none absolute bottom-6 left-6 h-14 w-14 border-b border-l border-[#c89b3c]/70" />
+            <div className="pointer-events-none absolute bottom-6 right-6 h-14 w-14 border-b border-r border-[#c89b3c]/70" />
+
+            <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-8">
+              <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.26em] text-[#c89b3c] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+                Première sortie officielle
+              </p>
+
+              <h3 className="max-w-[18rem] font-['IM_Fell_English_SC'] text-[clamp(2.35rem,10vw,3.3rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_7px_18px_rgba(0,0,0,0.95)]">
+                Salon de la Passion Médiévale
+              </h3>
+
+              <p className="mt-4 max-w-[20rem] font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+                Les premiers kits Panassor présentés au public.
+              </p>
+            </div>
+          </button>
+
+          <div className="mt-5 grid gap-5">
+            {conventionImages.slice(1).map((image) => (
+              <button
+                key={image.src}
+                type="button"
+                onClick={() => setSelectedImage(image)}
+                className="relative h-[310px] overflow-hidden border border-[#c89b3c]/45 bg-[#120c07] text-left shadow-[0_18px_50px_rgba(0,0,0,0.58)]"
+                aria-label={`Ouvrir l’image : ${image.alt}`}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.82] contrast-[1.08] saturate-[0.92]"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/72 via-transparent to-[#080504]/10" />
+                <div className="absolute inset-0 shadow-[inset_0_0_42px_rgba(8,5,4,0.62)]" />
+
+                <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/12" />
+
+                <span className="absolute bottom-4 left-4 right-4 font-['IM_Fell_English_SC'] text-[0.68rem] uppercase leading-4 tracking-[0.18em] text-[#e7c97b] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+                  Voir l’image
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <OrnamentDivider className="mt-12" width={112} opacity={0.55} />
+        </div>
+      </section>
+
+      {/* DESKTOP */}
+      <section className="relative hidden overflow-hidden bg-[#080504] px-6 pt-12 pb-32 text-[#f3e7cf] md:block">
         <SectionAtmosphere variant="featured" />
 
         <div className="relative z-10 mx-auto max-w-[92rem]">
@@ -131,7 +226,7 @@ function AtelierConventionGallery() {
 
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-[#030201]/92 px-6 py-8 backdrop-blur-sm"
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-[#030201]/92 px-4 py-8 backdrop-blur-sm md:px-6"
           role="dialog"
           aria-modal="true"
           onClick={() => setSelectedImage(null)}
@@ -139,13 +234,13 @@ function AtelierConventionGallery() {
           <button
             type="button"
             onClick={() => setSelectedImage(null)}
-            className="absolute top-6 right-6 z-20 border border-[#c89b3c]/70 bg-[#120c07] px-4 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805]"
+            className="absolute top-5 right-5 z-20 border border-[#c89b3c]/70 bg-[#120c07] px-4 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805] md:top-6 md:right-6"
           >
             Fermer
           </button>
 
           <div
-            className="relative max-h-full max-w-[92vw] border border-[#c89b3c]/60 bg-[#080504] p-3 shadow-[0_28px_90px_rgba(0,0,0,0.85)]"
+            className="relative max-h-full max-w-[94vw] border border-[#c89b3c]/60 bg-[#080504] p-2 shadow-[0_28px_90px_rgba(0,0,0,0.85)] md:max-w-[92vw] md:p-3"
             onClick={(event) => event.stopPropagation()}
           >
             <CornerFrame inset="outside" size="lg" />
@@ -153,10 +248,10 @@ function AtelierConventionGallery() {
             <img
               src={selectedImage.src}
               alt={selectedImage.alt}
-              className="max-h-[82vh] max-w-full object-contain"
+              className="max-h-[78vh] max-w-full object-contain md:max-h-[82vh]"
             />
 
-            <p className="mt-4 max-w-4xl font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/80">
+            <p className="mt-4 max-w-4xl font-['EB_Garamond'] text-base leading-6 text-[#d7c8ad]/80 md:text-lg md:leading-7">
               {selectedImage.alt}
             </p>
           </div>

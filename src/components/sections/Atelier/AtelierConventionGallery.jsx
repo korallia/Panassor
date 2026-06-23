@@ -78,12 +78,13 @@ function AtelierConventionGallery() {
             <img
               src={conventionImages[0].src}
               alt={conventionImages[0].alt}
-              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.78] contrast-[1.08] saturate-[0.92]"
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.9] contrast-[1.06] saturate-[0.96]"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/20 via-transparent to-[#080504]/92" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/40 via-transparent to-[#080504]/34" />
-            <div className="absolute inset-0 shadow-[inset_0_0_58px_rgba(8,5,4,0.72)]" />
+            <div className="absolute inset-0 bg-[#080504]/10" />
+            <div className="absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-[#080504]/96 via-[#080504]/62 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-[#080504]/35 to-transparent" />
+            <div className="absolute inset-0 shadow-[inset_0_0_42px_rgba(8,5,4,0.56)]" />
 
             <div className="pointer-events-none absolute inset-4 border border-[#c89b3c]/16" />
             <div className="pointer-events-none absolute left-6 top-6 h-14 w-14 border-l border-t border-[#c89b3c]/70" />
@@ -92,15 +93,15 @@ function AtelierConventionGallery() {
             <div className="pointer-events-none absolute bottom-6 right-6 h-14 w-14 border-b border-r border-[#c89b3c]/70" />
 
             <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-8">
-              <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.26em] text-[#c89b3c] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+              <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.24em] text-[#c89b3c] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
                 Première sortie officielle
               </p>
 
-              <h3 className="max-w-[18rem] font-['IM_Fell_English_SC'] text-[clamp(2.35rem,10vw,3.3rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_7px_18px_rgba(0,0,0,0.95)]">
+              <h3 className="max-w-[18rem] font-['IM_Fell_English_SC'] text-[clamp(2.2rem,9vw,3.05rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_7px_18px_rgba(0,0,0,0.95)]">
                 Salon de la Passion Médiévale
               </h3>
 
-              <p className="mt-4 max-w-[20rem] font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+              <p className="mt-4 max-w-[19rem] font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
                 Les premiers kits Panassor présentés au public.
               </p>
             </div>
@@ -118,11 +119,12 @@ function AtelierConventionGallery() {
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.82] contrast-[1.08] saturate-[0.92]"
+                  className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.9] contrast-[1.06] saturate-[0.96]"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/72 via-transparent to-[#080504]/10" />
-                <div className="absolute inset-0 shadow-[inset_0_0_42px_rgba(8,5,4,0.62)]" />
+                <div className="absolute inset-0 bg-[#080504]/8" />
+                <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#080504]/88 via-[#080504]/42 to-transparent" />
+                <div className="absolute inset-0 shadow-[inset_0_0_34px_rgba(8,5,4,0.5)]" />
 
                 <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/12" />
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import SectionTitle from "../../layout/SectionTitle";
@@ -16,6 +16,9 @@ function CollectionsHeroCarousel({
 }) {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const touchStartXRef = useRef(null);
+  const didSwipeRef = useRef(false);
 
   const carouselCollections = useMemo(() => {
     if (!collections?.length) return [];
@@ -62,6 +65,40 @@ function CollectionsHeroCarousel({
     setActiveIndex(index);
   };
 
+  const handleTouchStart = (event) => {
+    touchStartXRef.current = event.touches[0].clientX;
+    didSwipeRef.current = false;
+  };
+
+  const handleTouchEnd = (event) => {
+    if (touchStartXRef.current === null) return;
+
+    const touchEndX = event.changedTouches[0].clientX;
+    const swipeDistance = touchStartXRef.current - touchEndX;
+    const minimumSwipeDistance = 45;
+
+    if (Math.abs(swipeDistance) > minimumSwipeDistance) {
+      didSwipeRef.current = true;
+
+      if (swipeDistance > 0) {
+        goNext();
+      } else {
+        goPrevious();
+      }
+
+      window.setTimeout(() => {
+        didSwipeRef.current = false;
+      }, 150);
+    }
+
+    touchStartXRef.current = null;
+  };
+
+  const handleMobileHeroClick = () => {
+    if (didSwipeRef.current) return;
+    goToCollection();
+  };
+
   return (
     <section className="relative overflow-hidden bg-[#080504] px-4 pt-12 pb-24 text-[#f3e7cf] md:px-6 md:pb-32">
       <div className="relative mx-auto max-w-[88rem]">
@@ -92,8 +129,10 @@ function CollectionsHeroCarousel({
           <div className="overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
             <button
               type="button"
-              onClick={goToCollection}
-              className="group relative block min-h-[30rem] w-full overflow-hidden text-center"
+              onClick={handleMobileHeroClick}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              className="group relative block min-h-[30rem] w-full touch-pan-y overflow-hidden text-center"
               aria-label={`Découvrir la collection ${activeCollection.name_fr}`}
             >
               <img
@@ -109,7 +148,7 @@ function CollectionsHeroCarousel({
 
               <CornerFrame size="lg" />
 
-              <div className="relative z-20 flex min-h-[30rem] flex-col justify-center px-5 py-12">
+              <div className="relative z-20 flex min-h-[30rem] flex-col justify-center px-4 py-12">
                 <div className="mb-8 flex items-center justify-center gap-3 text-[#c89b3c]">
                   <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
 
@@ -120,7 +159,7 @@ function CollectionsHeroCarousel({
                   <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
                 </div>
 
-                <h3 className="mx-auto w-full max-w-full font-['IM_Fell_English_SC'] text-[clamp(2.85rem,14vw,3.35rem)] font-normal uppercase leading-[0.88] tracking-[0.02em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+                <h3 className="mx-auto w-full max-w-full font-['IM_Fell_English_SC'] text-[clamp(2.1rem,10.5vw,2.85rem)] font-normal uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
                   {titleWords.map((word) => (
                     <span key={word} className="block">
                       {word}

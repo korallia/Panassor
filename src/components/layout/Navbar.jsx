@@ -31,13 +31,23 @@ function Navbar() {
     },
   ];
 
+  const mobileItems = [
+    {
+      id: "products",
+      title: "Produits",
+      url: "/produits",
+    },
+    ...collections.map((collection) => ({
+      id: collection.id,
+      title: collection.title_fr || collection.name_fr,
+      url: `/collections/${collection.slug}`,
+    })),
+  ];
+
   const navigateAndClose = (url) => {
     navigate(url);
     setIsMenuOpen(false);
   };
-
-  const mobileMainLinkClass =
-    "block w-full border-y border-[#6f5423]/45 py-5 text-left font-['IM_Fell_English_SC'] text-3xl uppercase tracking-[0.08em] text-[#fff1d2] transition hover:text-[#d8a24c]";
 
   const mobileCollectionLinkClass =
     "block w-full border-b border-[#6f5423]/30 py-3 text-left font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88 transition last:border-b-0 hover:text-[#d8a24c]";
@@ -211,41 +221,21 @@ function Navbar() {
               <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/45" />
             </div>
 
-            <nav className="space-y-0">
-              <button
-                type="button"
-                onClick={() => navigateAndClose("/produits")}
-                className={mobileMainLinkClass}
-              >
-                Produits
-              </button>
+            <p className="mb-4 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c]/80">
+              Collections
+            </p>
 
-              <button
-                type="button"
-                onClick={() => navigateAndClose("/collections")}
-                className={mobileMainLinkClass}
-              >
-                Collections
-              </button>
-            </nav>
-
-            <div className="mt-7">
-              <p className="mb-4 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c]/80">
-                Collections
-              </p>
-
-              <div className="border-y border-[#6f5423]/45 py-2">
-                {dropdownItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => navigateAndClose(item.url)}
-                    className={mobileCollectionLinkClass}
-                  >
-                    {item.title}
-                  </button>
-                ))}
-              </div>
+            <div className="border-y border-[#6f5423]/45 py-2">
+              {mobileItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => navigateAndClose(item.url)}
+                  className={mobileCollectionLinkClass}
+                >
+                  {item.title}
+                </button>
+              ))}
             </div>
           </div>
         </div>

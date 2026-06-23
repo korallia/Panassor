@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
+
+import { useCollectionDetails } from "../context/CollectionsContext";
 
 import CollectionIntro from "../components/sections/CollectionProductsPage/CollectionIntro";
 import CollectionProductsGrid from "../components/sections/CollectionProductsPage/CollectionProductsGrid";
@@ -7,24 +8,7 @@ import FeatureVideoPlayer from "../components/layout/VideoPlayer";
 
 function CollectionProductsPage() {
   const { slug } = useParams();
-  const [collection, setCollection] = useState(null);
-  const [notFound, setNotFound] = useState(false);
-
-  useEffect(() => {
-    async function loadCollection() {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections/${slug}`)
-
-      if (response.status === 404) {
-        setNotFound(true);
-        return;
-      }
-
-      const data = await response.json();
-      setCollection(data);
-    }
-
-    loadCollection();
-  }, [slug]);
+  const { collection, notFound } = useCollectionDetails(slug);
 
   if (notFound) {
     return <Navigate to="/collections" replace />;

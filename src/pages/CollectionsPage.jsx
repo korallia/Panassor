@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { useCollections } from "../context/CollectionsContext";
 
 import CollectionCard from "../components/sections/CollectionsPage/CollectionCard";
 import PageHeroBanner from "../components/layout/PageHeroBanner";
@@ -8,18 +9,7 @@ import PanassorSectionHeader from "../components/layout/PanassorSectionHeader";
 
 function CollectionsPage() {
   const navigate = useNavigate();
-  const [collections, setCollections] = useState([]);
-
-  useEffect(() => {
-    async function loadCollections() {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections`)
-      const data = await response.json();
-
-      setCollections(data);
-    }
-
-    loadCollections();
-  }, []);
+  const collections = useCollections();
 
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
@@ -47,7 +37,7 @@ function CollectionsPage() {
                 key={collection.id}
                 collection={collection}
                 index={index}
-                onClick={() => navigate(collection.url)}
+                onClick={() => navigate(`/collections/${collection.slug}`)}
               />
             ))}
           </div>

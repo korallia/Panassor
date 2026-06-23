@@ -7,9 +7,13 @@ async function request(path) {
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
 
-    throw new Error(
+    const error = new Error(
       errorBody?.message || `API request failed: ${response.status}`
     );
+
+    error.status = response.status;
+
+    throw error;
   }
 
   return response.json();

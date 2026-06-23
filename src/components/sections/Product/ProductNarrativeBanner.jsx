@@ -12,47 +12,60 @@ function ProductNarrativeBanner({ collection }) {
     ["◇", "Inspiré de l’histoire"],
   ];
 
+  if (!collection) {
+    return null;
+  }
+
   return (
-    <section className="relative px-6 pb-4">
+    <section className="relative px-4 pb-4 md:px-6">
       <div className="relative mx-auto max-w-[88rem] overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
         <img
           src={collection.hero_image_url}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover brightness-[0.26] contrast-[1.18] saturate-[0.9]"
+          className="absolute inset-0 h-full w-full object-cover brightness-[0.22] contrast-[1.18] saturate-[0.9] md:brightness-[0.26]"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/97 via-[#080504]/82 to-[#080504]/38" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/50 via-transparent to-[#080504]/34" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/88 via-[#080504]/76 to-[#080504]/92 md:bg-gradient-to-r md:from-[#080504]/97 md:via-[#080504]/82 md:to-[#080504]/38" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/58 via-transparent to-[#080504]/38" />
         <div className="absolute inset-0 shadow-[inset_0_0_76px_rgba(0,0,0,0.82)]" />
 
-        <CornerFrame size="md" />
+        {/* Mobile corners contrôlés */}
+        <div className="pointer-events-none absolute left-5 top-5 z-20 h-20 w-20 border-l border-t border-[#c89b3c]/72 md:hidden" />
+        <div className="pointer-events-none absolute right-5 top-5 z-20 h-20 w-20 border-r border-t border-[#c89b3c]/72 md:hidden" />
+        <div className="pointer-events-none absolute bottom-5 left-5 z-20 h-20 w-20 border-b border-l border-[#c89b3c]/72 md:hidden" />
+        <div className="pointer-events-none absolute bottom-5 right-5 z-20 h-20 w-20 border-b border-r border-[#c89b3c]/72 md:hidden" />
 
-        <div className="relative z-10 grid min-h-[300px] gap-9 px-8 py-10 md:grid-cols-[1fr_230px] md:px-12">
+        {/* Desktop frame */}
+        <div className="hidden md:block">
+          <CornerFrame size="md" />
+        </div>
+
+        <div className="relative z-10 grid gap-10 px-6 py-12 md:min-h-[300px] md:grid-cols-[1fr_230px] md:px-12 md:py-10">
           <div className="flex max-w-3xl flex-col justify-center">
-            <div className="mb-5">
-              <div className="mb-4 flex w-72 max-w-full items-center gap-4 text-[#c89b3c]">
+            <div className="mb-6">
+              <div className="mb-5 flex w-full max-w-[22rem] items-center gap-4 text-[#c89b3c]">
                 <div className="h-px flex-1 bg-[#c89b3c]/65" />
 
-                <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.24em] text-[#c89b3c]">
+                <span className="whitespace-nowrap font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.22em] text-[#c89b3c] md:text-[0.72rem] md:tracking-[0.24em]">
                   L’empreinte Panassor
                 </span>
 
                 <div className="h-px flex-1 bg-[#c89b3c]/65" />
               </div>
 
-              <h2 className="font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] md:text-5xl">
+              <h2 className="font-['IM_Fell_English_SC'] text-[clamp(2.55rem,11vw,4rem)] uppercase leading-[0.9] text-[#fff1d2] md:text-5xl md:leading-none">
                 Chaque détail doit mériter sa place en jeu.
               </h2>
             </div>
 
-            <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-              La collection {collection.name_fr} est pensée pour les scènes où le
-              détail compte. Chaque pièce est conçue pour rester crédible en
+            <p className="max-w-2xl font-['EB_Garamond'] text-[1.35rem] leading-8 text-[#d7c8ad]/90 md:text-xl md:leading-8">
+              La collection {collection.name_fr} est pensée pour les scènes où
+              le détail compte. Chaque pièce est conçue pour rester crédible en
               jeu, respecter les exigences du décorum et donner aux joueurs des
               outils qu’ils peuvent manipuler avec fierté.
             </p>
 
-            <p className="mt-4 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84">
+            <p className="mt-5 max-w-2xl font-['EB_Garamond'] text-[1.35rem] leading-8 text-[#d7c8ad]/84 md:mt-4 md:text-xl md:leading-8">
               Inspirés par l’histoire, fabriqués au Québec et portés par notre
               passion du grandeur nature, nos kits existent pour enrichir
               l’immersion sans sacrifier la sécurité, la durabilité ou la
@@ -60,14 +73,14 @@ function ProductNarrativeBanner({ collection }) {
             </p>
 
             <OrnamentDivider
-              className="mt-6 justify-start"
+              className="mt-7 justify-start"
               width={96}
               opacity={0.58}
             />
 
             <Link
               to="/atelier"
-              className="mt-7 inline-flex w-fit items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] hover:bg-[#2a4630] hover:text-[#f7ead2]"
+              className="mt-8 inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2] sm:w-fit md:py-3"
             >
               Découvrir l’atelier
             </Link>

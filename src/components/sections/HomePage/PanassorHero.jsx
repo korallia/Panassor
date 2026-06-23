@@ -9,50 +9,56 @@ function PanassorHero({ collection }) {
 
   return (
     <div className="bg-[#080504] text-[#f7ead2]">
-      {/* MOBILE HERO */}
-      <section className="relative overflow-hidden bg-[#0b0704] px-4 pb-16 pt-8 md:hidden">
-        <div className="relative min-h-[33rem] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
-          <img
-            src={collection.hero_image_url}
-            alt={collection.title_fr}
-            className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.54] contrast-[1.12] saturate-[0.9]"
-          />
+      <section className="md:hidden">
+        <div className="relative overflow-hidden bg-[#0b0704] px-4 pt-8">
+          <div className="relative min-h-[32rem] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
+            <img
+              src={collection.hero_image_url}
+              alt={collection.title_fr}
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.52] contrast-[1.12] saturate-[0.9]"
+            />
 
-          <div className="absolute inset-0 bg-[#080504]/18" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/64 via-[#080504]/22 to-[#080504]/82" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/52 via-[#080504]/18 to-[#080504]/52" />
+            <div className="absolute inset-0 bg-[#080504]/20" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/68 via-[#080504]/24 to-[#080504]/86" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/58 via-transparent to-[#080504]/52" />
 
-          <CornerFrame inset="hero" size="lg" thickness="strong" color="gold" />
+            <CornerFrame
+              inset="hero"
+              size="lg"
+              thickness="strong"
+              color="gold"
+            />
 
-          <div className="relative z-20 flex min-h-[33rem] flex-col justify-center px-6 py-12 text-center">
-            <div className="mb-8 flex items-center justify-center gap-3 text-[#d8a24c]">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
+            <div className="relative z-20 flex min-h-[32rem] flex-col justify-center px-6 py-12 text-center">
+              <div className="mb-8 flex items-center justify-center gap-3 text-[#d8a24c]">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
 
-              <span className="whitespace-nowrap font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.22em] text-[#d8a24c]">
-                {collection.eyebrow_fr}
-              </span>
+                <span className="whitespace-nowrap font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.22em] text-[#d8a24c]">
+                  {collection.eyebrow_fr}
+                </span>
 
-              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
-            </div>
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
+              </div>
 
-            <h1 className="font-['IM_Fell_English_SC'] text-[4.4rem] font-normal uppercase leading-[0.84] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-              {collection.title_fr}
-            </h1>
+              <h1 className="font-['IM_Fell_English_SC'] text-[4.15rem] font-normal uppercase leading-[0.86] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+                {collection.title_fr}
+              </h1>
 
-            <div className="mx-auto mt-8 flex w-full max-w-[18rem] items-center justify-center gap-3 text-[#d8a24c]">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
-              <span className="text-lg">✦</span>
-              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
+              <div className="mx-auto mt-8 flex w-full max-w-[18rem] items-center justify-center gap-3 text-[#d8a24c]">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
+                <span className="text-lg">✦</span>
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="mx-auto mt-8 max-w-[34rem] text-center">
-          <p className="font-['EB_Garamond'] text-[1.55rem] leading-8 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
+        <div className="bg-[#080504] px-5 pb-16 pt-8 text-center">
+          <p className="mx-auto max-w-[33rem] font-['EB_Garamond'] text-[1.48rem] leading-8 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
             {collection.description_fr}
           </p>
 
-          <div className="mt-8 flex flex-col gap-4">
+          <div className="mx-auto mt-8 flex max-w-[30rem] flex-col gap-4">
             <button
               type="button"
               onClick={() => navigate(collection.url)}
@@ -73,7 +79,6 @@ function PanassorHero({ collection }) {
         </div>
       </section>
 
-      {/* DESKTOP HERO */}
       <section className="relative hidden min-h-[calc(100vh-6rem)] overflow-hidden bg-[#0b0704] md:block">
         <img
           src={collection.hero_image_url}

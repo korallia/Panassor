@@ -7,15 +7,32 @@ import CornerFrame from "../../ui/CornerFrame";
 function PanassorHero({ collection }) {
   const navigate = useNavigate();
 
+  if (!collection) {
+    return null;
+  }
+
+  const collectionUrl =
+    collection.url || `/collections/${collection.slug}`;
+
+  const goToCollection = () => {
+    navigate(collectionUrl);
+  };
+
   return (
     <div className="bg-[#080504] text-[#f7ead2]">
+      {/* MOBILE HERO */}
       <section className="md:hidden">
         <div className="relative overflow-hidden bg-[#0b0704] px-4 pt-8">
-          <div className="relative min-h-[32rem] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
+          <button
+            type="button"
+            onClick={goToCollection}
+            className="group relative block min-h-[30rem] w-full overflow-hidden border border-[#6f5423]/80 bg-[#120c07] text-center shadow-[0_18px_60px_rgba(0,0,0,0.6)]"
+            aria-label={`Découvrir la collection ${collection.title_fr}`}
+          >
             <img
               src={collection.hero_image_url}
               alt={collection.title_fr}
-              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.52] contrast-[1.12] saturate-[0.9]"
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.52] contrast-[1.12] saturate-[0.9] transition duration-500 group-hover:scale-[1.02]"
             />
 
             <div className="absolute inset-0 bg-[#080504]/20" />
@@ -29,7 +46,7 @@ function PanassorHero({ collection }) {
               color="gold"
             />
 
-            <div className="relative z-20 flex min-h-[32rem] flex-col justify-center px-6 py-12 text-center">
+            <div className="relative z-20 flex min-h-[30rem] flex-col justify-center px-6 py-12">
               <div className="mb-8 flex items-center justify-center gap-3 text-[#d8a24c]">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
 
@@ -40,8 +57,12 @@ function PanassorHero({ collection }) {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
               </div>
 
-              <h1 className="font-['IM_Fell_English_SC'] text-[4.15rem] font-normal uppercase leading-[0.86] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-                {collection.title_fr}
+              <h1 className="font-['IM_Fell_English_SC'] text-[3.75rem] font-normal uppercase leading-[0.86] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+                {collection.title_fr.split(" ").map((word) => (
+                  <span key={word} className="block">
+                    {word}
+                  </span>
+                ))}
               </h1>
 
               <div className="mx-auto mt-8 flex w-full max-w-[18rem] items-center justify-center gap-3 text-[#d8a24c]">
@@ -50,7 +71,7 @@ function PanassorHero({ collection }) {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
         <div className="bg-[#080504] px-5 pb-16 pt-8 text-center">
@@ -61,7 +82,7 @@ function PanassorHero({ collection }) {
           <div className="mx-auto mt-8 flex max-w-[30rem] flex-col gap-4">
             <button
               type="button"
-              onClick={() => navigate(collection.url)}
+              onClick={goToCollection}
               className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
             >
               <span className="mr-3">✦</span>
@@ -79,6 +100,7 @@ function PanassorHero({ collection }) {
         </div>
       </section>
 
+      {/* DESKTOP HERO */}
       <section className="relative hidden min-h-[calc(100vh-6rem)] overflow-hidden bg-[#0b0704] md:block">
         <img
           src={collection.hero_image_url}
@@ -126,7 +148,7 @@ function PanassorHero({ collection }) {
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <GoldButton collection_url={collection.url} />
+              <GoldButton collection_url={collectionUrl} />
               <GreenButton />
             </div>
           </div>

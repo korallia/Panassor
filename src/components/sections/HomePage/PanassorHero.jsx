@@ -11,12 +11,13 @@ function PanassorHero({ collection }) {
     return null;
   }
 
-  const collectionUrl =
-    collection.url || `/collections/${collection.slug}`;
+  const collectionUrl = collection.url || `/collections/${collection.slug}`;
 
   const goToCollection = () => {
     navigate(collectionUrl);
   };
+
+  const titleWords = collection.title_fr.split(" ");
 
   return (
     <div className="bg-[#080504] text-[#f7ead2]">
@@ -46,7 +47,7 @@ function PanassorHero({ collection }) {
               color="gold"
             />
 
-            <div className="relative z-20 flex min-h-[30rem] flex-col justify-center px-6 py-12">
+            <div className="relative z-20 flex min-h-[30rem] flex-col justify-center px-5 py-12">
               <div className="mb-8 flex items-center justify-center gap-3 text-[#d8a24c]">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
 
@@ -57,8 +58,8 @@ function PanassorHero({ collection }) {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
               </div>
 
-              <h1 className="font-['IM_Fell_English_SC'] text-[3.75rem] font-normal uppercase leading-[0.86] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-                {collection.title_fr.split(" ").map((word) => (
+              <h1 className="mx-auto w-full max-w-full font-['IM_Fell_English_SC'] text-[clamp(2.85rem,14vw,3.35rem)] font-normal uppercase leading-[0.88] tracking-[0.02em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+                {titleWords.map((word) => (
                   <span key={word} className="block">
                     {word}
                   </span>

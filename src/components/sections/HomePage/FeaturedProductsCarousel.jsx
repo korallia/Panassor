@@ -9,7 +9,7 @@ import SectionAtmosphere from "../../layout/SectionAtmosphere";
 
 function FeaturedProductsCarousel({
   collection,
-  className = "py-20",
+  className = "pt-20 pb-8 md:py-20",
   showCollectionButton = true,
 }) {
   const railRef = useRef(null);

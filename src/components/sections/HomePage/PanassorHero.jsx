@@ -21,33 +21,42 @@ function PanassorHero({ collection }) {
   return (
     <div className="bg-[#080504] text-[#f7ead2]">
       {/* MOBILE HERO */}
-      <section className="bg-[#0b0704] px-4 pb-16 pt-8 md:hidden">
-        <div className="overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
-          <button
-            type="button"
-            onClick={goToCollection}
-            className="group relative block min-h-[30rem] w-full overflow-hidden text-center"
-            aria-label={`Découvrir la collection ${collection.title_fr}`}
-          >
-            <img
-              src={collection.hero_image_url}
-              alt={collection.title_fr}
-              className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.52] contrast-[1.12] saturate-[0.9] transition duration-500 group-hover:scale-[1.02]"
-            />
+      <section className="relative min-h-[calc(100svh-5rem)] overflow-hidden bg-[#0b0704] md:hidden">
+        <button
+          type="button"
+          onClick={goToCollection}
+          className="group relative block min-h-[calc(100svh-5rem)] w-full overflow-hidden text-center"
+          aria-label={`Découvrir la collection ${collection.title_fr}`}
+        >
+          <img
+            src={collection.hero_image_url}
+            alt={collection.title_fr}
+            className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.5] contrast-[1.12] saturate-[0.9] transition duration-500 group-hover:scale-[1.02]"
+          />
 
-            <div className="absolute inset-0 bg-[#080504]/20" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/68 via-[#080504]/24 to-[#080504]/86" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/58 via-transparent to-[#080504]/52" />
+          <div className="absolute inset-0 bg-[#080504]/22" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/70 via-[#080504]/26 to-[#080504]/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/64 via-transparent to-[#080504]/58" />
 
-            <CornerFrame
-              inset="hero"
-              size="lg"
-              thickness="strong"
-              color="gold"
-            />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-b from-transparent via-[#080504]/72 to-[#080504]" />
 
-            <div className="relative z-20 flex min-h-[30rem] flex-col justify-center px-5 py-12">
-              <div className="mb-8 flex items-center justify-center gap-3 text-[#d8a24c]">
+          <CornerFrame
+            inset="hero"
+            size="lg"
+            thickness="strong"
+            color="gold"
+          />
+
+          <CornerFrame
+            inset="heroInner"
+            size="sm"
+            thickness="subtle"
+            color="paleGold"
+          />
+
+          <div className="relative z-20 flex min-h-[calc(100svh-5rem)] flex-col justify-center px-6 py-16">
+            <div className="mx-auto flex w-full max-w-[28rem] flex-col items-center text-center">
+              <div className="mb-8 flex w-full items-center justify-center gap-3 text-[#d8a24c]">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
 
                 <span className="whitespace-nowrap font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.22em] text-[#d8a24c]">
@@ -57,9 +66,9 @@ function PanassorHero({ collection }) {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
               </div>
 
-              <h1 className="mx-auto w-full max-w-full font-['IM_Fell_English_SC'] text-[clamp(2.85rem,14vw,3.35rem)] font-normal uppercase leading-[0.88] tracking-[0.02em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+              <h1 className="mx-auto w-full max-w-full text-center font-['IM_Fell_English_SC'] text-[clamp(2.85rem,14vw,3.35rem)] font-normal uppercase leading-[0.88] tracking-[0.02em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
                 {titleWords.map((word) => (
-                  <span key={word} className="block">
+                  <span key={word} className="block w-full text-center">
                     {word}
                   </span>
                 ))}
@@ -71,35 +80,31 @@ function PanassorHero({ collection }) {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d8a24c]/70" />
               </div>
             </div>
-          </button>
+          </div>
+        </button>
 
-          <div className="relative border-t border-[#6f5423]/70 bg-[#080504]/92 px-6 pb-7 pt-6 text-center">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(200,155,60,0.1),transparent_45%)]" />
+        <div className="relative z-30 bg-[#080504] px-5 pb-16 pt-8 text-center">
+          <p className="mx-auto max-w-[33rem] font-['EB_Garamond'] text-[1.32rem] leading-7 text-[#f7ead2]/84">
+            {collection.description_fr}
+          </p>
 
-            <div className="relative z-10">
-              <p className="mx-auto max-w-[31rem] font-['EB_Garamond'] text-[1.32rem] leading-7 text-[#f7ead2]/84">
-                {collection.description_fr}
-              </p>
+          <div className="mx-auto mt-8 flex max-w-[30rem] flex-col gap-3">
+            <button
+              type="button"
+              onClick={goToCollection}
+              className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
+            >
+              <span className="mr-3">✦</span>
+              Découvrir la collection
+            </button>
 
-              <div className="mx-auto mt-7 flex max-w-[28rem] flex-col gap-3">
-                <button
-                  type="button"
-                  onClick={goToCollection}
-                  className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
-                >
-                  <span className="mr-3">✦</span>
-                  Découvrir la collection
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => navigate("/atelier")}
-                  className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
-                >
-                  Voir l’atelier
-                </button>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/atelier")}
+              className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
+            >
+              Voir l’atelier
+            </button>
           </div>
         </div>
       </section>

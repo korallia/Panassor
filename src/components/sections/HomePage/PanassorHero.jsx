@@ -12,22 +12,21 @@ function PanassorHero({ collection }) {
   }
 
   const collectionUrl = collection.url || `/collections/${collection.slug}`;
+  const titleWords = collection.title_fr.split(" ");
 
   const goToCollection = () => {
     navigate(collectionUrl);
   };
 
-  const titleWords = collection.title_fr.split(" ");
-
   return (
     <div className="bg-[#080504] text-[#f7ead2]">
       {/* MOBILE HERO */}
-      <section className="md:hidden">
-        <div className="relative overflow-hidden bg-[#0b0704] px-4 pt-8">
+      <section className="bg-[#0b0704] px-4 pb-16 pt-8 md:hidden">
+        <div className="overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
           <button
             type="button"
             onClick={goToCollection}
-            className="group relative block min-h-[30rem] w-full overflow-hidden border border-[#6f5423]/80 bg-[#120c07] text-center shadow-[0_18px_60px_rgba(0,0,0,0.6)]"
+            className="group relative block min-h-[30rem] w-full overflow-hidden text-center"
             aria-label={`Découvrir la collection ${collection.title_fr}`}
           >
             <img
@@ -73,30 +72,34 @@ function PanassorHero({ collection }) {
               </div>
             </div>
           </button>
-        </div>
 
-        <div className="bg-[#080504] px-5 pb-16 pt-8 text-center">
-          <p className="mx-auto max-w-[33rem] font-['EB_Garamond'] text-[1.48rem] leading-8 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
-            {collection.description_fr}
-          </p>
+          <div className="relative border-t border-[#6f5423]/70 bg-[#080504]/92 px-6 pb-7 pt-6 text-center">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(200,155,60,0.1),transparent_45%)]" />
 
-          <div className="mx-auto mt-8 flex max-w-[30rem] flex-col gap-4">
-            <button
-              type="button"
-              onClick={goToCollection}
-              className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
-            >
-              <span className="mr-3">✦</span>
-              Découvrir la collection
-            </button>
+            <div className="relative z-10">
+              <p className="mx-auto max-w-[31rem] font-['EB_Garamond'] text-[1.32rem] leading-7 text-[#f7ead2]/84">
+                {collection.description_fr}
+              </p>
 
-            <button
-              type="button"
-              onClick={() => navigate("/atelier")}
-              className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
-            >
-              Voir l’atelier
-            </button>
+              <div className="mx-auto mt-7 flex max-w-[28rem] flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={goToCollection}
+                  className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
+                >
+                  <span className="mr-3">✦</span>
+                  Découvrir la collection
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/atelier")}
+                  className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
+                >
+                  Voir l’atelier
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>

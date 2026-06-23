@@ -81,56 +81,75 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">
-      <section className="relative px-6 pt-9 pb-8">
+      <section className="relative px-4 pt-9 pb-8 md:px-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(200,155,60,0.13),transparent_30%),radial-gradient(circle_at_18%_72%,rgba(6,40,24,0.34),transparent_34%),radial-gradient(circle_at_86%_68%,rgba(88,43,18,0.24),transparent_32%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,12,7,0.84),rgba(8,5,4,0.96)_32%,#080504)]" />
 
         <div className="relative mx-auto max-w-[88rem]">
-          <nav className="mb-6 flex flex-wrap items-center gap-2 font-['IM_Fell_English_SC'] text-[0.78rem] uppercase tracking-[0.2em] text-[#a47b36]">
-            <Link to="/" className="transition hover:text-[#c89b3c]">
-              Accueil
-            </Link>
-
-            <span className="text-[#6f5423]">›</span>
-
-            <Link to="/produits" className="transition hover:text-[#c89b3c]">
-              Produits
-            </Link>
-
-            <span className="text-[#6f5423]">›</span>
-
-            <Link
-              to={`/collections/${collection.slug}`}
-              className="transition hover:text-[#c89b3c]"
+          <div className="mb-7">
+            <nav
+              aria-label="Fil d’Ariane"
+              className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.18em] text-[#a47b36] md:text-[0.78rem] md:tracking-[0.2em]"
             >
-              {collection.name_fr}
-            </Link>
+              <Link
+                to="/"
+                className="shrink-0 transition hover:text-[#c89b3c]"
+              >
+                Accueil
+              </Link>
 
-            <span className="text-[#6f5423]">›</span>
+              <span className="shrink-0 text-[#6f5423]">›</span>
 
-            <span className="text-[#c89b3c]">{product.name_fr}</span>
-          </nav>
+              <Link
+                to="/produits"
+                className="shrink-0 transition hover:text-[#c89b3c]"
+              >
+                Produits
+              </Link>
 
-          <div className="grid gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
-            <ProductMediaGallery
-              key={selectedColorIndex}
-              media={productMedia}
-              productName={product.name_fr}
-            />
+              <span className="shrink-0 text-[#6f5423]">›</span>
 
-            <ProductPurchasePanel
-              product={product}
-              collection={collection}
-              leatherColors={leatherColors}
-              customizableItems={customizableItems}
-              selectedColorIndex={selectedColorIndex}
-              onSelectColor={setSelectedColorIndex}
-            />
+              <Link
+                to={`/collections/${collection.slug}`}
+                className="shrink-0 transition hover:text-[#c89b3c]"
+              >
+                {collection.name_fr}
+              </Link>
+            </nav>
+
+            <div className="mt-4 flex items-center gap-3 text-[#c89b3c]">
+              <div className="h-px w-12 bg-gradient-to-r from-[#c89b3c]/70 to-transparent" />
+
+              <p className="font-['IM_Fell_English_SC'] text-[0.78rem] uppercase tracking-[0.22em] text-[#c89b3c] md:text-sm">
+                {product.name_fr}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
+            <div className="min-w-0">
+              <ProductMediaGallery
+                key={selectedColorIndex}
+                media={productMedia}
+                productName={product.name_fr}
+              />
+            </div>
+
+            <div className="min-w-0">
+              <ProductPurchasePanel
+                product={product}
+                collection={collection}
+                leatherColors={leatherColors}
+                customizableItems={customizableItems}
+                selectedColorIndex={selectedColorIndex}
+                onSelectColor={setSelectedColorIndex}
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="relative px-6 pt-10 pb-8">
+      <section className="relative px-4 pt-10 pb-8 md:px-6">
         <OrnamentDivider
           className="mx-auto max-w-[88rem]"
           width={288}
@@ -140,7 +159,7 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
 
       <ProductNarrativeBanner collection={collection} />
 
-      <section className="relative px-6 pt-8 pb-8">
+      <section className="relative px-4 pt-8 pb-8 md:px-6">
         <OrnamentDivider
           className="mx-auto max-w-[88rem]"
           width={288}

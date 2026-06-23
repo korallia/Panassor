@@ -8,7 +8,7 @@ import CollectionProductsPage from "../src/pages/CollectionProductsPage"
 import CollectionsPage from "../src/pages/CollectionsPage"
 import ProductPage from "./pages/ProductPage";
 import RouteReset from "./components/RouteReset";
-import ProductsPage from "./components/sections/ProductsPage/ProductsPage";
+import ProductsPage from "./pages/ProductsPage";
 import AtelierPage from "./components/sections/Atelier/AtelierPage";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
 function App() {

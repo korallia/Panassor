@@ -1,25 +1,46 @@
 import { useEffect, useState } from "react";
 
-import ProductCard from "../../ui/ProductCard";
-import PageHeroBanner from "../../layout/PageHeroBanner";
-import OrnamentDivider from "../../ui/OrnamentDivider";
-import PanassorSectionHeader from "../../layout/PanassorSectionHeader";
+import { getProducts } from "../../backend/panassorApi";
+
+import ProductCard from "../components/ui/ProductCard";
+import PageHeroBanner from "../components/layout/PageHeroBanner";
+import OrnamentDivider from "../components/ui/OrnamentDivider";
+import PanassorSectionHeader from "../components/layout/PanassorSectionHeader";
+
+const RETRY_DELAY_MS = 3000;
 
 function ProductsPage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
+    let retryTimeoutId = null;
+
     async function loadProducts() {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/products`
-      );
+      try {
+        const data = await getProducts();
 
-      const data = await response.json();
+        if (!isMounted) return;
 
-      setProducts(data);
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+
+        if (!isMounted) return;
+
+        retryTimeoutId = window.setTimeout(loadProducts, RETRY_DELAY_MS);
+      }
     }
 
     loadProducts();
+
+    return () => {
+      isMounted = false;
+
+      if (retryTimeoutId) {
+        window.clearTimeout(retryTimeoutId);
+      }
+    };
   }, []);
 
   return (

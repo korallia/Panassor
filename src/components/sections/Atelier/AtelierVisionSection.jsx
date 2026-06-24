@@ -23,10 +23,11 @@ function AtelierVisionSection() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#080504]/28 via-transparent to-[#080504]/58" />
 
           <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/10" />
-          <div className="pointer-events-none absolute left-6 top-6 h-14 w-14 border-l border-t border-[#c89b3c]/55" />
-          <div className="pointer-events-none absolute right-6 top-6 h-14 w-14 border-r border-t border-[#c89b3c]/55" />
-          <div className="pointer-events-none absolute bottom-6 left-6 h-14 w-14 border-b border-l border-[#c89b3c]/55" />
-          <div className="pointer-events-none absolute bottom-6 right-6 h-14 w-14 border-b border-r border-[#c89b3c]/55" />
+
+          <div className="pointer-events-none absolute left-6 top-6 h-10 w-10 border-l border-t border-[#c89b3c]/55" />
+          <div className="pointer-events-none absolute right-6 top-6 h-10 w-10 border-r border-t border-[#c89b3c]/55" />
+          <div className="pointer-events-none absolute bottom-6 left-6 h-10 w-10 border-b border-l border-[#c89b3c]/55" />
+          <div className="pointer-events-none absolute bottom-6 right-6 h-10 w-10 border-b border-r border-[#c89b3c]/55" />
 
           <div className="relative z-10">
             <div className="mx-auto mb-8 flex h-56 w-56 items-center justify-center">
@@ -71,7 +72,11 @@ function AtelierVisionSection() {
               ))}
             </div>
 
-            <OrnamentDivider className="mt-9" width={96} opacity={0.55} />
+            <div className="mx-auto mt-9 flex max-w-[14rem] items-center justify-center gap-3 text-[#c89b3c]">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/55" />
+              <span className="text-sm">✦</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/55" />
+            </div>
           </div>
         </div>
       </div>

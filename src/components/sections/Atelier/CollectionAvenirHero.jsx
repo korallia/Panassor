@@ -91,10 +91,7 @@ function CollectionAvenirHero({ collection, primaryAction, secondaryAction }) {
               </div>
             )}
 
-            <div className="mt-9 flex items-center justify-center gap-4">
-              <span className="h-4 w-4 rounded-full bg-[#c89b3c]" />
-              <span className="h-4 w-4 rounded-full border border-[#c89b3c]/70" />
-            </div>
+           
           </div>
         </div>
       </div>

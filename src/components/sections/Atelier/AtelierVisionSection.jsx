@@ -2,6 +2,12 @@ import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
 function AtelierVisionSection() {
+  const visionPoints = [
+    "Des objets pour les rôles qui font vivre l’univers.",
+    "Une présence forte, sans voler la scène aux joueurs.",
+    "Des accessoires faits pour être vus, manipulés et incarnés.",
+  ];
+
   return (
     <section className="relative overflow-hidden bg-[#080504] text-[#f3e7cf]">
       <SectionAtmosphere variant="featured" />
@@ -10,19 +16,11 @@ function AtelierVisionSection() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_58%,rgba(35,72,40,0.2),transparent_34%)]" />
 
       {/* MOBILE */}
-      <div className="relative z-10 px-4 py-24 md:hidden">
-        <div className="relative min-h-[760px] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] px-5 py-10 shadow-[0_22px_70px_rgba(0,0,0,0.68)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_34%,rgba(200,155,60,0.18),transparent_34%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_26%_72%,rgba(35,72,40,0.22),transparent_36%)]" />
-
-          <img
-            src="/images/logo_panassor.png"
-            alt=""
-            className="pointer-events-none absolute -right-40 top-10 h-[30rem] w-[30rem] object-contain opacity-[0.24] drop-shadow-[0_24px_60px_rgba(0,0,0,0.9)]"
-          />
-
-          <div className="pointer-events-none absolute -right-32 top-16 h-[26rem] w-[26rem] rounded-full border border-[#c89b3c]/10" />
-          <div className="pointer-events-none absolute -right-44 top-4 h-[34rem] w-[34rem] rounded-full border border-[#c89b3c]/[0.07]" />
+      <div className="relative z-10 px-4 py-20 md:hidden">
+        <div className="relative overflow-hidden border border-[#6f5423]/70 bg-[#120c07] px-5 py-10 shadow-[0_22px_70px_rgba(0,0,0,0.68)]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(200,155,60,0.16),transparent_32%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_84%,rgba(35,72,40,0.24),transparent_38%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#080504]/28 via-transparent to-[#080504]/58" />
 
           <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/10" />
           <div className="pointer-events-none absolute left-6 top-6 h-14 w-14 border-l border-t border-[#c89b3c]/55" />
@@ -30,39 +28,50 @@ function AtelierVisionSection() {
           <div className="pointer-events-none absolute bottom-6 left-6 h-14 w-14 border-b border-l border-[#c89b3c]/55" />
           <div className="pointer-events-none absolute bottom-6 right-6 h-14 w-14 border-b border-r border-[#c89b3c]/55" />
 
-          <div className="relative z-10 flex min-h-[680px] flex-col justify-end">
-            <div className="mb-6 flex max-w-[18rem] items-center gap-3 text-[#c89b3c]">
-              <div className="h-px w-14 bg-[#c89b3c]/70" />
+          <div className="relative z-10">
+            <div className="mx-auto mb-8 flex h-56 w-56 items-center justify-center">
+              <div className="pointer-events-none absolute h-56 w-56 rounded-full border border-[#c89b3c]/10" />
+              <div className="pointer-events-none absolute h-72 w-72 rounded-full border border-[#c89b3c]/[0.06]" />
 
-              <p className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.26em] text-[#c89b3c]">
-                Vision Panassor
-              </p>
+              <img
+                src="/images/logo_panassor.png"
+                alt="Logo Panassor"
+                className="h-52 w-52 object-contain opacity-95 drop-shadow-[0_24px_55px_rgba(0,0,0,0.92)]"
+              />
             </div>
 
-            <h2 className="max-w-[21rem] font-['IM_Fell_English_SC'] text-[clamp(2.45rem,10vw,3.55rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.85)]">
-              Donner du poids aux rôles oubliés
-            </h2>
+            <div className="text-center">
+              <div className="mx-auto mb-5 flex max-w-[17rem] items-center justify-center gap-3 text-[#c89b3c]">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
+                <span className="text-lg">✦</span>
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
+              </div>
 
-            <div className="my-7 h-px w-48 bg-gradient-to-r from-[#c89b3c] to-transparent" />
+              <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.28em] text-[#c89b3c]">
+                Vision Panassor
+              </p>
 
-            <p className="font-['EB_Garamond'] text-[1.22rem] leading-7 text-[#d7c8ad]/90">
-              Panassor crée des kits immersifs pour les personnages qui
-              construisent l’histoire autrement : soigneurs, artisans, voleurs,
-              érudits et tous ceux qui font vivre un univers sans forcément
-              porter l’épée.
-            </p>
+              <h2 className="mx-auto max-w-[22rem] font-['IM_Fell_English_SC'] text-[clamp(2.25rem,9vw,3.25rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.85)]">
+                Donner du poids aux rôles oubliés
+              </h2>
+            </div>
 
-            <p className="mt-5 font-['EB_Garamond'] text-[1.12rem] leading-7 text-[#d7c8ad]/78">
-              Notre objectif est simple : créer des objets assez solides pour
-              être utilisés, assez beaux pour être remarqués, et assez incarnés
-              pour devenir une partie du personnage.
-            </p>
+            <div className="mx-auto my-8 h-px w-48 bg-gradient-to-r from-transparent via-[#c89b3c]/80 to-transparent" />
 
-            <OrnamentDivider
-              className="mt-9 justify-start"
-              width={96}
-              opacity={0.55}
-            />
+            <div className="grid gap-3">
+              {visionPoints.map((point) => (
+                <div
+                  key={point}
+                  className="border border-[#6f5423]/60 bg-[#080504]/44 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)]"
+                >
+                  <p className="font-['EB_Garamond'] text-[1.15rem] leading-7 text-[#d7c8ad]/88">
+                    {point}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <OrnamentDivider className="mt-9" width={96} opacity={0.55} />
           </div>
         </div>
       </div>

@@ -12,71 +12,90 @@ function CollectionAvenirHero({ collection, primaryAction, secondaryAction }) {
   return (
     <>
       {/* MOBILE */}
-      <div className="relative overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)] md:hidden">
-        <img
-          src={collection.hero_image_url}
-          alt={collection.name_fr}
-          className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.78] contrast-[1.08] saturate-[0.92]"
-        />
+      <div className="relative overflow-hidden border border-[#6f5423]/80 bg-[#080504] shadow-[0_18px_60px_rgba(0,0,0,0.6)] md:hidden">
+        <div className="relative min-h-[620px] overflow-hidden border-b border-[#6f5423]/70 bg-[#120c07]">
+          <img
+            src={collection.hero_image_url}
+            alt={collection.name_fr}
+            className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.42] contrast-[1.12] saturate-[0.9]"
+          />
 
-        <div className="absolute inset-0 bg-[#080504]/18" />
-        <div className="absolute inset-x-0 top-0 h-[34%] bg-gradient-to-b from-[#080504]/72 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-[#080504]/97 via-[#080504]/76 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/36 via-transparent to-[#080504]/32" />
-        <div className="absolute inset-0 shadow-[inset_0_0_48px_rgba(8,5,4,0.72)]" />
+          <div className="absolute inset-0 bg-[#080504]/22" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/72 via-[#080504]/28 to-[#080504]/86" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/38 via-transparent to-[#080504]/38" />
+          <div className="absolute inset-0 shadow-[inset_0_0_58px_rgba(8,5,4,0.78)]" />
 
-        <div className="pointer-events-none absolute inset-4 border border-[#c89b3c]/14" />
-        <div className="pointer-events-none absolute left-6 top-6 h-12 w-12 border-l border-t border-[#c89b3c]/65" />
-        <div className="pointer-events-none absolute right-6 top-6 h-12 w-12 border-r border-t border-[#c89b3c]/65" />
-        <div className="pointer-events-none absolute bottom-6 left-6 h-12 w-12 border-b border-l border-[#c89b3c]/65" />
-        <div className="pointer-events-none absolute bottom-6 right-6 h-12 w-12 border-b border-r border-[#c89b3c]/65" />
+          <CornerFrame
+            inset="hero"
+            size="lg"
+            thickness="strong"
+            color="gold"
+          />
 
-        <div className="relative z-10 flex min-h-[680px] flex-col justify-end px-6 py-10">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="h-px w-16 bg-[#c89b3c]/75" />
+          <div className="relative z-10 flex min-h-[620px] flex-col items-center justify-center px-6 py-16 text-center">
+            <div className="mb-8 flex w-full max-w-[21rem] items-center justify-center gap-3 text-[#c89b3c]">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
 
-            <p className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.24em] text-[#c89b3c] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
-              {collection.eyebrow_fr}
-            </p>
-          </div>
+              <p className="shrink-0 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.26em] text-[#c89b3c] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+                {collection.eyebrow_fr}
+              </p>
 
-          <h3 className="max-w-[22rem] font-['IM_Fell_English_SC'] text-[clamp(3rem,14vw,4.7rem)] uppercase leading-[0.82] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-            {collection.title_fr}
-          </h3>
-
-          <div className="my-7 h-px w-44 bg-gradient-to-r from-[#c89b3c] to-transparent" />
-
-          <p className="max-w-[22rem] font-['EB_Garamond'] text-[1.25rem] leading-7 text-[#d7c8ad]/92 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
-            {collection.description_fr}
-          </p>
-
-          {(primaryAction || secondaryAction) && (
-            <div className="mt-9 flex flex-col gap-3">
-              {primaryAction && (
-                <a
-                  href={primaryAction.href}
-                  target={primaryAction.external ? "_blank" : undefined}
-                  rel={primaryAction.external ? "noreferrer" : undefined}
-                  className="group relative inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
-                >
-                  <span className="mr-3 text-[#f8edd3] group-hover:text-[#120904]">
-                    ✦
-                  </span>
-                  {primaryAction.label}
-                </a>
-              )}
-
-              {secondaryAction && (
-                <button
-                  type="button"
-                  onClick={() => navigate(secondaryAction.href)}
-                  className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
-                >
-                  {secondaryAction.label}
-                </button>
-              )}
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
             </div>
-          )}
+
+            <h3 className="mx-auto max-w-[23rem] font-['IM_Fell_English_SC'] text-[clamp(3.1rem,14vw,4.9rem)] uppercase leading-[0.84] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+              {collection.title_fr}
+            </h3>
+
+            <div className="mx-auto mt-8 flex w-full max-w-[18rem] items-center justify-center gap-3 text-[#c89b3c]">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
+              <span className="text-lg">✦</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
+            </div>
+          </div>
+        </div>
+
+        <div className="relative px-6 py-10 text-center">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(200,155,60,0.1),transparent_34%)]" />
+
+          <div className="relative z-10">
+            <p className="mx-auto max-w-[23rem] font-['EB_Garamond'] text-[1.45rem] leading-8 text-[#d7c8ad]/90">
+              {collection.description_fr}
+            </p>
+
+            {(primaryAction || secondaryAction) && (
+              <div className="mx-auto mt-10 flex max-w-[23rem] flex-col gap-4">
+                {primaryAction && (
+                  <a
+                    href={primaryAction.href}
+                    target={primaryAction.external ? "_blank" : undefined}
+                    rel={primaryAction.external ? "noreferrer" : undefined}
+                    className="group relative inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-5 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
+                  >
+                    <span className="mr-3 text-[#f8edd3] group-hover:text-[#120904]">
+                      ✦
+                    </span>
+                    {primaryAction.label}
+                  </a>
+                )}
+
+                {secondaryAction && (
+                  <button
+                    type="button"
+                    onClick={() => navigate(secondaryAction.href)}
+                    className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-5 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
+                  >
+                    {secondaryAction.label}
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="mt-9 flex items-center justify-center gap-4">
+              <span className="h-4 w-4 rounded-full bg-[#c89b3c]" />
+              <span className="h-4 w-4 rounded-full border border-[#c89b3c]/70" />
+            </div>
+          </div>
         </div>
       </div>
 

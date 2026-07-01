@@ -20,36 +20,36 @@ function CollectionsHero() {
       <div className="relative z-10 mx-auto min-h-[430px] w-full max-w-[1440px] px-6 py-10 sm:px-8">
         <div className="relative min-h-[350px]">
           
-          {/* SWITCH PLUS TÔT (xl: 1280px) : Les équerres disparaissent sous 1280px pour ne pas bloquer le texte */}
-          <CornerFrame className="hidden xl:block absolute left-0 top-0 opacity-90" />
-          <CornerFrame className="hidden xl:block absolute bottom-0 right-0 rotate-180 opacity-90" />
+          {/* REQUÊTE MÉDIA STRICTE : Les équerres s'effacent dès qu'on passe sous la zone critique des 1220px */}
+          <CornerFrame className="absolute left-0 top-0 opacity-90 max-[1220px]:hidden" />
+          <CornerFrame className="absolute bottom-0 right-0 rotate-180 opacity-90 max-[1220px]:hidden" />
 
-          {/* SWITCH DE LAYOUT PASSE À 'xl:' :
-            - Sous 1280px : Tout est centré proprement (`justify-center text-center`)
-            - À partir de 1280px (xl) : On reprend l'alignement à gauche parfait avec le grand espace (`xl:justify-start xl:pl-24`)
+          {/* BASCULE DE MISE EN PAGE :
+            - Au-dessus de 1220px : Alignement parfait à gauche avec le retrait de 6rem (pl-24)
+            - En-dessous de 1220px : On bascule instantanément au centre (justify-center px-4) avant l'impact
           */}
-          <div className="flex min-h-[350px] items-center justify-center xl:justify-start px-4 xl:pl-24 xl:pr-8">
+          <div className="flex min-h-[350px] items-center justify-start max-[1220px]:justify-center pl-24 pr-8 max-[1220px]:px-4">
             
-            {/* L'alignement interne bascule aussi au breakpoint 'xl' */}
-            <div className="w-full max-w-[680px] flex flex-col items-center xl:items-start text-center xl:text-left">
+            {/* Alignement des textes et ornements horizontaux */}
+            <div className="w-full max-w-[680px] flex flex-col items-start max-[1220px]:items-center text-left max-[1220px]:text-center">
               
-              <OrnamentDivider className="mb-6 xl:mb-8 max-w-[260px] xl:max-w-[300px]" />
+              <OrnamentDivider className="mb-8 max-w-[300px] max-[1220px]:mb-6 max-[1220px]:max-w-[260px]" />
 
               <p className="font-['IM_Fell_English_SC'] text-[0.9rem] uppercase tracking-[0.45em] text-[#d6a13b] sm:text-[1rem]">
                 Univers Panassor
               </p>
 
-              <h1 className="mt-4 xl:mt-6 font-['Uncial_Antiqua'] text-[clamp(2.8rem,5.6vw,5.8rem)] leading-[0.92] tracking-[0.02em] text-[#fff1d6] drop-shadow-[0_5px_18px_rgba(0,0,0,0.75)]">
+              <h1 className="mt-6 font-['Uncial_Antiqua'] text-[clamp(3.3rem,5.6vw,5.8rem)] leading-[0.92] tracking-[0.02em] text-[#fff1d6] drop-shadow-[0_5px_18px_rgba(0,0,0,0.75)]">
                 Collections
               </h1>
 
-              <p className="mt-6 xl:mt-8 max-w-[660px] font-['EB_Garamond'] text-[clamp(1.1rem,1.45vw,1.45rem)] font-semibold leading-relaxed text-[#d8c7a1]">
+              <p className="mt-8 max-w-[660px] font-['EB_Garamond'] text-[clamp(1.1rem,1.45vw,1.45rem)] font-semibold leading-relaxed text-[#d8c7a1]">
                 Des kits immersifs pensés pour enrichir les scènes, soutenir
                 les personnages et donner une vraie présence aux moments de
                 jeu.
               </p>
 
-              <OrnamentDivider className="mt-6 xl:mt-8 max-w-[260px] xl:max-w-[300px]" />
+              <OrnamentDivider className="mt-8 max-w-[300px] max-[1220px]:mt-6 max-[1220px]:max-w-[260px]" />
             </div>
           </div>
 

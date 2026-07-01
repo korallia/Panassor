@@ -15,8 +15,8 @@ function AtelierVisionSection() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_48%,rgba(200,155,60,0.13),transparent_34%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_58%,rgba(35,72,40,0.2),transparent_34%)]" />
 
-      {/* MOBILE + TABLETTE */}
-      <div className="relative z-10 px-4 py-20 sm:px-6 lg:hidden">
+      {/* MOBILE + TABLETTE + PETIT DESKTOP */}
+      <div className="relative z-10 px-4 py-20 sm:px-6 xl:hidden">
         <div className="relative mx-auto max-w-[42rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] px-5 py-10 shadow-[0_22px_70px_rgba(0,0,0,0.68)] sm:px-8 sm:py-12">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(200,155,60,0.16),transparent_32%)]" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_84%,rgba(35,72,40,0.24),transparent_38%)]" />
@@ -81,8 +81,8 @@ function AtelierVisionSection() {
         </div>
       </div>
 
-      {/* DESKTOP */}
-      <div className="relative z-10 mx-auto hidden max-w-[88rem] grid-cols-[0.92fr_1.08fr] items-center gap-14 px-6 py-32 lg:grid">
+      {/* DESKTOP LARGE SEULEMENT */}
+      <div className="relative z-10 mx-auto hidden max-w-[88rem] grid-cols-[0.92fr_1.08fr] items-center gap-14 px-6 py-32 xl:grid">
         <div>
           <p className="mb-5 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
             Vision Panassor

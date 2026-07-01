@@ -24,20 +24,18 @@ function ContactPage() {
         description="Venez nous dire salut, suivre nos projets et nous écrire pour toute question ou demande spéciale."
       />
 
-      <section className="relative overflow-hidden bg-[#080504] px-6 pt-24 pb-40 text-[#f3e7cf]">
+      <section className="relative overflow-hidden bg-[#080504] px-6 pb-40 pt-24 text-[#f3e7cf]">
         <SectionAtmosphere variant="featured" />
 
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_34%,rgba(35,72,40,0.2),transparent_34%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_76%_22%,rgba(200,155,60,0.12),transparent_32%)]" />
 
         <div className="relative z-10 mx-auto max-w-[88rem]">
-          
-          {/* RECTIFICATION DE L'EN-TÊTE : On écrit le titre en brut pour supprimer SectionTitle et ses styles imprévisibles */}
-          <div className="mx-auto max-w-5xl text-center flex flex-col items-center">
+          <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
             <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
               Correspondance
             </p>
-            
+
             <h2 className="mt-3 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] sm:text-5xl md:text-6xl">
               Nous contacter
             </h2>
@@ -51,7 +49,7 @@ function ContactPage() {
               par courriel.
             </p>
 
-            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row w-full sm:w-auto">
+            <div className="mt-10 flex w-full flex-col justify-center gap-4 sm:w-auto sm:flex-row">
               <a
                 href="https://www.facebook.com/profile.php?id=61587079943525"
                 target="_blank"
@@ -73,11 +71,8 @@ function ContactPage() {
 
           <div className="mx-auto mt-20 h-px max-w-5xl bg-gradient-to-r from-transparent via-[#c89b3c]/40 to-transparent" />
 
-          {/* SECTION DUO : BLINDAGE DES BLOCS COULISSANTS */}
           <div className="mx-auto mt-20 grid max-w-[82rem] gap-12 lg:grid-cols-2 lg:items-stretch">
-            
-            {/* Gauche : Image */}
-            <div className="relative min-h-[28rem] sm:min-h-[32rem] md:min-h-[35rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)]">
+            <div className="relative min-h-[28rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)] sm:min-h-[32rem] md:min-h-[35rem]">
               <img
                 src="/images/kit_de_voleur.jpg"
                 alt="Commande unique Panassor"
@@ -101,8 +96,7 @@ function ContactPage() {
               </div>
             </div>
 
-            {/* Droite : Texte explicatif */}
-            <div className="flex flex-col justify-center bg-[#120c07]/30 border border-[#6f5423]/30 px-8 py-10 md:px-12">
+            <div className="flex flex-col justify-center border border-[#6f5423]/30 bg-[#120c07]/30 px-8 py-10 md:px-12">
               <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
                 Commandes et projets spéciaux
               </p>
@@ -154,7 +148,6 @@ function ContactPage() {
             opacity={0.55}
           />
 
-          {/* Section du bas (Facebook) */}
           <div className="mx-auto mt-20 max-w-[82rem]">
             <div className="relative border-y border-[#6f5423]/60 px-8 py-16 md:px-12">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(200,155,60,0.1),transparent_34%)]" />
@@ -164,10 +157,12 @@ function ContactPage() {
                 <div>
                   <div className="mb-4 flex items-center gap-4">
                     <div className="h-px w-16 bg-[#c89b3c]/80" />
-                    <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
+
+                    <p className="shrink-0 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
                       Facebook
                     </p>
-                    <div className="hidden h-px w-16 bg-[#c89b3c]/60 sm:block" />
+
+                    <div className="h-px w-16 bg-[#c89b3c]/60" />
                   </div>
 
                   <h2 className="max-w-4xl font-['IM_Fell_English_SC'] text-4xl uppercase leading-[0.95] text-[#fff1d2] sm:text-5xl">

@@ -69,31 +69,31 @@ function Navbar() {
 
   return (
     <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/94 backdrop-blur-sm">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 lg:grid lg:h-24 lg:grid-cols-[1fr_auto_1fr] lg:px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 xl:grid xl:h-24 xl:grid-cols-[minmax(18rem,1fr)_auto_minmax(3rem,1fr)] xl:px-8">
         <button
           type="button"
           onClick={() => navigateAndClose("/")}
-          className="flex min-w-0 items-center gap-3 text-left lg:justify-self-start"
+          className="flex min-w-0 items-center gap-3 text-left xl:justify-self-start"
           aria-label="Retourner à l’accueil"
         >
           <img
             src="/images/IconPanassor.png"
             alt="Logo Panassor"
-            className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] lg:h-14 lg:w-14"
+            className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] xl:h-13 xl:w-13 2xl:h-14 2xl:w-14"
           />
 
           <div className="min-w-0">
-            <div className="font-['Uncial_Antiqua'] text-3xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-4xl lg:text-5xl">
+            <div className="font-['Uncial_Antiqua'] text-3xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-4xl xl:text-[2.7rem] 2xl:text-5xl">
               Panassor
             </div>
 
-            <div className="mt-1 max-w-[10rem] font-['IM_Fell_English_SC'] text-[0.62rem] uppercase leading-4 tracking-[0.14em] text-[#d8a24c] sm:max-w-none sm:text-[0.72rem] lg:text-[0.8rem]">
+            <div className="mt-1 max-w-[10rem] font-['IM_Fell_English_SC'] text-[0.62rem] uppercase leading-4 tracking-[0.14em] text-[#d8a24c] sm:max-w-none sm:text-[0.72rem] xl:text-[0.72rem] 2xl:text-[0.8rem]">
               Kits médiévaux uniques
             </div>
           </div>
         </button>
 
-        <nav className="hidden items-center gap-7 justify-self-center font-['IM_Fell_English_SC'] text-2xl tracking-[0.03em] text-[#f7ead2]/85 lg:flex">
+        <nav className="hidden items-center gap-6 justify-self-center font-['IM_Fell_English_SC'] text-[1.55rem] tracking-[0.03em] text-[#f7ead2]/85 xl:flex 2xl:gap-7 2xl:text-2xl">
           <div className="group relative">
             <button
               type="button"
@@ -188,12 +188,18 @@ function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c]">
-         
+          <button
+            type="button"
+            className="flex h-9 w-9 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] text-xl leading-none transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]"
+            aria-label="Panier"
+          >
+            ▢
+          </button>
 
           <button
             type="button"
             onClick={() => setIsMenuOpen((current) => !current)}
-            className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] lg:hidden"
+            className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] xl:hidden"
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
@@ -203,7 +209,7 @@ function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-5 pb-7 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] lg:hidden">
+        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-5 pb-7 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] xl:hidden">
           <div className="mx-auto max-w-md">
             <div className="mb-5 flex items-center justify-center gap-3 text-[#c89b3c]">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/45" />

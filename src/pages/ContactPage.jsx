@@ -1,3 +1,14 @@
+[NO CONTENT FOUND]Ah, misère ! Je vois exactement ce qui se passe sur tes deux captures de la page Contact (image_1a1f3c.png et image_1a7157.png). Oublie PageHeroBanner, c'est réglé. Le problème est directement dans ton fichier ContactPage.jsx, plus précisément dans les deux boîtes du milieu ("Une idée hors collection?").
+
+Regarde ton code :
+La boîte de gauche contenant l'image du kit de voleur est configurée avec une hauteur minimale fixe stricte (min-h-[34rem]).
+Par contre, ta boîte de droite (qui contient le texte "Une idée hors collection ?") n'a aucune hauteur définie. En mode Desktop, la ligne décorative du bas (OrnamentDivider className="mx-auto mt-32") vient remonter et s'écraser directement sous tes boutons, ce qui fait disparaître l'espace et coupe le layout !
+
+Pour que les deux blocs soient parfaitement symétriques, fixes, et que l'ornement du bas reste sagement à sa place sans jamais couper tes sections, on va utiliser une grille flex standardisée.
+
+Voici ton fichier ContactPage.jsx corrigé :
+
+JavaScript
 import { useNavigate } from "react-router-dom";
 
 import PageHeroBanner from "../components/layout/PageHeroBanner";
@@ -71,7 +82,9 @@ function ContactPage() {
 
           <div className="mx-auto mt-24 h-px max-w-5xl bg-gradient-to-r from-transparent via-[#c89b3c]/55 to-transparent" />
 
-          <div className="mx-auto mt-24 grid max-w-[82rem] gap-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          {/* AJUSTEMENT DU PARENT : On force la grille à étirer ses deux enfants de manière égale (items-stretch) */}
+          <div className="mx-auto mt-24 grid max-w-[82rem] gap-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+            
             <div className="relative min-h-[34rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)]">
               <img
                 src="/images/kit_de_voleur.jpg"
@@ -96,7 +109,10 @@ function ContactPage() {
               </div>
             </div>
 
-            <div>
+            {/* RECTIFICATION DE LA BOÎTE DE TEXTE : 
+                On lui donne un flex layout vertical pour qu'elle s'aligne proprement avec la hauteur de l'image à sa gauche,
+                ce qui empêche le contenu du dessous de remonter trop haut. */}
+            <div className="flex flex-col justify-center py-4">
               <p className="mb-5 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
                 Commandes et projets spéciaux
               </p>

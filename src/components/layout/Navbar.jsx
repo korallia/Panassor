@@ -188,13 +188,7 @@ function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c]">
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] text-xl leading-none transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]"
-            aria-label="Panier"
-          >
-            ▢
-          </button>
+         
 
           <button
             type="button"

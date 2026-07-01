@@ -24,8 +24,8 @@ function PageHeroBanner({
 
   return (
     <>
-      {/* MOBILE */}
-      <section className="relative overflow-hidden bg-[#120c07] md:hidden">
+      {/* MOBILE + TABLETTE */}
+      <section className="relative overflow-hidden bg-[#120c07] lg:hidden">
         <div className="relative min-h-[34rem] overflow-hidden bg-[#120c07]">
           <img
             src={image}
@@ -46,7 +46,7 @@ function PageHeroBanner({
             color="paleGold"
           />
 
-          <div className="relative z-30 flex min-h-[34rem] w-full items-center justify-center px-5 py-16">
+          <div className="relative z-30 flex min-h-[34rem] w-full items-center justify-center px-5 py-16 sm:px-8">
             <div className="flex w-full max-w-[34rem] flex-col items-center text-center">
               <OrnamentDivider
                 className="mb-7 justify-center"
@@ -55,18 +55,24 @@ function PageHeroBanner({
               />
 
               {eyebrow && (
-                <p className="mb-6 w-full text-center font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#d8a24c]">
+                <p className="mb-6 w-full text-center font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#d8a24c] sm:text-sm">
                   {eyebrow}
                 </p>
               )}
 
-              <h1 className="mx-auto w-full max-w-[92vw] text-center font-['IM_Fell_English_SC'] text-[clamp(2.25rem,9.5vw,2.95rem)] uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+              <h1 className="mx-auto w-full max-w-[92vw] text-center font-['IM_Fell_English_SC'] text-[clamp(2.25rem,9.5vw,4.6rem)] uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
                 {titleWords.map((word) => (
                   <span key={word} className="block w-full text-center">
                     {word}
                   </span>
                 ))}
               </h1>
+
+              {description && (
+                <p className="mt-7 max-w-[34rem] font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)] sm:text-2xl sm:leading-9">
+                  {description}
+                </p>
+              )}
 
               <div className="mt-8 flex w-full max-w-[18rem] items-center justify-center gap-3 text-[#d8a24c]">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d8a24c]/70" />
@@ -80,7 +86,7 @@ function PageHeroBanner({
 
       {/* DESKTOP */}
       <section
-        className="relative hidden overflow-hidden bg-[#120c07] md:block md:h-[var(--page-hero-height)]"
+        className="relative hidden overflow-hidden bg-[#120c07] lg:block lg:h-[var(--page-hero-height)]"
         style={{ "--page-hero-height": desktopHeight }}
       >
         <img
@@ -119,7 +125,7 @@ function PageHeroBanner({
               </p>
             )}
 
-            <h1 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.88] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-7xl xl:text-8xl">
+            <h1 className="font-['IM_Fell_English_SC'] text-7xl uppercase leading-[0.88] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] xl:text-8xl">
               {title}
             </h1>
 

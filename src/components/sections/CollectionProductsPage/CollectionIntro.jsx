@@ -27,15 +27,28 @@ function CollectionIntro({ collection }) {
         className="z-20"
       />
 
-      <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-6 lg:grid-cols-2">
-        <div className="-translate-y-6 flex flex-col items-start text-left">
+      {/* CHANGEMENT ICI : On ajoute des paddings de sécurité fixes à gauche et à droite (px-12 md:px-24) 
+          pour maintenir le texte TRÈS LOIN des équerres, peu importe la taille de la fenêtre. */}
+      <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-12 sm:px-16 md:px-24 lg:grid-cols-2">
+        
+        {/* On limite la largeur maximale de la boîte de texte (max-w-[450px] à max-w-[650px]) 
+            pour qu'elle ne prenne jamais toute la place horizontalement */}
+        <div className="-translate-y-6 flex w-full max-w-[450px] flex-col items-start text-left sm:max-w-[550px] md:max-w-[650px]">
+          
           <OrnamentDivider
             className="mb-6 justify-start"
             width={96}
             opacity={0.7}
           />
 
-          <h1 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.88] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-7xl xl:text-8xl">
+          {/* CORRECTION DU TITRE : 
+              - On remplace les tailles fixes par un text-[clamp(...)] ultra adaptatif.
+              - Sur mobile, il commence proprement à 2.2rem.
+              - Il grossit de manière fluide avec la largeur de l'écran (5.5vw).
+              - Il se stabilise à un maximum de 5rem (équivalent à ton ancien 8xl) pour les grands écrans.
+              - tracking-normal pour éviter que l'espace des lettres ne pousse les bords.
+          */}
+          <h1 className="font-['IM_Fell_English_SC'] text-[clamp(2.2rem,5.5vw,5rem)] uppercase leading-[0.95] tracking-normal text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
             {collection.title_fr}
           </h1>
 

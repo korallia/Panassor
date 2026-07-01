@@ -16,10 +16,10 @@ function AtelierVisionSection() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_58%,rgba(35,72,40,0.2),transparent_34%)]" />
 
       {/* MOBILE + TABLETTE + PETIT DESKTOP */}
-      <div className="relative z-10 px-4 py-20 sm:px-6 xl:hidden">
-        <div className="relative mx-auto max-w-[46rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] px-5 py-10 shadow-[0_22px_70px_rgba(0,0,0,0.68)] sm:px-8 sm:py-12 md:px-10 md:py-14">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(200,155,60,0.16),transparent_32%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_84%,rgba(35,72,40,0.24),transparent_38%)]" />
+      <div className="relative z-10 px-4 py-16 sm:px-6 md:py-20 xl:hidden">
+        <div className="relative mx-auto max-w-[42rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] px-5 py-10 shadow-[0_22px_70px_rgba(0,0,0,0.68)] sm:px-8 md:px-10">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(200,155,60,0.15),transparent_32%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_86%,rgba(35,72,40,0.24),transparent_40%)]" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#080504]/28 via-transparent to-[#080504]/58" />
 
           <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/10" />
@@ -30,29 +30,29 @@ function AtelierVisionSection() {
           <div className="pointer-events-none absolute bottom-6 right-6 h-10 w-10 border-b border-r border-[#c89b3c]/55" />
 
           <div className="relative z-10">
-            <div className="mx-auto mb-8 flex h-56 w-56 items-center justify-center sm:h-72 sm:w-72 md:h-[24rem] md:w-[24rem] lg:h-[27rem] lg:w-[27rem]">
-              <div className="pointer-events-none absolute h-56 w-56 rounded-full border border-[#c89b3c]/10 sm:h-72 sm:w-72 md:h-[24rem] md:w-[24rem] lg:h-[27rem] lg:w-[27rem]" />
-              <div className="pointer-events-none absolute h-72 w-72 rounded-full border border-[#c89b3c]/[0.06] sm:h-96 sm:w-96 md:h-[31rem] md:w-[31rem] lg:h-[34rem] lg:w-[34rem]" />
+            <div className="mx-auto mb-7 flex h-56 w-56 items-center justify-center sm:h-72 sm:w-72 md:h-[22rem] md:w-[22rem] lg:h-[24rem] lg:w-[24rem]">
+              <div className="pointer-events-none absolute h-56 w-56 rounded-full border border-[#c89b3c]/10 sm:h-72 sm:w-72 md:h-[22rem] md:w-[22rem] lg:h-[24rem] lg:w-[24rem]" />
+              <div className="pointer-events-none absolute h-72 w-72 rounded-full border border-[#c89b3c]/[0.06] sm:h-96 sm:w-96 md:h-[29rem] md:w-[29rem] lg:h-[31rem] lg:w-[31rem]" />
 
               <img
                 src="/images/logo_panassor.png"
                 alt="Logo Panassor"
-                className="h-52 w-52 object-contain opacity-95 drop-shadow-[0_24px_55px_rgba(0,0,0,0.92)] sm:h-64 sm:w-64 md:h-[22rem] md:w-[22rem] lg:h-[25rem] lg:w-[25rem]"
+                className="h-52 w-52 object-contain opacity-95 drop-shadow-[0_24px_55px_rgba(0,0,0,0.92)] sm:h-64 sm:w-64 md:h-[20rem] md:w-[20rem] lg:h-[22rem] lg:w-[22rem]"
               />
             </div>
 
-            <div className="text-center">
-              <div className="mx-auto mb-5 flex max-w-[17rem] items-center justify-center gap-3 text-[#c89b3c] md:max-w-[22rem]">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
-                <span className="text-lg">✦</span>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
-              </div>
+            <div className="mx-auto mb-6 flex max-w-[17rem] items-center justify-center gap-3 text-[#c89b3c] md:max-w-[20rem]">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
+              <span className="text-lg">✦</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
+            </div>
 
+            <div className="text-center">
               <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
                 Vision Panassor
               </p>
 
-              <h2 className="mx-auto max-w-[34rem] font-['IM_Fell_English_SC'] text-[clamp(2.25rem,9vw,4.6rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.85)]">
+              <h2 className="mx-auto max-w-[34rem] font-['IM_Fell_English_SC'] text-[clamp(2.4rem,7.2vw,4rem)] uppercase leading-[0.92] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.85)]">
                 Donner du poids aux rôles oubliés
               </h2>
             </div>
@@ -65,7 +65,7 @@ function AtelierVisionSection() {
                   key={point}
                   className="border border-[#6f5423]/60 bg-[#080504]/44 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)] sm:px-5 md:px-6"
                 >
-                  <p className="font-['EB_Garamond'] text-[1.15rem] leading-7 text-[#d7c8ad]/88 sm:text-[1.35rem] sm:leading-8 md:text-[1.5rem] md:leading-9">
+                  <p className="font-['EB_Garamond'] text-[1.15rem] leading-7 text-[#d7c8ad]/88 sm:text-[1.3rem] sm:leading-8 md:text-[1.38rem] md:leading-8">
                     {point}
                   </p>
                 </div>

@@ -60,7 +60,7 @@ function PageHeroBanner({
                 </p>
               )}
 
-              <h1 className="mx-auto w-full max-w-[38rem] text-center font-['IM_Fell_English_SC'] text-[clamp(2.55rem,8vw,4.6rem)] uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
+              <h1 className="mx-auto w-full max-w-[38rem] text-center font-['IM_Fell_English_SC'] text-[clamp(2.3rem,8vw,4.6rem)] uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
                 {titleWords.map((word, index) => (
                   <span key={`${word}-${index}`} className="block w-full text-center">
                     {word}
@@ -111,8 +111,12 @@ function PageHeroBanner({
           color="paleGold"
         />
 
-        <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-12 lg:px-16 xl:grid-cols-[0.95fr_1.05fr] 2xl:px-8">
-          <div className="-translate-y-3 flex max-w-[44rem] flex-col items-start text-left">
+        {/* AJUSTEMENT : On force des paddings horizontaux massifs (px-20 xl:px-28 2xl:px-32) 
+            pour empêcher physiquement le texte de glisser vers les bords de l'écran. */}
+        <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-20 xl:grid-cols-[0.95fr_1.05fr] xl:px-28 2xl:px-32">
+          
+          {/* On restreint proprement le bloc de gauche pour lui donner une largeur maximale stricte */}
+          <div className="-translate-y-3 flex w-full max-w-[42rem] flex-col items-start text-left">
             <OrnamentDivider
               className="mb-6 justify-start"
               width={112}
@@ -125,12 +129,18 @@ function PageHeroBanner({
               </p>
             )}
 
-            <h1 className="font-['IM_Fell_English_SC'] text-7xl uppercase leading-[0.88] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] 2xl:text-8xl">
+            {/* CORRECTION DU TITRE DESKTOP :
+                On vire "text-7xl 2xl:text-8xl" et on met un clamp().
+                - Minimum garanti : 3rem (pour ne jamais casser la mise en page)
+                - Échelle fluide : 4.8vw (le titre réduit doucement au pixel près à mesure que l'écran rétrécit)
+                - Maximum : 5.5rem (équivalent à ton rendu propre sur très grand écran)
+                - tracking-normal pour garder le contrôle du mot. */}
+            <h1 className="w-full font-['IM_Fell_English_SC'] text-[clamp(3rem,4.8vw,5.5rem)] uppercase leading-[0.9] tracking-normal text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
               {title}
             </h1>
 
             {description && (
-              <p className="mt-8 max-w-2xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)]">
+              <p className="mt-8 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)] md:text-2xl md:leading-9">
                 {description}
               </p>
             )}

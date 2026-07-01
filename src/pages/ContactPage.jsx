@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 
 import PageHeroBanner from "../components/layout/PageHeroBanner";
 import SectionAtmosphere from "../components/layout/SectionAtmosphere";
-import SectionTitle from "../components/layout/SectionTitle";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
 import CornerFrame from "../components/ui/CornerFrame";
 
@@ -25,56 +24,60 @@ function ContactPage() {
         description="Venez nous dire salut, suivre nos projets et nous écrire pour toute question ou demande spéciale."
       />
 
-      <section className="relative overflow-hidden bg-[#080504] px-6 pt-28 pb-40 text-[#f3e7cf]">
+      <section className="relative overflow-hidden bg-[#080504] px-6 pt-24 pb-40 text-[#f3e7cf]">
         <SectionAtmosphere variant="featured" />
 
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_34%,rgba(35,72,40,0.2),transparent_34%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_76%_22%,rgba(200,155,60,0.12),transparent_32%)]" />
 
         <div className="relative z-10 mx-auto max-w-[88rem]">
-          <div className="mx-auto max-w-5xl text-center">
-            <SectionTitle
-              eyebrow="Correspondance"
-              title="Nous contacter"
-              align="center"
-              showDivider={false}
-            />
+          
+          {/* RECTIFICATION DE L'EN-TÊTE : On écrit le titre en brut pour supprimer SectionTitle et ses styles imprévisibles */}
+          <div className="mx-auto max-w-5xl text-center flex flex-col items-center">
+            <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
+              Correspondance
+            </p>
+            
+            <h2 className="mt-3 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] sm:text-5xl md:text-6xl">
+              Nous contacter
+            </h2>
 
-            <OrnamentDivider className="mt-7" width={112} opacity={0.65} />
+            <OrnamentDivider className="mt-6" width={112} opacity={0.65} />
 
-            <p className="mx-auto mt-9 max-w-4xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/84 md:text-3xl md:leading-10">
+            <p className="mx-auto mt-8 max-w-4xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84 md:text-2xl md:leading-9">
               Venez nous suivre sur Facebook, nous dire salut et suivre les
               aperçus des prochains kits. Pour toute question, commande unique,
               collaboration ou demande spéciale, contactez-nous par Messenger ou
               par courriel.
             </p>
 
-            <div className="mt-12 flex flex-col justify-center gap-4 sm:flex-row">
+            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row w-full sm:w-auto">
               <a
                 href="https://www.facebook.com/profile.php?id=61587079943525"
                 target="_blank"
                 rel="noreferrer"
-                className={`${goldButtonClass} px-9 py-5 text-xl`}
+                className={`${goldButtonClass} px-9 py-4 text-lg md:text-xl`}
               >
                 Suivre sur Facebook
               </a>
 
               <a
                 href="mailto:contact@panassor.com"
-                className={`${greenButtonClass} px-9 py-5 text-xl`}
+                className={`${greenButtonClass} px-9 py-4 text-lg md:text-xl`}
               >
-                <span className="mr-4">✦</span>
+                <span className="mr-3">✦</span>
                 contact@panassor.com
               </a>
             </div>
           </div>
 
-          <div className="mx-auto mt-24 h-px max-w-5xl bg-gradient-to-r from-transparent via-[#c89b3c]/55 to-transparent" />
+          <div className="mx-auto mt-20 h-px max-w-5xl bg-gradient-to-r from-transparent via-[#c89b3c]/40 to-transparent" />
 
-          {/* AJUSTEMENT DU PARENT : On force la grille à étirer ses deux enfants de manière égale (items-stretch) */}
-          <div className="mx-auto mt-24 grid max-w-[82rem] gap-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+          {/* SECTION DUO : BLINDAGE DES BLOCS COULISSANTS */}
+          <div className="mx-auto mt-20 grid max-w-[82rem] gap-12 lg:grid-cols-2 lg:items-stretch">
             
-            <div className="relative min-h-[34rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)]">
+            {/* Gauche : Image */}
+            <div className="relative min-h-[28rem] sm:min-h-[32rem] md:min-h-[35rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)]">
               <img
                 src="/images/kit_de_voleur.jpg"
                 alt="Commande unique Panassor"
@@ -88,31 +91,29 @@ function ContactPage() {
               <CornerFrame size="lg" />
 
               <div className="absolute bottom-8 left-8 right-8">
-                <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
+                <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
                   Commande unique
                 </p>
 
-                <h2 className="mt-3 font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] md:text-6xl">
+                <h2 className="mt-3 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] sm:text-5xl">
                   Un objet pour votre personnage
                 </h2>
               </div>
             </div>
 
-            {/* RECTIFICATION DE LA BOÎTE DE TEXTE : 
-                On lui donne un flex layout vertical pour qu'elle s'aligne proprement avec la hauteur de l'image à sa gauche,
-                ce qui empêche le contenu du dessous de remonter trop haut. */}
-            <div className="flex flex-col justify-center py-4">
-              <p className="mb-5 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
+            {/* Droite : Texte explicatif */}
+            <div className="flex flex-col justify-center bg-[#120c07]/30 border border-[#6f5423]/30 px-8 py-10 md:px-12">
+              <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
                 Commandes et projets spéciaux
               </p>
 
-              <h2 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.9] text-[#fff1d2] md:text-7xl">
+              <h2 className="mt-2 font-['IM_Fell_English_SC'] text-4xl uppercase leading-[0.95] text-[#fff1d2] sm:text-5xl md:text-6xl">
                 Une idée hors collection?
               </h2>
 
-              <div className="my-8 h-px w-72 bg-gradient-to-r from-[#c89b3c] to-transparent" />
+              <div className="my-6 h-px w-48 bg-gradient-to-r from-[#c89b3c] to-transparent" />
 
-              <div className="space-y-6 font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/84">
+              <div className="space-y-4 font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84 md:text-2xl md:leading-9">
                 <p>
                   Vous avez une idée pour un accessoire, une commande unique ou
                   un projet spécial? Écrivez-nous simplement ce que vous avez en
@@ -126,12 +127,12 @@ function ContactPage() {
                 </p>
               </div>
 
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <a
                   href="mailto:contact@panassor.com?subject=Commande%20unique%20Panassor"
                   className={goldButtonClass}
                 >
-                  <span className="mr-3">✦</span>
+                  <span className="mr-2">✦</span>
                   Écrire à l’atelier
                 </a>
 
@@ -148,33 +149,32 @@ function ContactPage() {
           </div>
 
           <OrnamentDivider
-            className="mx-auto mt-32"
+            className="mx-auto mt-28"
             width={136}
             opacity={0.55}
           />
 
+          {/* Section du bas (Facebook) */}
           <div className="mx-auto mt-20 max-w-[82rem]">
-            <div className="relative border-y border-[#6f5423]/60 px-8 py-20 md:px-12">
+            <div className="relative border-y border-[#6f5423]/60 px-8 py-16 md:px-12">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(200,155,60,0.1),transparent_34%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_50%,rgba(35,72,40,0.16),transparent_36%)]" />
 
               <div className="relative z-10 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
                 <div>
-                  <div className="mb-5 flex items-center gap-4">
+                  <div className="mb-4 flex items-center gap-4">
                     <div className="h-px w-16 bg-[#c89b3c]/80" />
-
-                    <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
+                    <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
                       Facebook
                     </p>
-
                     <div className="hidden h-px w-16 bg-[#c89b3c]/60 sm:block" />
                   </div>
 
-                  <h2 className="max-w-4xl font-['IM_Fell_English_SC'] text-5xl uppercase leading-[0.92] text-[#fff1d2] md:text-6xl">
+                  <h2 className="max-w-4xl font-['IM_Fell_English_SC'] text-4xl uppercase leading-[0.95] text-[#fff1d2] sm:text-5xl">
                     Suivre ce qui se prépare dans l’ombre
                   </h2>
 
-                  <p className="mt-7 max-w-3xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/80">
+                  <p className="mt-5 max-w-3xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/80 md:text-2xl md:leading-9">
                     On y partage les aperçus, les projets à venir et les
                     nouvelles de l’atelier. Passez nous dire salut, poser une
                     question ou suivre ce qui se prépare.

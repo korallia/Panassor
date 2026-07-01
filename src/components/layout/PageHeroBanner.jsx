@@ -34,7 +34,7 @@ function PageHeroBanner({
           />
 
           <div className="absolute inset-0 bg-[#080504]/30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/76 via-[#080504]/36 to-[#080504]/9" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080504]/76 via-[#080504]/36 to-[#080504]/90" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/62 via-transparent to-[#080504]/62" />
 
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-b from-transparent via-[#080504]/70 to-[#080504]" />
@@ -61,8 +61,8 @@ function PageHeroBanner({
               )}
 
               <h1 className="mx-auto w-full max-w-[38rem] text-center font-['IM_Fell_English_SC'] text-[clamp(2.55rem,8vw,4.6rem)] uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-                {titleWords.map((word) => (
-                  <span key={word} className="block w-full text-center">
+                {titleWords.map((word, index) => (
+                  <span key={`${word}-${index}`} className="block w-full text-center">
                     {word}
                   </span>
                 ))}
@@ -111,7 +111,7 @@ function PageHeroBanner({
           color="paleGold"
         />
 
-        <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-10 xl:grid-cols-[0.95fr_1.05fr]">
+        <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-12 lg:px-16 xl:grid-cols-[0.95fr_1.05fr] 2xl:px-8">
           <div className="-translate-y-3 flex max-w-[44rem] flex-col items-start text-left">
             <OrnamentDivider
               className="mb-6 justify-start"

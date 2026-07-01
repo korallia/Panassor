@@ -20,17 +20,17 @@ function CollectionsHero() {
       <div className="relative z-10 mx-auto min-h-[430px] w-full max-w-[1440px] px-6 py-10 sm:px-8">
         <div className="relative min-h-[350px]">
           
-          {/* REQUÊTE MÉDIA STRICTE : Les équerres s'effacent dès qu'on passe sous la zone critique des 1220px */}
+          {/* Les équerres s'effacent dès qu'on passe sous 1220px */}
           <CornerFrame className="absolute left-0 top-0 opacity-90 max-[1220px]:hidden" />
           <CornerFrame className="absolute bottom-0 right-0 rotate-180 opacity-90 max-[1220px]:hidden" />
 
-          {/* BASCULE DE MISE EN PAGE :
-            - Au-dessus de 1220px : Alignement parfait à gauche avec le retrait de 6rem (pl-24)
-            - En-dessous de 1220px : On bascule instantanément au centre (justify-center px-4) avant l'impact
+          {/* FIX ICI : 
+            - max-[1220px]:justify-center et max-[1220px]:px-4 forcent le centrage sur mobile/tablette.
+            - min-[1221px]:pl-24 applique le décalage à gauche UNIQUEMENT quand les équerres sont affichées.
           */}
-          <div className="flex min-h-[350px] items-center justify-start max-[1220px]:justify-center pl-24 pr-8 max-[1220px]:px-4">
+          <div className="flex min-h-[350px] items-center justify-start max-[1220px]:justify-center min-[1221px]:pl-24 pr-8 max-[1220px]:px-4">
             
-            {/* Alignement des textes et ornements horizontaux */}
+            {/* Alignement des textes et ornements */}
             <div className="w-full max-w-[680px] flex flex-col items-start max-[1220px]:items-center text-left max-[1220px]:text-center">
               
               <OrnamentDivider className="mb-8 max-w-[300px] max-[1220px]:mb-6 max-[1220px]:max-w-[260px]" />

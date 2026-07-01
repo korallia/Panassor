@@ -112,7 +112,7 @@ function PanassorHero({ collection }) {
         </div>
       </section>
 
-      {/* DESKTOP / TABLETTE LARGE HERO */}
+      {/* DESKTOP HERO */}
       <section className="relative hidden min-h-[calc(100vh-6rem)] overflow-hidden bg-[#0b0704] md:block">
         <img
           src={collection.hero_image_url}
@@ -121,8 +121,8 @@ function PanassorHero({ collection }) {
         />
 
         <div className="absolute inset-0 bg-black/15" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/94 via-[#080504]/52 to-[#080504]/8" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/85 via-transparent to-[#080504]/55" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/94 via-[#080504]/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/86 via-transparent to-[#080504]/55" />
 
         <CornerFrame inset="hero" size="lg" thickness="strong" color="gold" />
 
@@ -133,33 +133,33 @@ function PanassorHero({ collection }) {
           color="paleGold"
         />
 
-        <div className="relative z-20 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl items-center px-8 py-12 lg:px-10 xl:px-6">
-          <div className="max-w-[34rem] lg:max-w-[40rem] xl:max-w-2xl">
-            <div className="mb-5 flex items-center gap-4 lg:mb-6">
-              <div className="h-px w-12 bg-[#d8a24c]/70 lg:w-16" />
+        <div className="relative z-20 flex min-h-[calc(100vh-6rem)] items-center py-12 pl-[clamp(3.5rem,9vw,10rem)] pr-[clamp(2rem,6vw,6rem)]">
+          <div className="max-w-[min(48rem,58vw)]">
+            <div className="mb-6 flex items-center gap-4">
+              <div className="h-px w-16 bg-[#d8a24c]/70" />
 
-              <span className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#d8a24c] lg:text-base">
+              <span className="font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.22em] text-[#d8a24c]">
                 {collection.eyebrow_fr}
               </span>
 
-              <div className="h-px w-12 bg-[#d8a24c]/70 lg:w-16" />
+              <div className="h-px w-16 bg-[#d8a24c]/70" />
             </div>
 
-            <h1 className="max-w-[42rem] font-['IM_Fell_English_SC'] text-[clamp(4.8rem,8.2vw,8rem)] font-normal uppercase leading-[0.82] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] xl:text-9xl">
+            <h1 className="font-['IM_Fell_English_SC'] text-[clamp(5rem,7.4vw,8.4rem)] font-normal uppercase leading-[0.82] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] 2xl:text-9xl">
               {collection.title_fr}
             </h1>
 
-            <div className="my-6 flex items-center gap-3 text-[#d8a24c] lg:my-7">
-              <div className="h-px w-16 bg-[#d8a24c]/70 lg:w-20" />
+            <div className="my-7 flex items-center gap-3 text-[#d8a24c]">
+              <div className="h-px w-20 bg-[#d8a24c]/70" />
               <span className="text-xl">✦</span>
-              <div className="h-px w-16 bg-[#d8a24c]/70 lg:w-20" />
+              <div className="h-px w-20 bg-[#d8a24c]/70" />
             </div>
 
-            <p className="max-w-[32rem] font-['EB_Garamond'] text-[1.65rem] leading-9 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)] lg:max-w-xl lg:text-3xl lg:leading-10">
+            <p className="max-w-xl font-['EB_Garamond'] text-[clamp(1.65rem,2.1vw,2rem)] leading-[1.28] text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
               {collection.description_fr}
             </p>
 
-            <div className="mt-8 flex max-w-[34rem] flex-col gap-4 min-[900px]:flex-row lg:mt-10">
+            <div className="mt-10 flex max-w-[42rem] flex-col gap-4 min-[920px]:flex-row">
               <GoldButton collection_url={collectionUrl} />
               <GreenButton />
             </div>

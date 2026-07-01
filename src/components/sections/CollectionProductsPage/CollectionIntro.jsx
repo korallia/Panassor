@@ -16,43 +16,45 @@ function CollectionsHero() {
       <div className="absolute inset-0 bg-gradient-to-r from-[#050302]/95 via-[#050302]/72 to-[#050302]/35" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#050302]/35 via-transparent to-[#050302]/85" />
 
-      {/* Conteneur principal */}
-      <div className="relative z-10 mx-auto min-h-[430px] w-full max-w-[1440px] px-6 py-10 sm:px-8">
-        <div className="relative min-h-[350px]">
+      {/* Conteneur principal fixe (Garde la structure initiale intacte) */}
+      <div className="relative z-10 mx-auto min-h-[430px] w-full max-w-[1440px] px-8 py-10">
+        <div className="relative min-h-[350px] w-full">
           
-          {/* SWITCH MODE MOBILE : Les équerres ne s'affichent qu'à partir de 'lg' (1024px) pour ne pas gêner */}
-          <CornerFrame className="hidden lg:block absolute left-0 top-0 opacity-90" />
-          <CornerFrame className="hidden lg:block absolute bottom-0 right-0 rotate-180 opacity-90" />
+          {/* Les équerres restent visibles et stables aux angles */}
+          <CornerFrame className="absolute left-0 top-0 opacity-90" />
+          <CornerFrame className="absolute bottom-0 right-0 rotate-180 opacity-90" />
 
-          {/* SWITCH DE LAYOUT :
-            - En dessous de 1024px (mode mobile/tablette) : On centre le texte (`justify-center text-center px-4`)
-            - À partir de `lg:` (mode grand écran) : On bascule sur l'alignement à gauche d'origine avec le padding idéal
-          */}
-          <div className="flex min-h-[350px] items-center justify-center lg:justify-start px-4 lg:pl-24 lg:pr-8">
+          {/* On crée un espace de sécurité fixe à gauche (pl-14 md:pl-20) pour que rien ne touche le coin gauche */}
+          <div className="flex min-h-[350px] items-center justify-start pl-14 pr-6 sm:pl-20 md:pl-24">
             
-            {/* On ajuste l'alignement des éléments internes (items-center sur mobile, items-start sur grand écran) */}
-            <div className="w-full max-w-[680px] flex flex-col items-center lg:items-start text-center lg:text-left">
+            {/* La boîte de mouvement est bridée pour ne pas s'étaler */}
+            <div className="w-full max-w-[650px] flex flex-col items-start overflow-hidden">
               
-              <OrnamentDivider className="mb-6 lg:mb-8 max-w-[260px] lg:max-w-[300px]" />
+              <OrnamentDivider className="mb-6 w-full max-w-[260px]" />
 
-              <p className="font-['IM_Fell_English_SC'] text-[0.85rem] sm:text-[0.9rem] lg:text-[1rem] uppercase tracking-[0.45em] text-[#d6a13b]">
+              <p className="font-['IM_Fell_English_SC'] text-[0.9rem] uppercase tracking-[0.45em] text-[#d6a13b] sm:text-[1rem]">
                 Univers Panassor
               </p>
 
-              <h1 className="mt-4 lg:mt-6 font-['Uncial_Antiqua'] text-[clamp(2.5rem,5.2vw,5.5rem)] leading-[0.95] tracking-[0.02em] text-[#fff1d6] drop-shadow-[0_5px_18px_rgba(0,0,0,0.75)]">
+              {/* CORRECTION ICI : 
+                - text-[clamp(2rem,5.5vw,5rem)] : Réduit drastiquement le titre sur les écrans moyens 
+                  pour l'empêcher de pousser la boîte vers le coin.
+                - tracking-[0.02em] réduit pour compacter le mot "COLLECTIONS" horizontalement.
+              */}
+              <h1 className="mt-4 font-['Uncial_Antiqua'] text-[clamp(2rem,5.5vw,5rem)] leading-none tracking-[0.01em] text-[#fff1d6] drop-shadow-[0_5px_18px_rgba(0,0,0,0.75)] whitespace-nowrap">
                 Collections
               </h1>
 
-              <p className="mt-6 lg:mt-8 max-w-[660px] font-['EB_Garamond'] text-[clamp(1.1rem,1.4vw,1.4rem)] font-semibold leading-relaxed text-[#d8c7a1]">
+              <p className="mt-6 max-w-[580px] font-['EB_Garamond'] text-[clamp(1.1rem,1.35vw,1.35rem)] font-semibold leading-relaxed text-[#d8c7a1]">
                 Des kits immersifs pensés pour enrichir les scènes, soutenir
                 les personnages et donner une vraie présence aux moments de
                 jeu.
               </p>
 
-              <OrnamentDivider className="mt-6 lg:mt-8 max-w-[260px] lg:max-w-[300px]" />
+              <OrnamentDivider className="mt-6 w-full max-w-[260px]" />
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
 

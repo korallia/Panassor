@@ -67,8 +67,11 @@ function PanassorHero({ collection }) {
               </div>
 
               <h1 className="mx-auto w-full max-w-full text-center font-['IM_Fell_English_SC'] text-[clamp(2.85rem,14vw,3.35rem)] font-normal uppercase leading-[0.88] tracking-[0.02em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-                {titleWords.map((word) => (
-                  <span key={word} className="block w-full text-center">
+                {titleWords.map((word, index) => (
+                  <span
+                    key={`${word}-${index}`}
+                    className="block w-full text-center"
+                  >
                     {word}
                   </span>
                 ))}
@@ -109,7 +112,7 @@ function PanassorHero({ collection }) {
         </div>
       </section>
 
-      {/* DESKTOP HERO */}
+      {/* DESKTOP / TABLETTE LARGE HERO */}
       <section className="relative hidden min-h-[calc(100vh-6rem)] overflow-hidden bg-[#0b0704] md:block">
         <img
           src={collection.hero_image_url}
@@ -118,7 +121,7 @@ function PanassorHero({ collection }) {
         />
 
         <div className="absolute inset-0 bg-black/15" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/90 via-[#080504]/45 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/94 via-[#080504]/52 to-[#080504]/8" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/85 via-transparent to-[#080504]/55" />
 
         <CornerFrame inset="hero" size="lg" thickness="strong" color="gold" />
@@ -130,33 +133,33 @@ function PanassorHero({ collection }) {
           color="paleGold"
         />
 
-        <div className="relative z-20 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl items-center px-6 py-12">
-          <div className="max-w-2xl">
-            <div className="mb-6 flex items-center gap-4">
-              <div className="h-px w-16 bg-[#d8a24c]/70" />
+        <div className="relative z-20 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl items-center px-8 py-12 lg:px-10 xl:px-6">
+          <div className="max-w-[34rem] lg:max-w-[40rem] xl:max-w-2xl">
+            <div className="mb-5 flex items-center gap-4 lg:mb-6">
+              <div className="h-px w-12 bg-[#d8a24c]/70 lg:w-16" />
 
-              <span className="font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.22em] text-[#d8a24c]">
+              <span className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#d8a24c] lg:text-base">
                 {collection.eyebrow_fr}
               </span>
 
-              <div className="h-px w-16 bg-[#d8a24c]/70" />
+              <div className="h-px w-12 bg-[#d8a24c]/70 lg:w-16" />
             </div>
 
-            <h1 className="font-['IM_Fell_English_SC'] text-8xl font-normal uppercase leading-[0.82] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] xl:text-9xl">
+            <h1 className="max-w-[42rem] font-['IM_Fell_English_SC'] text-[clamp(4.8rem,8.2vw,8rem)] font-normal uppercase leading-[0.82] tracking-wide text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] xl:text-9xl">
               {collection.title_fr}
             </h1>
 
-            <div className="my-7 flex items-center gap-3 text-[#d8a24c]">
-              <div className="h-px w-20 bg-[#d8a24c]/70" />
+            <div className="my-6 flex items-center gap-3 text-[#d8a24c] lg:my-7">
+              <div className="h-px w-16 bg-[#d8a24c]/70 lg:w-20" />
               <span className="text-xl">✦</span>
-              <div className="h-px w-20 bg-[#d8a24c]/70" />
+              <div className="h-px w-16 bg-[#d8a24c]/70 lg:w-20" />
             </div>
 
-            <p className="max-w-xl font-['EB_Garamond'] text-3xl leading-10 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
+            <p className="max-w-[32rem] font-['EB_Garamond'] text-[1.65rem] leading-9 text-[#f7ead2]/88 drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)] lg:max-w-xl lg:text-3xl lg:leading-10">
               {collection.description_fr}
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+            <div className="mt-8 flex max-w-[34rem] flex-col gap-4 min-[900px]:flex-row lg:mt-10">
               <GoldButton collection_url={collectionUrl} />
               <GreenButton />
             </div>

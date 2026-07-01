@@ -16,22 +16,24 @@ function CollectionsHero() {
       <div className="absolute inset-0 bg-gradient-to-r from-[#050302]/95 via-[#050302]/72 to-[#050302]/35" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#050302]/35 via-transparent to-[#050302]/85" />
 
-      {/* ZONE DE CADRAGE GLOBALE (Le grand rectangle invisible qui gère les grands coins) */}
-      <div className="relative z-10 mx-auto min-h-[430px] w-full max-w-[1440px] px-6 py-10 sm:px-12">
-        <div className="relative min-h-[350px] w-full">
+      {/* Conteneur de la bannière */}
+      <div className="relative z-10 mx-auto min-h-[460px] w-full max-w-[1440px] px-6 py-10 sm:px-8">
+        
+        {/* Le cadre principal qui contient les coins */}
+        <div className="relative min-h-[380px] w-full">
           
-          {/* Les cadres de coins restent ancrés ici, tout au bout du conteneur de 1440px */}
+          {/* Les CornerFrame sont ancrés de façon absolue aux quatre extrémités */}
           <CornerFrame className="absolute left-0 top-0 opacity-90" />
           <CornerFrame className="absolute bottom-0 right-0 rotate-180 opacity-90" />
 
-          {/* ZONE DU CONTENU : Centrée verticalement, mais isolée des angles par un padding fixe */}
-          <div className="flex min-h-[350px] items-center justify-start py-8 pl-14 pr-6 sm:pl-20 md:pl-24">
+          {/* LA SOLUTION ICI : 
+            - pl-16 sm:pl-24 : repousse le bloc vers la droite pour éviter le coin gauche.
+            - pt-16 pb-12 : empêche le texte qui grandit de monter trop haut ou de descendre trop bas dans les coins.
+          */}
+          <div className="flex min-h-[380px] items-center justify-start pt-16 pb-12 pl-16 sm:pl-24 pr-6">
             
-            {/* CORRECTION RADICALE : 
-              - max-w-[580px] force le texte à sauter à la ligne BIEN AVANT de pouvoir s'étaler vers la droite.
-              - flex flex-col assure que les OrnamentDivider restent alignés sans dépasser.
-            */}
-            <div className="w-full max-w-[580px] flex flex-col items-start">
+            {/* Le bloc contenant uniquement le texte et les lignes horizontales */}
+            <div className="w-full max-w-[620px] flex flex-col items-start">
               
               <OrnamentDivider className="mb-6 w-full max-w-[260px]" />
 
@@ -56,7 +58,7 @@ function CollectionsHero() {
         </div>
       </div>
 
-      {/* Bordure de fin de section */}
+      {/* Bordure basse */}
       <div className="relative z-10 h-8 border-t border-[#2b1c0d] bg-[#120b06]" />
     </section>
   );

@@ -20,8 +20,10 @@ function CollectionsHero() {
           <CornerFrame className="absolute bottom-0 right-0 rotate-180 opacity-90" />
 
           <div className="flex min-h-[260px] items-center">
-            <div className="ml-12 max-w-[760px] sm:ml-16 lg:ml-20">
-              <OrnamentDivider className="mb-8 max-w-[290px]" />
+            <div className="relative max-w-[760px] pb-12 pt-12">
+              <div className="pointer-events-none absolute left-8 top-0 w-[300px]">
+                <OrnamentDivider />
+              </div>
 
               <p className="font-['IM_Fell_English_SC'] text-[0.9rem] uppercase tracking-[0.45em] text-[#d6a13b] sm:text-[1rem]">
                 Univers Panassor
@@ -36,7 +38,9 @@ function CollectionsHero() {
                 personnages et donner une vraie présence aux moments de jeu.
               </p>
 
-              <OrnamentDivider className="mt-8 max-w-[290px]" />
+              <div className="pointer-events-none absolute bottom-0 left-8 w-[300px]">
+                <OrnamentDivider />
+              </div>
             </div>
           </div>
         </div>

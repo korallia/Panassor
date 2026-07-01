@@ -69,11 +69,11 @@ function Navbar() {
 
   return (
     <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/94 backdrop-blur-sm">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 md:grid md:h-24 md:grid-cols-[1fr_auto_1fr] md:px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 md:grid md:h-24 md:grid-cols-[auto_1fr_auto] md:px-6">
         <button
           type="button"
           onClick={() => navigateAndClose("/")}
-          className="flex min-w-0 items-center gap-3 text-left md:justify-self-start"
+          className="flex min-w-0 shrink-0 items-center gap-3 text-left md:justify-self-start"
           aria-label="Retourner à l’accueil"
         >
           <img
@@ -93,7 +93,7 @@ function Navbar() {
           </div>
         </button>
 
-        <nav className="hidden items-center gap-7 justify-self-center font-['IM_Fell_English_SC'] text-2xl tracking-[0.03em] text-[#f7ead2]/85 md:flex">
+        <nav className="hidden min-w-0 items-center justify-center gap-5 justify-self-center font-['IM_Fell_English_SC'] text-[1.35rem] tracking-[0.03em] text-[#f7ead2]/85 md:flex lg:gap-7 lg:text-2xl">
           <div className="group relative">
             <button
               type="button"

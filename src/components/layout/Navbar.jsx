@@ -38,6 +38,16 @@ function Navbar() {
       url: "/produits",
     },
     {
+      id: "atelier",
+      title: "Atelier",
+      url: "/atelier",
+    },
+    {
+      id: "contact",
+      title: "Contact",
+      url: "/contact",
+    },
+    {
       id: "all-collections",
       title: "Toutes les collections",
       url: "/collections",
@@ -59,31 +69,31 @@ function Navbar() {
 
   return (
     <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/94 backdrop-blur-sm">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 md:grid md:h-24 md:grid-cols-[1fr_auto_1fr] md:px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 lg:grid lg:h-24 lg:grid-cols-[1fr_auto_1fr] lg:px-6">
         <button
           type="button"
           onClick={() => navigateAndClose("/")}
-          className="flex min-w-0 items-center gap-3 text-left md:justify-self-start"
+          className="flex min-w-0 items-center gap-3 text-left lg:justify-self-start"
           aria-label="Retourner à l’accueil"
         >
           <img
             src="/images/IconPanassor.png"
             alt="Logo Panassor"
-            className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] md:h-14 md:w-14"
+            className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] lg:h-14 lg:w-14"
           />
 
           <div className="min-w-0">
-            <div className="font-['Uncial_Antiqua'] text-3xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-4xl md:text-5xl">
+            <div className="font-['Uncial_Antiqua'] text-3xl leading-none text-[#f7ead2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.9)] sm:text-4xl lg:text-5xl">
               Panassor
             </div>
 
-            <div className="mt-1 max-w-[10rem] font-['IM_Fell_English_SC'] text-[0.62rem] uppercase leading-4 tracking-[0.14em] text-[#d8a24c] sm:max-w-none sm:text-[0.72rem] md:text-[0.8rem]">
+            <div className="mt-1 max-w-[10rem] font-['IM_Fell_English_SC'] text-[0.62rem] uppercase leading-4 tracking-[0.14em] text-[#d8a24c] sm:max-w-none sm:text-[0.72rem] lg:text-[0.8rem]">
               Kits médiévaux uniques
             </div>
           </div>
         </button>
 
-        <nav className="hidden items-center gap-7 justify-self-center font-['IM_Fell_English_SC'] text-2xl tracking-[0.03em] text-[#f7ead2]/85 md:flex">
+        <nav className="hidden items-center gap-7 justify-self-center font-['IM_Fell_English_SC'] text-2xl tracking-[0.03em] text-[#f7ead2]/85 lg:flex">
           <div className="group relative">
             <button
               type="button"
@@ -97,7 +107,6 @@ function Navbar() {
               <div className="relative overflow-hidden border border-[#6f5423]/80 bg-[linear-gradient(180deg,#1b1008_0%,#0b0603_100%)] p-3 shadow-[0_22px_58px_rgba(0,0,0,0.82),0_0_34px_rgba(200,155,60,0.1)] backdrop-blur">
                 <div className="pointer-events-none absolute inset-1 border border-[#c89b3c]/10" />
                 <div className="pointer-events-none absolute left-1/2 top-[-0.45rem] h-4 w-4 -translate-x-1/2 rotate-45 border-l border-t border-[#6f5423]/80 bg-[#1b1008]" />
-
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(200,155,60,0.13),transparent_42%)]" />
 
                 <div className="relative z-10 mb-2 flex items-center justify-center gap-3 px-4 py-2 text-[#c89b3c]">
@@ -178,47 +187,29 @@ function Navbar() {
           </button>
         </nav>
 
-        <div className="flex shrink-0 items-center justify-self-end text-[#d8a24c]">
+        <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c]">
+          <button
+            type="button"
+            className="flex h-9 w-9 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] text-xl leading-none transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]"
+            aria-label="Panier"
+          >
+            ▢
+          </button>
+
           <button
             type="button"
             onClick={() => setIsMenuOpen((current) => !current)}
-            className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
+            className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] lg:hidden"
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
             {isMenuOpen ? "Fermer" : "Menu"}
           </button>
-
-          <div className="hidden items-center gap-5 md:flex">
-            <button
-              type="button"
-              className="text-xl transition hover:text-[#f7ead2]"
-              aria-label="Compte"
-            >
-              ♙
-            </button>
-
-            <button
-              type="button"
-              className="text-xl transition hover:text-[#f7ead2]"
-              aria-label="Recherche"
-            >
-              ⌕
-            </button>
-
-            <button
-              type="button"
-              className="text-xl transition hover:text-[#f7ead2]"
-              aria-label="Panier"
-            >
-              ▢
-            </button>
-          </div>
         </div>
       </div>
 
       {isMenuOpen && (
-        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-5 pb-7 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] md:hidden">
+        <div className="border-t border-[#6f5423]/60 bg-[#080504]/98 px-5 pb-7 pt-5 shadow-[0_22px_58px_rgba(0,0,0,0.82)] lg:hidden">
           <div className="mx-auto max-w-md">
             <div className="mb-5 flex items-center justify-center gap-3 text-[#c89b3c]">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/45" />
@@ -227,7 +218,7 @@ function Navbar() {
             </div>
 
             <p className="mb-4 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c]/80">
-              Collections
+              Navigation
             </p>
 
             <div className="border-y border-[#6f5423]/45 py-2">

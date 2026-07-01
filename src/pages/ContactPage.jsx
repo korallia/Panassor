@@ -1,14 +1,3 @@
-[NO CONTENT FOUND]Ah, misère ! Je vois exactement ce qui se passe sur tes deux captures de la page Contact (image_1a1f3c.png et image_1a7157.png). Oublie PageHeroBanner, c'est réglé. Le problème est directement dans ton fichier ContactPage.jsx, plus précisément dans les deux boîtes du milieu ("Une idée hors collection?").
-
-Regarde ton code :
-La boîte de gauche contenant l'image du kit de voleur est configurée avec une hauteur minimale fixe stricte (min-h-[34rem]).
-Par contre, ta boîte de droite (qui contient le texte "Une idée hors collection ?") n'a aucune hauteur définie. En mode Desktop, la ligne décorative du bas (OrnamentDivider className="mx-auto mt-32") vient remonter et s'écraser directement sous tes boutons, ce qui fait disparaître l'espace et coupe le layout !
-
-Pour que les deux blocs soient parfaitement symétriques, fixes, et que l'ornement du bas reste sagement à sa place sans jamais couper tes sections, on va utiliser une grille flex standardisée.
-
-Voici ton fichier ContactPage.jsx corrigé :
-
-JavaScript
 import { useNavigate } from "react-router-dom";
 
 import PageHeroBanner from "../components/layout/PageHeroBanner";

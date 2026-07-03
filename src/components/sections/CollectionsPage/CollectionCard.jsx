@@ -13,7 +13,7 @@ function getMobileTitleWords(title) {
 function CollectionCard({ collection, index = 0, onClick }) {
   const { language } = useLanguage();
 
-  const imageFirst = index % 2 === 1;
+  const reversedDesktop = index % 2 === 1;
 
   const title = t(collection, "title", language);
   const eyebrow = t(collection, "eyebrow", language);
@@ -32,7 +32,7 @@ function CollectionCard({ collection, index = 0, onClick }) {
       {/* IMAGE */}
       <div
         className={`relative min-h-[18rem] overflow-hidden bg-[#0b0704] md:min-h-[20rem] ${
-          imageFirst ? "lg:order-first" : ""
+          reversedDesktop ? "lg:order-2" : "lg:order-1"
         }`}
       >
         <img
@@ -78,7 +78,11 @@ function CollectionCard({ collection, index = 0, onClick }) {
       </div>
 
       {/* CONTENT */}
-      <div className="relative z-10 flex min-h-[auto] flex-col justify-center px-6 pb-7 pt-6 text-center md:min-h-[18rem] md:p-10 md:text-left">
+      <div
+        className={`relative z-10 flex min-h-[auto] flex-col justify-center px-6 pb-7 pt-6 text-center md:min-h-[18rem] md:p-10 md:text-left ${
+          reversedDesktop ? "lg:order-1" : "lg:order-2"
+        }`}
+      >
         <div className="hidden md:block">
           <OrnamentDivider
             className="mb-5 justify-start"

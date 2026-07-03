@@ -21,7 +21,7 @@ export const collectionsContent = {
     hero: {
       image: "/images/collections-hero.png",
       alt: "Panassor collections",
-      eyebrow: "Panassor universes",
+      eyebrow: "Panassor worlds",
       title: "Collections",
       description:
         "Immersive kits designed to enrich scenes, support characters, and give real presence to moments of play.",

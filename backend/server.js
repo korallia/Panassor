@@ -37,7 +37,8 @@ app.get("/api/collections", async (req, res) => {
     const result = await pool.query(`
       SELECT
         id,
-        slug,
+        slug_fr,
+        slug_en,
         name_fr,
         name_en,
         title_fr,
@@ -45,6 +46,7 @@ app.get("/api/collections", async (req, res) => {
         eyebrow_fr,
         eyebrow_en,
         url,
+        url_en,
         description_fr,
         description_en,
         long_description_fr,
@@ -76,7 +78,8 @@ app.get("/api/collections/coming-soon", async (req, res) => {
     const result = await pool.query(`
       SELECT
         id,
-        slug,
+        slug_fr,
+        slug_en,
         name_fr,
         name_en,
         title_fr,
@@ -84,6 +87,7 @@ app.get("/api/collections/coming-soon", async (req, res) => {
         eyebrow_fr,
         eyebrow_en,
         url,
+        url_en,
         description_fr,
         description_en,
         long_description_fr,
@@ -109,7 +113,7 @@ app.get("/api/collections/coming-soon", async (req, res) => {
   }
 });
 
-// Get one published collection by slug, with products
+// Get one published collection by slug_fr or slug_en, with products
 app.get("/api/collections/:slug", async (req, res) => {
   const { slug } = req.params;
 
@@ -118,7 +122,8 @@ app.get("/api/collections/:slug", async (req, res) => {
       `
       SELECT
         id,
-        slug,
+        slug_fr,
+        slug_en,
         name_fr,
         name_en,
         title_fr,
@@ -126,6 +131,7 @@ app.get("/api/collections/:slug", async (req, res) => {
         eyebrow_fr,
         eyebrow_en,
         url,
+        url_en,
         description_fr,
         description_en,
         long_description_fr,
@@ -137,7 +143,7 @@ app.get("/api/collections/:slug", async (req, res) => {
         featured,
         status
       FROM collections
-      WHERE slug = $1
+      WHERE (slug_fr = $1 OR slug_en = $1)
         AND status = 'published';
       `,
       [slug]
@@ -156,7 +162,8 @@ app.get("/api/collections/:slug", async (req, res) => {
       SELECT
         p.id,
         p.collection_id,
-        p.slug,
+        p.slug_fr,
+        p.slug_en,
         p.name_fr,
         p.name_en,
         p.title_fr,
@@ -199,7 +206,8 @@ app.get("/api/products/customizable", async (req, res) => {
       SELECT
         p.id,
         p.collection_id,
-        p.slug,
+        p.slug_fr,
+        p.slug_en,
         p.name_fr,
         p.name_en,
         p.title_fr,
@@ -212,7 +220,8 @@ app.get("/api/products/customizable", async (req, res) => {
         p.customizable,
         p.is_kit,
         p.featured,
-        c.slug AS collection_slug,
+        c.slug_fr AS collection_slug_fr,
+        c.slug_en AS collection_slug_en,
         c.name_fr AS collection_name_fr,
         c.name_en AS collection_name_en,
         pi.url AS image_url
@@ -244,7 +253,8 @@ app.get("/api/products", async (req, res) => {
       SELECT
         p.id,
         p.collection_id,
-        p.slug,
+        p.slug_fr,
+        p.slug_en,
         p.name_fr,
         p.name_en,
         p.title_fr,
@@ -257,7 +267,8 @@ app.get("/api/products", async (req, res) => {
         p.customizable,
         p.is_kit,
         p.featured,
-        c.slug AS collection_slug,
+        c.slug_fr AS collection_slug_fr,
+        c.slug_en AS collection_slug_en,
         c.name_fr AS collection_name_fr,
         c.name_en AS collection_name_en,
         pi.url AS image_url
@@ -285,7 +296,7 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-// Get one product by slug, only if its collection is published
+// Get one product by slug_fr or slug_en, only if its collection is published
 app.get("/api/products/:slug", async (req, res) => {
   const { slug } = req.params;
 
@@ -295,7 +306,8 @@ app.get("/api/products/:slug", async (req, res) => {
       SELECT
         p.id,
         p.collection_id,
-        p.slug,
+        p.slug_fr,
+        p.slug_en,
         p.name_fr,
         p.name_en,
         p.title_fr,
@@ -308,13 +320,14 @@ app.get("/api/products/:slug", async (req, res) => {
         p.customizable,
         p.is_kit,
         p.featured,
-        c.slug AS collection_slug,
+        c.slug_fr AS collection_slug_fr,
+        c.slug_en AS collection_slug_en,
         c.name_fr AS collection_name_fr,
         c.name_en AS collection_name_en
       FROM products p
       JOIN collections c
         ON c.id = p.collection_id
-      WHERE p.slug = $1
+      WHERE (p.slug_fr = $1 OR p.slug_en = $1)
         AND c.status = 'published';
       `,
       [slug]
@@ -351,7 +364,8 @@ app.get("/api/products/:slug", async (req, res) => {
         `
         SELECT
           included.id,
-          included.slug,
+          included.slug_fr,
+          included.slug_en,
           included.name_fr,
           included.name_en,
           included.title_fr,

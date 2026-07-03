@@ -1,3 +1,6 @@
+import { useLanguage } from "../../context/LanguageContext";
+import { t } from "../../utils/localization";
+
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
@@ -8,8 +11,15 @@ function getMobileTitleWords(title) {
 }
 
 function CollectionCard({ collection, index = 0, onClick }) {
+  const { language } = useLanguage();
+
   const imageFirst = index % 2 === 1;
-  const mobileTitleWords = getMobileTitleWords(collection.title_fr);
+
+  const title = t(collection, "title", language);
+  const eyebrow = t(collection, "eyebrow", language);
+  const description = t(collection, "description", language);
+
+  const mobileTitleWords = getMobileTitleWords(title);
 
   return (
     <button
@@ -27,7 +37,7 @@ function CollectionCard({ collection, index = 0, onClick }) {
       >
         <img
           src={collection.thumbnail_image_url || collection.hero_image_url}
-          alt={collection.title_fr}
+          alt={title}
           loading="lazy"
           decoding="async"
           className="h-full w-full object-cover object-center brightness-[0.68] contrast-[1.08] saturate-[1.02] transition duration-500 group-hover:scale-[1.035] group-hover:brightness-[0.9] md:brightness-[0.82] md:group-hover:brightness-[0.95]"
@@ -54,12 +64,12 @@ function CollectionCard({ collection, index = 0, onClick }) {
           </div>
 
           <p className="mb-3 text-center font-['IM_Fell_English_SC'] text-[0.7rem] uppercase tracking-[0.24em] text-[#c89b3c]">
-            {collection.eyebrow_fr}
+            {eyebrow}
           </p>
 
           <h3 className="text-center font-['IM_Fell_English_SC'] text-[clamp(2.65rem,11vw,3.35rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
-            {mobileTitleWords.map((word) => (
-              <span key={word} className="block">
+            {mobileTitleWords.map((word, wordIndex) => (
+              <span key={`${word}-${wordIndex}`} className="block">
                 {word}
               </span>
             ))}
@@ -77,16 +87,16 @@ function CollectionCard({ collection, index = 0, onClick }) {
           />
 
           <p className="mb-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.32em] text-[#c89b3c]">
-            {collection.eyebrow_fr}
+            {eyebrow}
           </p>
 
           <h3 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2] transition group-hover:text-[#e7c97b] md:text-6xl">
-            {collection.title_fr}
+            {title}
           </h3>
         </div>
 
         <p className="mx-auto max-w-2xl font-['EB_Garamond'] text-[1.28rem] leading-7 text-[#d7c8ad]/84 md:mx-0 md:mt-6 md:text-2xl md:leading-8">
-          {collection.description_fr}
+          {description}
         </p>
 
         <span className="mt-7 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition group-hover:bg-[#c89b3c] group-hover:text-[#100805] md:mt-8 md:w-fit md:text-lg">

@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import { getCollectionUrl, t } from "../../../utils/localization";
+
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
 import ProductMediaGallery from "./ProductMediaGallery";
@@ -13,14 +16,22 @@ function IndividualProductPage({
   collection,
   productMedia,
   relatedProducts = [],
+  copy,
 }) {
+  const { language } = useLanguage();
+
   if (!product || !collection) {
     return null;
   }
 
+  const productName = t(product, "name", language);
+  const collectionName = t(collection, "name", language);
+  const collectionUrl = getCollectionUrl(collection, language);
+
   const relatedCollection = {
     ...collection,
-    title_fr: "Compléter la trousse",
+    title_fr: copy.relatedProducts.title,
+    title_en: copy.relatedProducts.title,
     products: relatedProducts,
   };
 
@@ -32,14 +43,14 @@ function IndividualProductPage({
 
         <div className="relative mx-auto max-w-[88rem]">
           <nav
-            aria-label="Fil d’Ariane"
+            aria-label={copy.breadcrumbs.ariaLabel}
             className="mb-7 flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap pb-1 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.18em] text-[#a47b36] [scrollbar-width:none] md:mb-6 md:flex-wrap md:overflow-visible md:pb-0 md:text-[0.78rem] md:tracking-[0.2em] [&::-webkit-scrollbar]:hidden"
           >
             <Link
               to="/"
               className="hidden shrink-0 transition hover:text-[#c89b3c] md:inline"
             >
-              Accueil
+              {copy.breadcrumbs.home}
             </Link>
 
             <span className="hidden shrink-0 text-[#6f5423] md:inline">›</span>
@@ -48,30 +59,28 @@ function IndividualProductPage({
               to="/produits"
               className="shrink-0 transition hover:text-[#c89b3c]"
             >
-              Produits
+              {copy.breadcrumbs.products}
             </Link>
 
             <span className="shrink-0 text-[#6f5423]">›</span>
 
             <Link
-              to={`/collections/${collection.slug}`}
+              to={collectionUrl}
               className="shrink-0 transition hover:text-[#c89b3c]"
             >
-              {collection.name_fr}
+              {collectionName}
             </Link>
 
             <span className="shrink-0 text-[#6f5423]">›</span>
 
-            <span className="shrink-0 text-[#c89b3c]">
-              {product.name_fr}
-            </span>
+            <span className="shrink-0 text-[#c89b3c]">{productName}</span>
           </nav>
 
           <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <div className="min-w-0">
               <ProductMediaGallery
                 media={productMedia}
-                productName={product.name_fr}
+                productName={productName}
               />
             </div>
 
@@ -95,6 +104,7 @@ function IndividualProductPage({
 
       <FeaturedProductsCarousel
         collection={relatedCollection}
+        copy={copy.relatedProducts}
         className="pt-20 pb-8"
         showCollectionButton={false}
       />

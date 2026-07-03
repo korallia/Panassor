@@ -10,6 +10,10 @@ export const productPageContent = {
       productVideo: "Vidéo du produit",
     },
 
+    purchasePanel: {
+      addToCart: "Ajouter au panier",
+    },
+
     relatedProducts: {
       eyebrow: "Pièces associées",
       title: "Compléter la trousse",
@@ -44,6 +48,10 @@ export const productPageContent = {
 
     media: {
       productVideo: "Product video",
+    },
+
+    purchasePanel: {
+      addToCart: "Add to cart",
     },
 
     relatedProducts: {

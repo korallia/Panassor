@@ -1,8 +1,21 @@
 import { useNavigate } from "react-router-dom";
 
+import { useLanguage } from "../../context/LanguageContext";
+import { getProductUrl, t } from "../../utils/localization";
+
 function ProductCard({ product, variant = "carousel" }) {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+
   const isGrid = variant === "grid";
+
+  if (!product) {
+    return null;
+  }
+
+  const productName = t(product, "name", language);
+  const productDescription = t(product, "description", language);
+  const productUrl = getProductUrl(product, language);
 
   const articleClass = isGrid
     ? "group relative flex h-full cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78)]"
@@ -18,7 +31,13 @@ function ProductCard({ product, variant = "carousel" }) {
       className={articleClass}
       role="button"
       tabIndex={0}
-      onClick={() => navigate(`/produits/${product.slug}`)}
+      onClick={() => navigate(productUrl)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          navigate(productUrl);
+        }
+      }}
     >
       <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
@@ -26,7 +45,7 @@ function ProductCard({ product, variant = "carousel" }) {
         <div className={`relative overflow-hidden bg-[#0b0704] ${imageAspect}`}>
           <img
             src={product.image_url}
-            alt={product.name_fr}
+            alt={productName}
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover brightness-[0.92] contrast-[1.08] saturate-[1.02] transition duration-500 group-hover:scale-[1.035] group-hover:brightness-[1]"
@@ -48,13 +67,13 @@ function ProductCard({ product, variant = "carousel" }) {
           <h3
             className={`mb-4 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] ${titleHeight}`}
           >
-            {product.name_fr}
+            {productName}
           </h3>
 
           <p
             className={`mb-7 font-['EB_Garamond'] text-xl leading-7 text-[#d7c8ad]/86 ${descHeight}`}
           >
-            {product.description_fr}
+            {productDescription}
           </p>
 
           <div className="mt-auto pt-2">

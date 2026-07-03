@@ -67,17 +67,23 @@ function Navbar() {
   const mobileCollectionLinkClass =
     "block w-full border-b border-[#6f5423]/30 py-3 text-left font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88 transition last:border-b-0 hover:text-[#d8a24c]";
 
-  const LanguageButton = () => (
+  const DesktopLanguageButton = () => (
     <button
       type="button"
-      className="group relative inline-flex items-center justify-center gap-2 border border-[#9b6a22] bg-[#120c07]/40 px-4 py-2 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.16em] text-[#f3c96b] transition hover:border-[#d8a24c] hover:bg-[#c89b3c] hover:text-[#100805] md:px-5 md:text-sm"
+      className="font-['IM_Fell_English_SC'] text-[1.05rem] uppercase tracking-[0.08em] text-[#d8a24c]/90 transition hover:text-[#f7ead2] lg:text-xl"
       aria-label="Changer la langue du site"
     >
-      <span className="text-[0.65rem] text-[#d8a24c] transition group-hover:text-[#100805]">
-        ✦
-      </span>
+      EN
+    </button>
+  );
 
-      <span className="relative z-10">EN</span>
+  const MobileLanguageButton = () => (
+    <button
+      type="button"
+      className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
+      aria-label="Changer la langue du site"
+    >
+      EN
     </button>
   );
 
@@ -199,11 +205,13 @@ function Navbar() {
           >
             Contact
           </button>
+
+          <span className="text-sm text-[#8a5a2b]">✦</span>
+
+          <DesktopLanguageButton />
         </nav>
 
         <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c]">
-          <LanguageButton />
-
           <button
             type="button"
             onClick={() => setIsMenuOpen((current) => !current)}
@@ -213,6 +221,8 @@ function Navbar() {
           >
             {isMenuOpen ? "Fermer" : "Menu"}
           </button>
+
+          <MobileLanguageButton />
         </div>
       </div>
 

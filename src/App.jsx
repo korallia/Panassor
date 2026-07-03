@@ -12,7 +12,7 @@ import ProductsPage from "./pages/ProductsPage";
 import AtelierPage from "./pages/AtelierPage";
 import ContactPage from "./pages/ContactPage";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
-import  { LanguageProvider  } from "../src/context/LanguageProvider "
+import  { LanguageProvider  } from "../src/context/LanguageProvider"
 function App() {
   return (
       <LanguageProvider>

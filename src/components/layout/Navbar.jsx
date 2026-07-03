@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCollections } from "../../context/CollectionsContext";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../context/LanguageContext"
 import { getCollectionUrl, t } from "../../utils/localization";
 
 function Navbar() {

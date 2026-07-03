@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
 import { useCollections } from "../context/CollectionsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { getCollectionUrl } from "../utils/localization";
+import { getPageText } from "../utils/content";
+import { collectionsContent } from "../content/collectionsContent";
 
 import CollectionCard from "../components/sections/CollectionsPage/CollectionCard";
 import PageHeroBanner from "../components/layout/PageHeroBanner";
@@ -10,22 +14,25 @@ import PanassorSectionHeader from "../components/layout/PanassorSectionHeader";
 function CollectionsPage() {
   const navigate = useNavigate();
   const collections = useCollections();
+  const { language } = useLanguage();
+
+  const copy = getPageText(collectionsContent, language);
 
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <PageHeroBanner
-        image="/images/collections-hero.png"
-        alt="Collections Panassor"
-        eyebrow="Univers Panassor"
-        title="Collections"
-        description="Des kits immersifs pensés pour enrichir les scènes, soutenir les personnages et donner une vraie présence aux moments de jeu."
+        image={copy.hero.image}
+        alt={copy.hero.alt}
+        eyebrow={copy.hero.eyebrow}
+        title={copy.hero.title}
+        description={copy.hero.description}
       />
 
       <section className="relative overflow-hidden bg-[#080504] px-6 pt-24 pb-32">
         <PanassorSectionHeader
-          eyebrow="Toutes les collections"
-          title="Choisir un univers"
-          description="Chaque collection rassemble des accessoires conçus autour d’une ambiance, d’un rôle et d’un type de scène."
+          eyebrow={copy.index.eyebrow}
+          title={copy.index.title}
+          description={copy.index.description}
           atmosphere="collectionsIndex"
           className="mx-auto mb-16 max-w-[78rem]"
         />
@@ -37,7 +44,7 @@ function CollectionsPage() {
                 key={collection.id}
                 collection={collection}
                 index={index}
-                onClick={() => navigate(`/collections/${collection.slug}`)}
+                onClick={() => navigate(getCollectionUrl(collection, language))}
               />
             ))}
           </div>

@@ -12,6 +12,7 @@ export const productPageContent = {
 
     purchasePanel: {
       addToCart: "Ajouter au panier",
+      modifyItem: "Modifier",
     },
 
     relatedProducts: {
@@ -52,6 +53,7 @@ export const productPageContent = {
 
     purchasePanel: {
       addToCart: "Add to cart",
+      modifyItem: "Change",
     },
 
     relatedProducts: {

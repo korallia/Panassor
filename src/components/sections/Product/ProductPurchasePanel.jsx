@@ -144,9 +144,10 @@ function ProductPurchasePanel({
               />
 
               <CustomizableItemsList
-                items={selectedItems}
-                onSelectItem={openToolModal}
-              />
+  items={selectedItems}
+  onSelectItem={openToolModal}
+  copy={copy}
+/>
             </>
           )}
         </div>

@@ -1,6 +1,6 @@
 import CustomizableItemButton from "./CustomizableItemButton";
 
-function CustomizableItemsList({ items = [], onSelectItem }) {
+function CustomizableItemsList({ items = [], onSelectItem, copy = {} }) {
   if (!items.length) {
     return null;
   }
@@ -13,6 +13,7 @@ function CustomizableItemsList({ items = [], onSelectItem }) {
           item={item}
           index={index}
           onClick={onSelectItem}
+          copy={copy}
         />
       ))}
     </div>

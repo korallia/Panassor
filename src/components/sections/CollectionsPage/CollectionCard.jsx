@@ -25,7 +25,11 @@ function CollectionCard({ collection, index = 0, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="group relative grid w-full overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78),0_0_34px_rgba(200,155,60,0.08)] md:hover:-translate-y-1 lg:grid-cols-[1.15fr_0.85fr]"
+      className={`group relative grid w-full overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78),0_0_34px_rgba(200,155,60,0.08)] md:hover:-translate-y-1 ${
+        reversedDesktop
+          ? "lg:grid-cols-[0.85fr_1.15fr]"
+          : "lg:grid-cols-[1.15fr_0.85fr]"
+      }`}
     >
       <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 

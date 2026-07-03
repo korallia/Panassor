@@ -1,4 +1,4 @@
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
 
 import CornerFrame from "../../ui/CornerFrame";

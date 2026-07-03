@@ -353,6 +353,7 @@ app.get("/api/products/:slug", async (req, res) => {
         alt_fr,
         alt_en,
         sort_order,
+        color_key,
         is_main
       FROM product_images
       WHERE product_id = $1

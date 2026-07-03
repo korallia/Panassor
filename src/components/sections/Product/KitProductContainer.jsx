@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import {
@@ -7,6 +7,7 @@ import {
   getProductSlug,
   t,
 } from "../../../utils/localization";
+import { productColorContent } from "../../../content/productColorContent";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductMediaGallery from "./ProductMediaGallery";
@@ -21,68 +22,69 @@ function KitProductContainer({
   copy,
 }) {
   const { language } = useLanguage();
-  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
   const productSlug = getProductSlug(product, language);
   const productName = t(product, "name", language);
   const collectionName = t(collection, "name", language);
-  const collectionTitle = t(collection, "title", language);
   const collectionUrl = getCollectionUrl(collection, language);
 
+  const colorConfig = productColorContent[product.slug_fr];
+
+  const availableColors = useMemo(() => {
+    return colorConfig?.colors ?? [];
+  }, [colorConfig]);
+
+  const defaultColorKey =
+    colorConfig?.defaultColorKey ||
+    product.images?.find((image) => image.is_main)?.color_key ||
+    product.images?.[0]?.color_key ||
+    null;
+
+  const [selectedColorKey, setSelectedColorKey] = useState(defaultColorKey);
+
   useEffect(() => {
-    setSelectedColorIndex(0);
-  }, [productSlug]);
+    setSelectedColorKey(defaultColorKey);
+  }, [productSlug, defaultColorKey]);
 
-  const defaultProductImage =
-    product.images?.find((image) => image.is_main)?.url ??
-    product.images?.[0]?.url ??
-    product.image_url;
+  const activeColorKey = selectedColorKey || defaultColorKey;
 
-  const kitImagesByColor =
-    product.slug_fr === "kit-chirurgien"
-      ? [
-          "/images/hero-kit-chirurgien.jpg",
-          "/images/PlaceHolderRouge.png",
-          "/images/PlaceHolderNoir.png",
-        ]
+  const selectedColorIndex = Math.max(
+    availableColors.findIndex((color) => color.key === activeColorKey),
+    0
+  );
+
+  const leatherColors = availableColors.map((color) => ({
+    name: color[language] || color.fr || color.key,
+    value: color.value,
+    key: color.key,
+  }));
+
+  const colorImages =
+    activeColorKey && product.images?.length
+      ? product.images.filter((image) => image.color_key === activeColorKey)
       : [];
 
-  const mainProductImage =
-    kitImagesByColor[selectedColorIndex] ?? defaultProductImage;
+  const visibleImages =
+    colorImages.length > 0 ? colorImages : product.images ?? [];
+
+  const defaultProductImage =
+    visibleImages.find((image) => image.is_main)?.url ??
+    visibleImages[0]?.url ??
+    product.image_url;
 
   const productMedia = [
     {
       type: "image",
-      src: mainProductImage,
+      src: defaultProductImage,
       alt: productName,
     },
-    ...(product.images ?? [])
-      .filter((image) => image.url !== mainProductImage)
+    ...visibleImages
+      .filter((image) => image.url !== defaultProductImage)
       .map((image) => ({
         type: "image",
         src: image.url,
         alt: t(image, "alt", language) || productName,
       })),
-    ...(collection.video_url
-      ? [
-          {
-            type: "video",
-            src: collection.video_url,
-            poster: collection.video_poster_url,
-            alt: collectionTitle || copy.media.productVideo,
-          },
-        ]
-      : []),
-    {
-      type: "image",
-      src: collection.hero_image_url,
-      alt: collectionName,
-    },
-    {
-      type: "image",
-      src: collection.thumbnail_image_url,
-      alt: collectionName,
-    },
   ].filter((item) => item.src);
 
   const kitItems =
@@ -92,11 +94,15 @@ function KitProductContainer({
 
   const customizableItems = kitItems.filter((item) => item.customizable);
 
-  const leatherColors = [
-    { name: copy.leatherColors.darkBrown, value: "#2a160c" },
-    { name: copy.leatherColors.burgundy, value: "#401918" },
-    { name: copy.leatherColors.black, value: "#141414" },
-  ];
+  const handleSelectColor = (index) => {
+    const selectedColor = availableColors[index];
+
+    if (!selectedColor) {
+      return;
+    }
+
+    setSelectedColorKey(selectedColor.key);
+  };
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">
@@ -142,22 +148,22 @@ function KitProductContainer({
           <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <div className="min-w-0">
               <ProductMediaGallery
-                key={selectedColorIndex}
+                key={activeColorKey || productSlug}
                 media={productMedia}
                 productName={productName}
               />
             </div>
 
             <div className="min-w-0">
-             <ProductPurchasePanel
-  product={product}
-  collection={collection}
-  leatherColors={leatherColors}
-  customizableItems={customizableItems}
-  selectedColorIndex={selectedColorIndex}
-  onSelectColor={setSelectedColorIndex}
-  copy={copy.purchasePanel}
-/>
+              <ProductPurchasePanel
+                product={product}
+                collection={collection}
+                leatherColors={leatherColors}
+                customizableItems={customizableItems}
+                selectedColorIndex={selectedColorIndex}
+                onSelectColor={handleSelectColor}
+                copy={copy.purchasePanel}
+              />
             </div>
           </div>
         </div>
@@ -171,10 +177,10 @@ function KitProductContainer({
         />
       </section>
 
-     <ProductNarrativeBanner
-  collection={collection}
-  copy={copy.narrativeBanner}
-/>
+      <ProductNarrativeBanner
+        collection={collection}
+        copy={copy.narrativeBanner}
+      />
 
       <section className="relative px-4 pt-8 pb-8 md:px-6">
         <OrnamentDivider

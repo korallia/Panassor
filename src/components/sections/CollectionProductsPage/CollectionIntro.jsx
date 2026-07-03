@@ -13,13 +13,20 @@ function CollectionIntro({ collection }) {
 
   const title = t(collection, "title", language);
 
+  const introImage =
+    collection.intro_image_url ||
+    collection.hero_image_url ||
+    collection.thumbnail_image_url;
+
   return (
     <section className="relative h-[430px] overflow-hidden bg-[#120c07] text-[#f3e7cf]">
-      <img
-        src={collection.hero_image_url}
-        alt={title}
-        className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.72] contrast-[1.1] saturate-[0.95]"
-      />
+      {introImage && (
+        <img
+          src={introImage}
+          alt={title}
+          className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.72] contrast-[1.1] saturate-[0.95]"
+        />
+      )}
 
       <div className="absolute inset-0 bg-[#080504]/18" />
       <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/92 via-[#080504]/62 to-[#080504]/22" />

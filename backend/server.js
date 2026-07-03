@@ -45,7 +45,7 @@ app.get("/api/collections", async (req, res) => {
         title_en,
         eyebrow_fr,
         eyebrow_en,
-        url,
+        url_fr,
         url_en,
         description_fr,
         description_en,
@@ -86,7 +86,7 @@ app.get("/api/collections/coming-soon", async (req, res) => {
         title_en,
         eyebrow_fr,
         eyebrow_en,
-        url,
+        url_fr,
         url_en,
         description_fr,
         description_en,
@@ -130,7 +130,7 @@ app.get("/api/collections/:slug", async (req, res) => {
         title_en,
         eyebrow_fr,
         eyebrow_en,
-        url,
+        url_fr,
         url_en,
         description_fr,
         description_en,
@@ -200,6 +200,7 @@ app.get("/api/collections/:slug", async (req, res) => {
   }
 });
 
+// Get customizable products from published collections only
 app.get("/api/products/customizable", async (req, res) => {
   try {
     const result = await pool.query(`

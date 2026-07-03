@@ -156,10 +156,8 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
               </div>
 
               <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-                {firstParagraphPrefix}{" "}
-                <span className="text-[#fff1d2]">{collectionName}</span>{" "}
-                {firstParagraphSuffix}
-              </p>
+  {firstParagraphPrefix} {collectionName} {firstParagraphSuffix}
+</p>
 
               <p className="mt-4 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84">
                 {secondParagraph}

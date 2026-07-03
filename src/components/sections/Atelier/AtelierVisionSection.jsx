@@ -1,12 +1,8 @@
 import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
-function AtelierVisionSection() {
-  const visionPoints = [
-    "Des objets pour les rôles qui font vivre l’univers.",
-    "Une présence forte, sans voler la scène aux joueurs.",
-    "Des accessoires faits pour être vus, manipulés et incarnés.",
-  ];
+function AtelierVisionSection({ copy = {} }) {
+  const visionPoints = copy.points ?? [];
 
   return (
     <section className="relative overflow-hidden bg-[#080504] text-[#f3e7cf]">
@@ -36,7 +32,7 @@ function AtelierVisionSection() {
 
               <img
                 src="/images/logo_panassor.png"
-                alt="Logo Panassor"
+                alt={copy.logoAlt}
                 className="h-52 w-52 object-contain opacity-95 drop-shadow-[0_24px_55px_rgba(0,0,0,0.92)] sm:h-64 sm:w-64 md:h-[20rem] md:w-[20rem] lg:h-[22rem] lg:w-[22rem]"
               />
             </div>
@@ -49,11 +45,11 @@ function AtelierVisionSection() {
 
             <div className="text-center">
               <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
-                Vision Panassor
+                {copy.eyebrow}
               </p>
 
               <h2 className="mx-auto max-w-[34rem] font-['IM_Fell_English_SC'] text-[clamp(2.4rem,7.2vw,4rem)] uppercase leading-[0.92] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.85)]">
-                Donner du poids aux rôles oubliés
+                {copy.title}
               </h2>
             </div>
 
@@ -85,26 +81,21 @@ function AtelierVisionSection() {
       <div className="relative z-10 mx-auto hidden max-w-[88rem] grid-cols-[0.92fr_1.08fr] items-center gap-14 px-6 py-32 xl:grid">
         <div>
           <p className="mb-5 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
-            Vision Panassor
+            {copy.eyebrow}
           </p>
 
           <h2 className="font-['IM_Fell_English_SC'] text-7xl uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.75)]">
-            Donner du poids aux rôles oubliés
+            {copy.title}
           </h2>
 
           <div className="my-8 h-px w-72 bg-gradient-to-r from-[#c89b3c] to-transparent" />
 
           <p className="font-['EB_Garamond'] text-3xl leading-10 text-[#d7c8ad]/88">
-            Panassor crée des kits immersifs pour les personnages qui
-            construisent l’histoire autrement : soigneurs, artisans, voleurs,
-            érudits, manipulateurs et tous ceux qui font vivre un univers sans
-            forcément porter l’épée.
+            {copy.desktopParagraphs?.[0]}
           </p>
 
           <p className="mt-6 font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/75">
-            Notre objectif est simple : créer des objets qui ont assez de
-            présence pour être remarqués, assez de solidité pour être utilisés,
-            et assez d’âme pour devenir une partie du personnage.
+            {copy.desktopParagraphs?.[1]}
           </p>
 
           <OrnamentDivider className="mt-12" width={112} opacity={0.55} />
@@ -122,7 +113,7 @@ function AtelierVisionSection() {
           <div className="relative flex h-[38rem] w-[38rem] -translate-y-4 items-center justify-center">
             <img
               src="/images/logo_panassor.png"
-              alt="Logo Panassor"
+              alt={copy.logoAlt}
               className="h-[38rem] w-[38rem] object-contain opacity-95 drop-shadow-[0_30px_65px_rgba(0,0,0,0.92)]"
             />
           </div>

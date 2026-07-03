@@ -6,7 +6,7 @@ import SectionTitle from "../../layout/SectionTitle";
 import CollectionAvenirHero from "./CollectionAvenirHero";
 import { getComingSoonCollections } from "../../../../backend/panassorApi";
 
-function AtelierSneakPeekSection() {
+function AtelierSneakPeekSection({ copy = {} }) {
   const [comingSoonCollections, setComingSoonCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -60,8 +60,8 @@ function AtelierSneakPeekSection() {
       <div className="relative z-10 mx-auto max-w-[88rem]">
         <div className="mx-auto mb-14 max-w-4xl text-center">
           <SectionTitle
-            eyebrow="Sneak peek"
-            title="Un nouveau kit se prépare"
+            eyebrow={copy.eyebrow}
+            title={copy.title}
             align="center"
             showDivider={false}
           />
@@ -71,15 +71,8 @@ function AtelierSneakPeekSection() {
 
         <CollectionAvenirHero
           collection={collectionAVenir}
-          primaryAction={{
-            label: "Suivre sur Facebook",
-            href: "https://www.facebook.com/profile.php?id=61587079943525",
-            external: true,
-          }}
-          secondaryAction={{
-            label: "Voir les collections",
-            href: "/collections",
-          }}
+          primaryAction={copy.primaryAction}
+          secondaryAction={copy.secondaryAction}
         />
 
         <OrnamentDivider className="mt-20" width={112} opacity={0.55} />

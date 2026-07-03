@@ -1,5 +1,8 @@
 import { useRef } from "react";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import { getCollectionUrl, t } from "../../../utils/localization";
+
 import ProductCard from "../../ui/ProductCard";
 import CarouselArrow from "../../ui/CarouselArrow";
 import SectionTitle from "../../layout/SectionTitle";
@@ -13,6 +16,7 @@ function FeaturedProductsCarousel({
   showCollectionButton = true,
 }) {
   const desktopRailRef = useRef(null);
+  const { language } = useLanguage();
 
   const scrollCarousel = (direction) => {
     desktopRailRef.current?.scrollBy({
@@ -25,6 +29,9 @@ function FeaturedProductsCarousel({
     return null;
   }
 
+  const collectionTitle = t(collection, "title", language);
+  const collectionUrl = getCollectionUrl(collection, language);
+
   return (
     <section
       className={`relative overflow-hidden bg-[#080504] px-6 text-[#f3e7cf] ${className}`}
@@ -35,7 +42,7 @@ function FeaturedProductsCarousel({
         <div className="relative mb-16">
           <SectionTitle
             eyebrow="Produits de la collection"
-            title={collection.title_fr}
+            title={collectionTitle}
             align="center"
             showDivider={false}
           />
@@ -61,7 +68,6 @@ function FeaturedProductsCarousel({
           </div>
         </div>
 
-        {/* MOBILE: une carte par écran */}
         <div className="relative left-1/2 w-screen -translate-x-1/2 md:hidden">
           <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]">
             {collection.products.map((product) => (
@@ -75,7 +81,6 @@ function FeaturedProductsCarousel({
           </div>
         </div>
 
-        {/* DESKTOP: ancien comportement */}
         <div
           ref={desktopRailRef}
           className="hidden snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin] md:flex"
@@ -87,7 +92,7 @@ function FeaturedProductsCarousel({
 
         {showCollectionButton && (
           <div className="mt-8 hidden justify-center md:flex">
-            <GoldButton collection_url={collection.url} />
+            <GoldButton collection_url={collectionUrl} />
           </div>
         )}
       </div>

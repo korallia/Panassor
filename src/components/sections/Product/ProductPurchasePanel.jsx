@@ -28,7 +28,7 @@ function ProductPurchasePanel({
   customizableItems = [],
   selectedColorIndex = 0,
   onSelectColor,
-  copy,
+  copy = {},
 }) {
   const { language } = useLanguage();
 
@@ -42,22 +42,34 @@ function ProductPurchasePanel({
 
   useEffect(() => {
     async function loadToolOptions() {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
-      );
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
+        );
 
-      const data = await response.json();
-      setToolOptions(data);
+        const data = await response.json();
+        setToolOptions(data);
+      } catch (error) {
+        console.error("Failed to load customizable products:", error);
+        setToolOptions([]);
+      }
     }
 
     loadToolOptions();
   }, []);
+
+  if (!product || !collection) {
+    return null;
+  }
 
   const collectionName = t(collection, "name", language);
   const productName = t(product, "name", language);
   const productDescription =
     t(product, "long_description", language) ||
     t(product, "description", language);
+
+  const addToCartLabel =
+    copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
 
   const activeItem =
     activeItemIndex !== null ? selectedItems[activeItemIndex] : null;
@@ -107,7 +119,7 @@ function ProductPurchasePanel({
               type="button"
               className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
             >
-              {copy.addToCart}
+              {addToCartLabel}
             </button>
           </div>
 

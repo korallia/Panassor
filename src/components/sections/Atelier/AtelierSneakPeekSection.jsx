@@ -1,19 +1,55 @@
+import { useEffect, useState } from "react";
+
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import SectionTitle from "../../layout/SectionTitle";
 import CollectionAvenirHero from "./CollectionAvenirHero";
-
-const collectionAVenir = {
-  id: "kit-voleur-avenir",
-  name_fr: "Kit de voleur",
-  title_fr: "Kit de voleur",
-  eyebrow_fr: "Prochainement",
-  description_fr:
-    "Le prochain univers Panassor se prépare dans l’ombre. Suivez-nous sur Facebook pour voir les aperçus, les pistes de création et nous laisser vos suggestions.",
-  hero_image_url: "/images/kit_de_voleur.jpg",
-};
+import { getComingSoonCollections } from "../../../api/panassorApi";
 
 function AtelierSneakPeekSection() {
+  const [comingSoonCollections, setComingSoonCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadComingSoonCollections() {
+      try {
+        const data = await getComingSoonCollections();
+
+        if (isMounted) {
+          setComingSoonCollections(data);
+        }
+      } catch (error) {
+        console.error("Failed to load coming soon collections:", error);
+
+        if (isMounted) {
+          setComingSoonCollections([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadComingSoonCollections();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const collectionAVenir = comingSoonCollections[0];
+
+  if (loading) {
+    return null;
+  }
+
+  if (!collectionAVenir) {
+    return null;
+  }
+
   return (
     <section
       id="sneak-peek"

@@ -31,7 +31,7 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// Get all collections
+// Get published collections only
 app.get("/api/collections", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -53,8 +53,10 @@ app.get("/api/collections", async (req, res) => {
         thumbnail_image_url,
         video_url,
         video_poster_url,
-        featured
+        featured,
+        status
       FROM collections
+      WHERE status = 'published'
       ORDER BY featured DESC, name_fr ASC;
     `);
 
@@ -68,7 +70,46 @@ app.get("/api/collections", async (req, res) => {
   }
 });
 
-// Get one collection by slug, with products
+// Get coming soon collections for sneak peek / atelier
+app.get("/api/collections/coming-soon", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        id,
+        slug,
+        name_fr,
+        name_en,
+        title_fr,
+        title_en,
+        eyebrow_fr,
+        eyebrow_en,
+        url,
+        description_fr,
+        description_en,
+        long_description_fr,
+        long_description_en,
+        hero_image_url,
+        thumbnail_image_url,
+        video_url,
+        video_poster_url,
+        featured,
+        status
+      FROM collections
+      WHERE status = 'coming_soon'
+      ORDER BY featured DESC, name_fr ASC;
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Failed to fetch coming soon collections:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch coming soon collections",
+    });
+  }
+});
+
+// Get one published collection by slug, with products
 app.get("/api/collections/:slug", async (req, res) => {
   const { slug } = req.params;
 
@@ -93,9 +134,11 @@ app.get("/api/collections/:slug", async (req, res) => {
         thumbnail_image_url,
         video_url,
         video_poster_url,
-        featured
+        featured,
+        status
       FROM collections
-      WHERE slug = $1;
+      WHERE slug = $1
+        AND status = 'published';
       `,
       [slug]
     );
@@ -171,6 +214,7 @@ app.get("/api/products/customizable", async (req, res) => {
         p.featured,
         c.slug AS collection_slug,
         c.name_fr AS collection_name_fr,
+        c.name_en AS collection_name_en,
         pi.url AS image_url
       FROM products p
       JOIN collections c
@@ -179,6 +223,7 @@ app.get("/api/products/customizable", async (req, res) => {
         ON pi.product_id = p.id
         AND pi.is_main = TRUE
       WHERE p.customizable = TRUE
+        AND c.status = 'published'
       ORDER BY c.name_fr ASC, p.name_fr ASC;
     `);
 
@@ -192,7 +237,7 @@ app.get("/api/products/customizable", async (req, res) => {
   }
 });
 
-// Get all products
+// Get all products from published collections only
 app.get("/api/products", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -222,6 +267,7 @@ app.get("/api/products", async (req, res) => {
       LEFT JOIN product_images pi
         ON pi.product_id = p.id
         AND pi.is_main = TRUE
+      WHERE c.status = 'published'
       ORDER BY
         c.name_fr ASC,
         p.is_kit DESC,
@@ -239,7 +285,7 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-// Get one product by slug
+// Get one product by slug, only if its collection is published
 app.get("/api/products/:slug", async (req, res) => {
   const { slug } = req.params;
 
@@ -263,10 +309,13 @@ app.get("/api/products/:slug", async (req, res) => {
         p.is_kit,
         p.featured,
         c.slug AS collection_slug,
-        c.name_fr AS collection_name_fr
+        c.name_fr AS collection_name_fr,
+        c.name_en AS collection_name_en
       FROM products p
-      JOIN collections c ON c.id = p.collection_id
-      WHERE p.slug = $1;
+      JOIN collections c
+        ON c.id = p.collection_id
+      WHERE p.slug = $1
+        AND c.status = 'published';
       `,
       [slug]
     );
@@ -308,6 +357,7 @@ app.get("/api/products/:slug", async (req, res) => {
           included.title_fr,
           included.title_en,
           included.description_fr,
+          included.description_en,
           included.price_cents,
           included.customizable,
           ki.quantity,

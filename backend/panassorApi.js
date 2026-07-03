@@ -23,6 +23,10 @@ export function getCollections() {
   return request("/api/collections");
 }
 
+export function getComingSoonCollections() {
+  return request("/api/collections/coming-soon");
+}
+
 export function getCollectionBySlug(slug) {
   return request(`/api/collections/${slug}`);
 }

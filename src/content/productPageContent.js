@@ -13,6 +13,17 @@ export const productPageContent = {
     purchasePanel: {
       addToCart: "Ajouter au panier",
       modifyItem: "Modifier",
+
+      toolModal: {
+        eyebrow: "Modifier l’outil",
+        mobileTitle: "Choisir",
+        desktopTitle: "Choisir un outil",
+        close: "Fermer",
+        replacePrefix: "Remplacer",
+        replaceSuffix: "par :",
+        desktopDescriptionPrefix: "Sélectionne l’outil qui remplacera",
+        select: "Sélectionner",
+      },
     },
 
     relatedProducts: {
@@ -54,6 +65,17 @@ export const productPageContent = {
     purchasePanel: {
       addToCart: "Add to cart",
       modifyItem: "Change",
+
+      toolModal: {
+        eyebrow: "Change tool",
+        mobileTitle: "Choose",
+        desktopTitle: "Choose a tool",
+        close: "Close",
+        replacePrefix: "Replace",
+        replaceSuffix: "with:",
+        desktopDescriptionPrefix: "Choose the tool that will replace",
+        select: "Select",
+      },
     },
 
     relatedProducts: {

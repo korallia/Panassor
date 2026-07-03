@@ -16,7 +16,7 @@ function Navbar() {
       id: "all-collections",
       title: language === "en" ? "All collections" : "Toutes les collections",
       url: "/collections",
-      image: "/images/hero-kit-chirurgien.jpg",
+      image: "/images/03_banner_med_torsio.jpg",
       eyebrow: language === "en" ? "Explore" : "Explorer",
     },
     ...collections.map((collection) => ({

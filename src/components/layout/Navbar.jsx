@@ -1,45 +1,49 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { useCollections } from "../../context/CollectionsContext";
+import { useLanguage } from "../../context/LanguageContext";
+import { getCollectionUrl, t } from "../../utils/localization";
 
 function Navbar() {
   const navigate = useNavigate();
   const collections = useCollections();
+  const { language, toggleLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dropdownItems = [
     {
       id: "all-collections",
-      title: "Toutes les collections",
+      title: language === "en" ? "All collections" : "Toutes les collections",
       url: "/collections",
       image: "/images/hero-kit-chirurgien.jpg",
-      eyebrow: "Explorer",
+      eyebrow: language === "en" ? "Explore" : "Explorer",
     },
     ...collections.map((collection) => ({
       id: collection.id,
-      title: collection.title_fr || collection.name_fr,
-      url: `/collections/${collection.slug}`,
+      title: t(collection, "title", language) || t(collection, "name", language),
+      url: getCollectionUrl(collection, language),
       image: collection.thumbnail_image_url || collection.hero_image_url,
-      eyebrow: collection.eyebrow_fr,
+      eyebrow: t(collection, "eyebrow", language),
     })),
     {
       id: "coming-soon",
-      title: "Collections à venir",
+      title: language === "en" ? "Coming collections" : "Collections à venir",
       url: "/atelier#sneak-peek",
       image: "/images/kit_de_voleur.jpg",
-      eyebrow: "Prochainement",
+      eyebrow: language === "en" ? "Coming soon" : "Prochainement",
     },
   ];
 
   const mobileItems = [
     {
       id: "products",
-      title: "Produits",
+      title: language === "en" ? "Products" : "Produits",
       url: "/produits",
     },
     {
       id: "atelier",
-      title: "Atelier",
+      title: language === "en" ? "Workshop" : "Atelier",
       url: "/atelier",
     },
     {
@@ -49,13 +53,13 @@ function Navbar() {
     },
     {
       id: "all-collections",
-      title: "Toutes les collections",
+      title: language === "en" ? "All collections" : "Toutes les collections",
       url: "/collections",
     },
     ...collections.map((collection) => ({
       id: collection.id,
-      title: collection.title_fr || collection.name_fr,
-      url: `/collections/${collection.slug}`,
+      title: t(collection, "title", language) || t(collection, "name", language),
+      url: getCollectionUrl(collection, language),
     })),
   ];
 
@@ -70,20 +74,22 @@ function Navbar() {
   const DesktopLanguageButton = () => (
     <button
       type="button"
+      onClick={toggleLanguage}
       className="font-['IM_Fell_English_SC'] text-[1.05rem] uppercase tracking-[0.08em] text-[#d8a24c]/90 transition hover:text-[#f7ead2] lg:text-xl"
-      aria-label="Changer la langue du site"
+      aria-label={language === "en" ? "Switch to French" : "Passer en anglais"}
     >
-      EN
+      {language === "fr" ? "EN" : "FR"}
     </button>
   );
 
   const MobileLanguageButton = () => (
     <button
       type="button"
+      onClick={toggleLanguage}
       className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
-      aria-label="Changer la langue du site"
+      aria-label={language === "en" ? "Switch to French" : "Passer en anglais"}
     >
-      EN
+      {language === "fr" ? "EN" : "FR"}
     </button>
   );
 
@@ -94,7 +100,7 @@ function Navbar() {
           type="button"
           onClick={() => navigateAndClose("/")}
           className="flex min-w-0 shrink-0 items-center gap-3 text-left md:justify-self-start"
-          aria-label="Retourner à l’accueil"
+          aria-label={language === "en" ? "Return to home" : "Retourner à l’accueil"}
         >
           <img
             src="/images/IconPanassor.png"
@@ -108,7 +114,9 @@ function Navbar() {
             </div>
 
             <div className="mt-1 max-w-[10rem] font-['IM_Fell_English_SC'] text-[0.62rem] uppercase leading-4 tracking-[0.14em] text-[#d8a24c] sm:max-w-none sm:text-[0.72rem] md:text-[0.8rem]">
-              Kits médiévaux uniques
+              {language === "en"
+                ? "Unique medieval kits"
+                : "Kits médiévaux uniques"}
             </div>
           </div>
         </button>
@@ -183,7 +191,7 @@ function Navbar() {
             onClick={() => navigate("/produits")}
             className="transition hover:text-[#d8a24c]"
           >
-            Produits
+            {language === "en" ? "Products" : "Produits"}
           </button>
 
           <span className="text-sm text-[#8a5a2b]">✦</span>
@@ -193,7 +201,7 @@ function Navbar() {
             onClick={() => navigate("/atelier")}
             className="transition hover:text-[#d8a24c]"
           >
-            Atelier
+            {language === "en" ? "Workshop" : "Atelier"}
           </button>
 
           <span className="text-sm text-[#8a5a2b]">✦</span>
@@ -217,9 +225,21 @@ function Navbar() {
             onClick={() => setIsMenuOpen((current) => !current)}
             className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
             aria-expanded={isMenuOpen}
-            aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-label={
+              isMenuOpen
+                ? language === "en"
+                  ? "Close menu"
+                  : "Fermer le menu"
+                : language === "en"
+                  ? "Open menu"
+                  : "Ouvrir le menu"
+            }
           >
-            {isMenuOpen ? "Fermer" : "Menu"}
+            {isMenuOpen
+              ? language === "en"
+                ? "Close"
+                : "Fermer"
+              : "Menu"}
           </button>
 
           <MobileLanguageButton />

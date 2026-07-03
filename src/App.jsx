@@ -12,8 +12,10 @@ import ProductsPage from "./pages/ProductsPage";
 import AtelierPage from "./pages/AtelierPage";
 import ContactPage from "./pages/ContactPage";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
+import  { LanguageProvider  } from "../src/context/LanguageProvider "
 function App() {
   return (
+      <LanguageProvider>
       <CollectionsProvider>
     <div className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <Navbar />
@@ -31,6 +33,7 @@ function App() {
       <Footer />
     </div>
     </CollectionsProvider>
+    </LanguageProvider>
   );
 }
 

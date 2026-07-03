@@ -1,9 +1,16 @@
 import { useNavigate } from "react-router-dom";
 
+import { useLanguage } from "../context/LanguageContext";
+import { getPageText } from "../utils/content";
+import { contactContent } from "../content/contactContent";
+
 import PageHeroBanner from "../components/layout/PageHeroBanner";
 import SectionAtmosphere from "../components/layout/SectionAtmosphere";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
 import CornerFrame from "../components/ui/CornerFrame";
+
+const contactEmail = "contact@panassor.ca";
+const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
 
 const goldButtonClass =
   "inline-flex items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-7 py-4 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]";
@@ -13,15 +20,20 @@ const greenButtonClass =
 
 function ContactPage() {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+
+  const copy = getPageText(contactContent, language);
+
+  const emailSubject = encodeURIComponent(copy.customOrder.emailSubject);
 
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <PageHeroBanner
-        image="/images/collections-hero.png"
-        alt="Contact Panassor"
-        eyebrow="Correspondance"
-        title="Contact"
-        description="Venez nous dire salut, suivre nos projets et nous écrire pour toute question ou demande spéciale."
+        image={copy.hero.image}
+        alt={copy.hero.alt}
+        eyebrow={copy.hero.eyebrow}
+        title={copy.hero.title}
+        description={copy.hero.description}
       />
 
       <section className="relative overflow-hidden bg-[#080504] px-6 pb-40 pt-24 text-[#f3e7cf]">
@@ -33,38 +45,35 @@ function ContactPage() {
         <div className="relative z-10 mx-auto max-w-[88rem]">
           <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
             <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
-              Correspondance
+              {copy.intro.eyebrow}
             </p>
 
             <h2 className="mt-3 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] sm:text-5xl md:text-6xl">
-              Nous contacter
+              {copy.intro.title}
             </h2>
 
             <OrnamentDivider className="mt-6" width={112} opacity={0.65} />
 
             <p className="mx-auto mt-8 max-w-4xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84 md:text-2xl md:leading-9">
-              Venez nous suivre sur Facebook, nous dire salut et suivre les
-              aperçus des prochains kits. Pour toute question, commande unique,
-              collaboration ou demande spéciale, contactez-nous par Messenger ou
-              par courriel.
+              {copy.intro.description}
             </p>
 
             <div className="mt-10 flex w-full flex-col justify-center gap-4 sm:w-auto sm:flex-row">
               <a
-                href="https://www.facebook.com/profile.php?id=61587079943525"
+                href={facebookUrl}
                 target="_blank"
                 rel="noreferrer"
                 className={`${goldButtonClass} px-9 py-4 text-lg md:text-xl`}
               >
-                Suivre sur Facebook
+                {copy.intro.facebookButton}
               </a>
 
               <a
-                href="mailto:contact@panassor.com"
+                href={`mailto:${contactEmail}`}
                 className={`${greenButtonClass} px-9 py-4 text-lg md:text-xl`}
               >
                 <span className="mr-3">✦</span>
-                contact@panassor.com
+                {contactEmail}
               </a>
             </div>
           </div>
@@ -74,8 +83,8 @@ function ContactPage() {
           <div className="mx-auto mt-20 grid max-w-[82rem] gap-12 lg:grid-cols-2 lg:items-stretch">
             <div className="relative min-h-[28rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)] sm:min-h-[32rem] md:min-h-[35rem]">
               <img
-                src="/images/kit_de_voleur.jpg"
-                alt="Commande unique Panassor"
+                src={copy.customOrder.image}
+                alt={copy.customOrder.imageAlt}
                 className="absolute inset-0 h-full w-full object-cover brightness-[0.55] contrast-[1.12] saturate-[0.88]"
               />
 
@@ -87,56 +96,48 @@ function ContactPage() {
 
               <div className="absolute bottom-8 left-8 right-8">
                 <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
-                  Commande unique
+                  {copy.customOrder.imageEyebrow}
                 </p>
 
                 <h2 className="mt-3 font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)] sm:text-5xl">
-                  Un objet pour votre personnage
+                  {copy.customOrder.imageTitle}
                 </h2>
               </div>
             </div>
 
             <div className="flex flex-col justify-center border border-[#6f5423]/30 bg-[#120c07]/30 px-8 py-10 md:px-12">
               <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
-                Commandes et projets spéciaux
+                {copy.customOrder.eyebrow}
               </p>
 
               <h2 className="mt-2 font-['IM_Fell_English_SC'] text-4xl uppercase leading-[0.95] text-[#fff1d2] sm:text-5xl md:text-6xl">
-                Une idée hors collection?
+                {copy.customOrder.title}
               </h2>
 
               <div className="my-6 h-px w-48 bg-gradient-to-r from-[#c89b3c] to-transparent" />
 
               <div className="space-y-4 font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84 md:text-2xl md:leading-9">
-                <p>
-                  Vous avez une idée pour un accessoire, une commande unique ou
-                  un projet spécial? Écrivez-nous simplement ce que vous avez en
-                  tête.
-                </p>
-
-                <p>
-                  Que ce soit pour un personnage, un événement ou une
-                  collaboration, on pourra regarder avec vous si le projet est
-                  possible.
-                </p>
+                {copy.customOrder.paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
               </div>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <a
-                  href="mailto:contact@panassor.com?subject=Commande%20unique%20Panassor"
+                  href={`mailto:${contactEmail}?subject=${emailSubject}`}
                   className={goldButtonClass}
                 >
                   <span className="mr-2">✦</span>
-                  Écrire à l’atelier
+                  {copy.customOrder.emailButton}
                 </a>
 
                 <a
-                  href="https://www.facebook.com/profile.php?id=61587079943525"
+                  href={facebookUrl}
                   target="_blank"
                   rel="noreferrer"
                   className={greenButtonClass}
                 >
-                  Nous écrire sur Messenger
+                  {copy.customOrder.messengerButton}
                 </a>
               </div>
             </div>
@@ -159,31 +160,29 @@ function ContactPage() {
                     <div className="h-px w-16 bg-[#c89b3c]/80" />
 
                     <p className="shrink-0 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c] sm:text-sm">
-                      Facebook
+                      {copy.facebook.eyebrow}
                     </p>
 
                     <div className="h-px w-16 bg-[#c89b3c]/60" />
                   </div>
 
                   <h2 className="max-w-4xl font-['IM_Fell_English_SC'] text-4xl uppercase leading-[0.95] text-[#fff1d2] sm:text-5xl">
-                    Suivre ce qui se prépare dans l’ombre
+                    {copy.facebook.title}
                   </h2>
 
                   <p className="mt-5 max-w-3xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/80 md:text-2xl md:leading-9">
-                    On y partage les aperçus, les projets à venir et les
-                    nouvelles de l’atelier. Passez nous dire salut, poser une
-                    question ou suivre ce qui se prépare.
+                    {copy.facebook.description}
                   </p>
                 </div>
 
                 <div className="flex flex-col gap-4 lg:items-end">
                   <a
-                    href="https://www.facebook.com/profile.php?id=61587079943525"
+                    href={facebookUrl}
                     target="_blank"
                     rel="noreferrer"
                     className={`${goldButtonClass} w-full sm:w-fit`}
                   >
-                    Suivre sur Facebook
+                    {copy.facebook.facebookButton}
                   </a>
 
                   <button
@@ -191,7 +190,7 @@ function ContactPage() {
                     onClick={() => navigate("/atelier#sneak-peek")}
                     className={`${greenButtonClass} w-full sm:w-fit`}
                   >
-                    Voir les projets à venir
+                    {copy.facebook.sneakPeekButton}
                   </button>
                 </div>
               </div>

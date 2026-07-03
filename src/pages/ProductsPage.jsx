@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 
 import { getProducts } from "../../backend/panassorApi";
 
+import { useLanguage } from "../context/LanguageContext";
+import { getPageText } from "../utils/content";
+import { productsContent } from "../content/productsContent";
+
 import ProductCard from "../components/ui/ProductCard";
 import PageHeroBanner from "../components/layout/PageHeroBanner";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
@@ -10,6 +14,9 @@ import PanassorSectionHeader from "../components/layout/PanassorSectionHeader";
 const RETRY_DELAY_MS = 3000;
 
 function ProductsPage() {
+  const { language } = useLanguage();
+  const copy = getPageText(productsContent, language);
+
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -46,18 +53,18 @@ function ProductsPage() {
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <PageHeroBanner
-        image="/images/collections-hero.png"
-        alt="Produits Panassor"
-        eyebrow="Catalogue Panassor"
-        title="Produits"
-        description="Des instruments immersifs, durables et sécuritaires pensés pour enrichir vos scènes de jeu et donner du poids aux rôles non-combattants."
+        image={copy.hero.image}
+        alt={copy.hero.alt}
+        eyebrow={copy.hero.eyebrow}
+        title={copy.hero.title}
+        description={copy.hero.description}
       />
 
       <section className="relative overflow-hidden bg-[#080504] px-6 pt-24 pb-32">
         <PanassorSectionHeader
-          eyebrow="Tous les produits"
-          title="Explorer le catalogue"
-          description="Chaque accessoire est conçu pour soutenir une ambiance, un geste et une présence en jeu."
+          eyebrow={copy.index.eyebrow}
+          title={copy.index.title}
+          description={copy.index.description}
           atmosphere="productsIndex"
           className="mx-auto mb-16 max-w-[78rem]"
         />

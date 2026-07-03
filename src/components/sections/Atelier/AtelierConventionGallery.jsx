@@ -5,23 +5,10 @@ import OrnamentDivider from "../../ui/OrnamentDivider";
 import PanassorSectionHeader from "../../layout/PanassorSectionHeader";
 import SectionAtmosphere from "../../layout/SectionAtmosphere";
 
-const conventionImages = [
-  {
-    src: "/images/Kiosque.jpg",
-    alt: "Kiosque Panassor au Salon de la Passion Médiévale",
-  },
-  {
-    src: "/images/Emile.jpg",
-    alt: "Présentation des kits Panassor au Salon de la Passion Médiévale",
-  },
-  {
-    src: "/images/Kiosque2.jpg",
-    alt: "Table Panassor avec accessoires médiévaux en convention",
-  },
-];
-
-function AtelierConventionGallery() {
+function AtelierConventionGallery({ copy = {} }) {
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const conventionImages = copy.images ?? [];
 
   useEffect(() => {
     if (!selectedImage) return;
@@ -41,6 +28,13 @@ function AtelierConventionGallery() {
     };
   }, [selectedImage]);
 
+  if (!conventionImages.length) {
+    return null;
+  }
+
+  const featuredImage = conventionImages[0];
+  const secondaryImages = conventionImages.slice(1);
+
   return (
     <>
       {/* MOBILE */}
@@ -56,28 +50,27 @@ function AtelierConventionGallery() {
             </div>
 
             <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.3em] text-[#c89b3c]">
-              Galerie
+              {copy.eyebrow}
             </p>
 
             <h2 className="font-['IM_Fell_English_SC'] text-[clamp(2.65rem,11vw,4rem)] uppercase leading-[0.9] text-[#fff1d2]">
-              Panassor en convention
+              {copy.title}
             </h2>
 
             <p className="mt-5 font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/84">
-              Une première rencontre avec la communauté, les kits sur table, et
-              l’univers Panassor hors de l’atelier.
+              {copy.mobileDescription}
             </p>
           </div>
 
           <button
             type="button"
-            onClick={() => setSelectedImage(conventionImages[0])}
+            onClick={() => setSelectedImage(featuredImage)}
             className="relative block h-[72svh] min-h-[540px] w-full overflow-hidden border border-[#c89b3c]/55 bg-[#120c07] text-left shadow-[0_24px_70px_rgba(0,0,0,0.72)]"
-            aria-label="Ouvrir l’image du kiosque Panassor en plein écran"
+            aria-label={copy.openFeaturedImageLabel}
           >
             <img
-              src={conventionImages[0].src}
-              alt={conventionImages[0].alt}
+              src={featuredImage.src}
+              alt={featuredImage.alt}
               className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.9] contrast-[1.06] saturate-[0.96]"
             />
 
@@ -94,27 +87,27 @@ function AtelierConventionGallery() {
 
             <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-8">
               <p className="mb-4 font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.24em] text-[#c89b3c] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
-                Première sortie officielle
+                {copy.featuredEyebrow}
               </p>
 
               <h3 className="max-w-[18rem] font-['IM_Fell_English_SC'] text-[clamp(2.2rem,9vw,3.05rem)] uppercase leading-[0.9] text-[#fff1d2] drop-shadow-[0_7px_18px_rgba(0,0,0,0.95)]">
-                Salon de la Passion Médiévale
+                {copy.featuredTitle}
               </h3>
 
               <p className="mt-4 max-w-[19rem] font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
-                Les premiers kits Panassor présentés au public.
+                {copy.featuredMobileDescription}
               </p>
             </div>
           </button>
 
           <div className="mt-5 grid gap-5">
-            {conventionImages.slice(1).map((image) => (
+            {secondaryImages.map((image) => (
               <button
                 key={image.src}
                 type="button"
                 onClick={() => setSelectedImage(image)}
                 className="relative h-[310px] overflow-hidden border border-[#c89b3c]/45 bg-[#120c07] text-left shadow-[0_18px_50px_rgba(0,0,0,0.58)]"
-                aria-label={`Ouvrir l’image : ${image.alt}`}
+                aria-label={`${copy.openImageLabelPrefix} ${image.alt}`}
               >
                 <img
                   src={image.src}
@@ -129,7 +122,7 @@ function AtelierConventionGallery() {
                 <div className="pointer-events-none absolute inset-3 border border-[#c89b3c]/12" />
 
                 <span className="absolute bottom-4 left-4 right-4 font-['IM_Fell_English_SC'] text-[0.68rem] uppercase leading-4 tracking-[0.18em] text-[#e7c97b] drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
-                  Voir l’image
+                  {copy.viewImage}
                 </span>
               </button>
             ))}
@@ -145,9 +138,9 @@ function AtelierConventionGallery() {
 
         <div className="relative z-10 mx-auto max-w-[92rem]">
           <PanassorSectionHeader
-            eyebrow="Galerie"
-            title="Panassor en convention"
-            description="Les photos montrent une partie de l’expérience, mais rien ne remplace le moment où l’on peut prendre les kits en main, voir les détails de près et discuter avec nous de vos personnages, scènes et idées de jeu."
+            eyebrow={copy.eyebrow}
+            title={copy.title}
+            description={copy.desktopDescription}
             showAtmosphere={false}
             className="mx-auto mb-16 max-w-[78rem]"
           />
@@ -155,16 +148,16 @@ function AtelierConventionGallery() {
           <div className="grid gap-10 lg:grid-cols-[1.55fr_0.75fr]">
             <button
               type="button"
-              onClick={() => setSelectedImage(conventionImages[0])}
+              onClick={() => setSelectedImage(featuredImage)}
               className="relative min-h-[720px] border border-[#c89b3c]/55 bg-[#120c07] p-4 text-left shadow-[0_28px_80px_rgba(0,0,0,0.72)]"
-              aria-label="Ouvrir l’image du kiosque Panassor en plein écran"
+              aria-label={copy.openFeaturedImageLabel}
             >
               <CornerFrame inset="outside" size="lg" />
 
               <div className="relative h-full min-h-[690px] overflow-hidden">
                 <img
-                  src={conventionImages[0].src}
-                  alt={conventionImages[0].alt}
+                  src={featuredImage.src}
+                  alt={featuredImage.alt}
                   className="h-full min-h-[690px] w-full object-cover brightness-[0.82] contrast-[1.08] saturate-[0.92] transition duration-500 hover:scale-[1.015] hover:brightness-[0.9]"
                 />
 
@@ -177,19 +170,15 @@ function AtelierConventionGallery() {
 
                   <div className="relative z-10 px-5 py-4">
                     <p className="mb-2 font-['IM_Fell_English_SC'] text-[11px] uppercase tracking-[0.24em] text-[#c89b3c]">
-                      Première sortie officielle
+                      {copy.featuredEyebrow}
                     </p>
 
                     <h3 className="font-['IM_Fell_English_SC'] text-3xl uppercase leading-[0.92] text-[#fff1d2] drop-shadow-[0_6px_16px_rgba(0,0,0,0.9)] md:text-4xl">
-                      Salon de la Passion Médiévale
+                      {copy.featuredTitle}
                     </h3>
 
                     <p className="mt-3 max-w-none font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
-                      Cette année, Panassor présentait ses premiers kits au
-                      public lors du Salon de la Passion Médiévale. Une première
-                      rencontre avec la communauté, nos accessoires sur table,
-                      et le début concret de l’univers Panassor hors de
-                      l’atelier.
+                      {copy.featuredDesktopDescription}
                     </p>
                   </div>
                 </div>
@@ -197,13 +186,13 @@ function AtelierConventionGallery() {
             </button>
 
             <div className="grid gap-10">
-              {conventionImages.slice(1).map((image) => (
+              {secondaryImages.map((image) => (
                 <button
                   key={image.src}
                   type="button"
                   onClick={() => setSelectedImage(image)}
                   className="relative min-h-[347px] border border-[#c89b3c]/40 bg-[#120c07] p-3 text-left shadow-[0_20px_55px_rgba(0,0,0,0.55)]"
-                  aria-label={`Ouvrir l’image : ${image.alt}`}
+                  aria-label={`${copy.openImageLabelPrefix} ${image.alt}`}
                 >
                   <CornerFrame inset="outside" size="lg" />
 
@@ -238,7 +227,7 @@ function AtelierConventionGallery() {
             onClick={() => setSelectedImage(null)}
             className="absolute top-5 right-5 z-20 border border-[#c89b3c]/70 bg-[#120c07] px-4 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805] md:top-6 md:right-6"
           >
-            Fermer
+            {copy.close}
           </button>
 
           <div

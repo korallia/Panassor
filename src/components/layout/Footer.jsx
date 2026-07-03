@@ -1,5 +1,10 @@
 import { useNavigate } from "react-router-dom";
+
 import { useCollections } from "../../context/CollectionsContext";
+import { useLanguage } from "../../context/LanguageContext";
+import { getCollectionUrl, t } from "../../utils/localization";
+import { getPageText } from "../../utils/content";
+import { footerContent } from "../../content/footerContent";
 
 const contactEmail = "contact@panassor.ca";
 const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
@@ -7,6 +12,9 @@ const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
 function Footer() {
   const navigate = useNavigate();
   const collections = useCollections();
+  const { language } = useLanguage();
+
+  const copy = getPageText(footerContent, language);
 
   const footerLinkClass = "text-left transition hover:text-[#d8a24c]";
 
@@ -28,11 +36,11 @@ function Footer() {
               type="button"
               onClick={() => navigate("/")}
               className="mb-5 flex items-center gap-4 text-left"
-              aria-label="Retourner à l’accueil"
+              aria-label={copy.brand.homeAriaLabel}
             >
               <img
                 src="/images/IconPanassor.png"
-                alt="Logo Panassor"
+                alt={copy.brand.logoAlt}
                 className="h-16 w-16 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)]"
               />
 
@@ -42,14 +50,13 @@ function Footer() {
                 </div>
 
                 <div className="mt-1 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#d8a24c]">
-                  Kits médiévaux uniques
+                  {copy.brand.tagline}
                 </div>
               </div>
             </button>
 
             <p className="max-w-md font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/85">
-              Accessoires immersifs faits main pour enrichir les scènes, les
-              personnages et les univers de grandeur nature.
+              {copy.brand.description}
             </p>
 
             <div className="mt-7 h-px w-52 bg-gradient-to-r from-[#c89b3c] to-transparent" />
@@ -57,7 +64,7 @@ function Footer() {
 
           <div>
             <h3 className="mb-5 font-['IM_Fell_English_SC'] text-2xl uppercase tracking-[0.06em] text-[#fff1d2]">
-              Navigation
+              {copy.navigation.title}
             </h3>
 
             <ul className="space-y-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/85">
@@ -67,7 +74,7 @@ function Footer() {
                   onClick={() => navigate("/")}
                   className={footerLinkClass}
                 >
-                  Accueil
+                  {copy.navigation.links.home}
                 </button>
               </li>
 
@@ -77,7 +84,7 @@ function Footer() {
                   onClick={() => navigate("/produits")}
                   className={footerLinkClass}
                 >
-                  Produits
+                  {copy.navigation.links.products}
                 </button>
               </li>
 
@@ -87,7 +94,7 @@ function Footer() {
                   onClick={() => navigate("/collections")}
                   className={footerLinkClass}
                 >
-                  Collections
+                  {copy.navigation.links.collections}
                 </button>
               </li>
 
@@ -97,7 +104,7 @@ function Footer() {
                   onClick={() => navigate("/atelier")}
                   className={footerLinkClass}
                 >
-                  Atelier
+                  {copy.navigation.links.workshop}
                 </button>
               </li>
             </ul>
@@ -105,7 +112,7 @@ function Footer() {
 
           <div>
             <h3 className="mb-5 font-['IM_Fell_English_SC'] text-2xl uppercase tracking-[0.06em] text-[#fff1d2]">
-              Collections
+              {copy.collections.title}
             </h3>
 
             <ul className="space-y-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/85">
@@ -113,10 +120,12 @@ function Footer() {
                 <li key={collection.id}>
                   <button
                     type="button"
-                    onClick={() => navigate(`/collections/${collection.slug}`)}
+                    onClick={() =>
+                      navigate(getCollectionUrl(collection, language))
+                    }
                     className={footerLinkClass}
                   >
-                    {collection.name_fr}
+                    {t(collection, "name", language)}
                   </button>
                 </li>
               ))}
@@ -127,7 +136,7 @@ function Footer() {
                   onClick={() => navigate("/atelier#sneak-peek")}
                   className={footerLinkClass}
                 >
-                  Collections à venir
+                  {copy.collections.comingSoon}
                 </button>
               </li>
             </ul>
@@ -135,28 +144,24 @@ function Footer() {
 
           <div>
             <h3 className="mb-5 font-['IM_Fell_English_SC'] text-2xl uppercase tracking-[0.06em] text-[#fff1d2]">
-              Contact
+              {copy.contact.title}
             </h3>
 
             <p className="mb-6 font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/85">
-              Venez nous suivre sur Facebook ou écrivez-nous pour une question,
-              une commande unique ou une demande spéciale.
+              {copy.contact.description}
             </p>
 
-            <a
-              href={`mailto:${contactEmail}`}
-              className={contactButtonClass}
-            >
+            <a href={`mailto:${contactEmail}`} className={contactButtonClass}>
               <span className="mr-3">✦</span>
-              Nous contacter
+              {copy.contact.button}
             </a>
 
             <div className="mt-7 flex gap-3">
               <a
                 href={`mailto:${contactEmail}`}
                 className={iconButtonClass}
-                aria-label="Nous contacter par courriel"
-                title="Nous contacter"
+                aria-label={copy.contact.emailAriaLabel}
+                title={copy.contact.emailTitle}
               >
                 ✉
               </a>
@@ -166,8 +171,8 @@ function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 className={iconButtonClass}
-                aria-label="Facebook Panassor"
-                title="Facebook Panassor"
+                aria-label={copy.contact.facebookAriaLabel}
+                title={copy.contact.facebookTitle}
               >
                 f
               </a>
@@ -176,8 +181,8 @@ function Footer() {
                 type="button"
                 onClick={() => navigate("/collections")}
                 className={iconButtonClass}
-                aria-label="Voir les collections"
-                title="Voir les collections"
+                aria-label={copy.contact.collectionsAriaLabel}
+                title={copy.contact.collectionsTitle}
               >
                 ⌂
               </button>
@@ -186,10 +191,15 @@ function Footer() {
         </div>
 
         <div className="flex flex-col gap-4 pt-7 font-['EB_Garamond'] text-base text-[#d7c8ad]/65 md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Panassor. Tous droits réservés.</p>
+          <p>
+            © {new Date().getFullYear()} Panassor. {copy.legal.rights}
+          </p>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <a href={`mailto:${contactEmail}`} className="transition hover:text-[#d8a24c]">
+            <a
+              href={`mailto:${contactEmail}`}
+              className="transition hover:text-[#d8a24c]"
+            >
               {contactEmail}
             </a>
 

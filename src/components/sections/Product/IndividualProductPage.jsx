@@ -118,7 +118,10 @@ function IndividualProductPage({
         />
       </section>
 
-      <ProductNarrativeBanner collection={collection} />
+      <ProductNarrativeBanner
+  collection={collection}
+  copy={copy.narrativeBanner}
+/>
 
       <section className="bg-[#080504] pb-24" />
     </main>

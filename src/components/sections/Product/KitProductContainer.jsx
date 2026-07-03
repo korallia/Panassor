@@ -171,7 +171,10 @@ function KitProductContainer({
         />
       </section>
 
-      <ProductNarrativeBanner collection={collection} />
+     <ProductNarrativeBanner
+  collection={collection}
+  copy={copy.narrativeBanner}
+/>
 
       <section className="relative px-4 pt-8 pb-8 md:px-6">
         <OrnamentDivider

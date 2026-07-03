@@ -1,20 +1,65 @@
 import { Link } from "react-router-dom";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import { t } from "../../../utils/localization";
+
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
-function ProductNarrativeBanner({ collection }) {
-  const badges = [
-    ["⚜", "Fabrication québécoise"],
-    ["✦", "Exigence décorum"],
-    ["◌", "Pensé pour le GN"],
-    ["◆", "Sécuritaire en jeu"],
-    ["◇", "Inspiré de l’histoire"],
-  ];
+function ProductNarrativeBanner({ collection, copy = {} }) {
+  const { language } = useLanguage();
 
   if (!collection) {
     return null;
   }
+
+  const collectionName = t(collection, "name", language);
+
+  const badges =
+    copy.badges ||
+    (language === "en"
+      ? [
+          ["⚜", "Made in Quebec"],
+          ["✦", "Decorum-focused"],
+          ["◌", "Designed for LARP"],
+          ["◆", "Safe for play"],
+          ["◇", "Inspired by history"],
+        ]
+      : [
+          ["⚜", "Fabrication québécoise"],
+          ["✦", "Exigence décorum"],
+          ["◌", "Pensé pour le GN"],
+          ["◆", "Sécuritaire en jeu"],
+          ["◇", "Inspiré de l’histoire"],
+        ]);
+
+  const eyebrow =
+    copy.eyebrow || (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
+
+  const title =
+    copy.title ||
+    (language === "en"
+      ? "Every detail must earn its place in play."
+      : "Chaque détail doit mériter sa place en jeu.");
+
+  const firstParagraphPrefix =
+    copy.firstParagraphPrefix || (language === "en" ? "The" : "La collection");
+
+  const firstParagraphSuffix =
+    copy.firstParagraphSuffix ||
+    (language === "en"
+      ? "collection is designed for scenes where details matter. Each piece is made to stay credible in play, respect decorum requirements, and give players tools they can handle with pride."
+      : "est pensée pour les scènes où le détail compte. Chaque pièce est conçue pour rester crédible en jeu, respecter les exigences du décorum et donner aux joueurs des outils qu’ils peuvent manipuler avec fierté.");
+
+  const secondParagraph =
+    copy.secondParagraph ||
+    (language === "en"
+      ? "Inspired by history, made in Quebec, and driven by our passion for live-action roleplay, our kits exist to enrich immersion without sacrificing safety, durability, or quality."
+      : "Inspirés par l’histoire, fabriqués au Québec et portés par notre passion du grandeur nature, nos kits existent pour enrichir l’immersion sans sacrifier la sécurité, la durabilité ou la qualité.");
+
+  const atelierButton =
+    copy.atelierButton ||
+    (language === "en" ? "Discover the workshop" : "Découvrir l’atelier");
 
   const backgroundImage =
     collection.hero_image_url ??
@@ -51,7 +96,7 @@ function ProductNarrativeBanner({ collection }) {
               </div>
 
               <p className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.28em] text-[#c89b3c] drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">
-                L’empreinte Panassor
+                {eyebrow}
               </p>
             </div>
 
@@ -99,29 +144,25 @@ function ProductNarrativeBanner({ collection }) {
                   <div className="h-px flex-1 bg-[#c89b3c]/65" />
 
                   <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.24em] text-[#c89b3c]">
-                    L’empreinte Panassor
+                    {eyebrow}
                   </span>
 
                   <div className="h-px flex-1 bg-[#c89b3c]/65" />
                 </div>
 
                 <h2 className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2]">
-                  Chaque détail doit mériter sa place en jeu.
+                  {title}
                 </h2>
               </div>
 
               <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-                La collection {collection.name_fr} est pensée pour les scènes où
-                le détail compte. Chaque pièce est conçue pour rester crédible
-                en jeu, respecter les exigences du décorum et donner aux joueurs
-                des outils qu’ils peuvent manipuler avec fierté.
+                {firstParagraphPrefix}{" "}
+                <span className="text-[#fff1d2]">{collectionName}</span>{" "}
+                {firstParagraphSuffix}
               </p>
 
               <p className="mt-4 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84">
-                Inspirés par l’histoire, fabriqués au Québec et portés par notre
-                passion du grandeur nature, nos kits existent pour enrichir
-                l’immersion sans sacrifier la sécurité, la durabilité ou la
-                qualité.
+                {secondParagraph}
               </p>
 
               <OrnamentDivider
@@ -134,7 +175,7 @@ function ProductNarrativeBanner({ collection }) {
                 to="/atelier"
                 className="mt-7 inline-flex w-fit items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-7 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.1em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
               >
-                Découvrir l’atelier
+                {atelierButton}
               </Link>
             </div>
 

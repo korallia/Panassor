@@ -67,6 +67,20 @@ function Navbar() {
   const mobileCollectionLinkClass =
     "block w-full border-b border-[#6f5423]/30 py-3 text-left font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88 transition last:border-b-0 hover:text-[#d8a24c]";
 
+  const LanguageButton = () => (
+    <button
+      type="button"
+      className="group relative inline-flex items-center justify-center gap-2 border border-[#9b6a22] bg-[#120c07]/40 px-4 py-2 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.16em] text-[#f3c96b] transition hover:border-[#d8a24c] hover:bg-[#c89b3c] hover:text-[#100805] md:px-5 md:text-sm"
+      aria-label="Changer la langue du site"
+    >
+      <span className="text-[0.65rem] text-[#d8a24c] transition group-hover:text-[#100805]">
+        ✦
+      </span>
+
+      <span className="relative z-10">EN</span>
+    </button>
+  );
+
   return (
     <header className="relative z-50 border-b-2 border-[#c89b3c]/75 bg-[#090604]/94 backdrop-blur-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 md:grid md:h-24 md:grid-cols-[auto_1fr_auto] md:px-6">
@@ -188,6 +202,7 @@ function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c]">
+          <LanguageButton />
 
           <button
             type="button"

@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import { t } from "../../../utils/localization";
+
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
 import ProductPanelTitle from "./ProductPanelTitle";
@@ -7,10 +10,12 @@ import ProductColorOptions from "./ProductColorOptions";
 import CustomizableItemsList from "./CustomizableItemsList";
 import ToolSelectionModal from "./ToolSelectionModal";
 
-function formatPrice(priceCents, currency = "CAD") {
+function formatPrice(priceCents, language = "fr", currency = "CAD") {
   if (priceCents == null) return "";
 
-  return new Intl.NumberFormat("fr-CA", {
+  const locale = language === "en" ? "en-CA" : "fr-CA";
+
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
   }).format(priceCents / 100);
@@ -23,7 +28,10 @@ function ProductPurchasePanel({
   customizableItems = [],
   selectedColorIndex = 0,
   onSelectColor,
+  copy,
 }) {
+  const { language } = useLanguage();
+
   const [selectedItems, setSelectedItems] = useState(customizableItems);
   const [toolOptions, setToolOptions] = useState([]);
   const [activeItemIndex, setActiveItemIndex] = useState(null);
@@ -34,13 +42,22 @@ function ProductPurchasePanel({
 
   useEffect(() => {
     async function loadToolOptions() {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`)
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
+      );
+
       const data = await response.json();
       setToolOptions(data);
     }
 
     loadToolOptions();
   }, []);
+
+  const collectionName = t(collection, "name", language);
+  const productName = t(product, "name", language);
+  const productDescription =
+    t(product, "long_description", language) ||
+    t(product, "description", language);
 
   const activeItem =
     activeItemIndex !== null ? selectedItems[activeItemIndex] : null;
@@ -70,14 +87,14 @@ function ProductPurchasePanel({
 
         <div className="relative z-10">
           <ProductPanelTitle
-            collectionName={collection.name_fr}
-            productName={product.name_fr}
-            description={product.long_description_fr ?? product.description_fr}
+            collectionName={collectionName}
+            productName={productName}
+            description={productDescription}
           />
 
           <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(product.price_cents)}
+              {formatPrice(product.price_cents, language)}
             </p>
 
             <OrnamentDivider
@@ -90,7 +107,7 @@ function ProductPurchasePanel({
               type="button"
               className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
             >
-              Ajouter au panier
+              {copy.addToCart}
             </button>
           </div>
 

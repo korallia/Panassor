@@ -15,6 +15,9 @@ export const productsContent = {
       description:
         "Chaque accessoire est conçu pour soutenir une ambiance, un geste et une présence en jeu.",
     },
+    purchasePanel: {
+  addToCart: "Ajouter au panier",
+},
   },
 
   en: {
@@ -33,5 +36,8 @@ export const productsContent = {
       description:
         "Each accessory is designed to support a mood, a gesture, and a presence in play.",
     },
+    purchasePanel: {
+    addToCart: "Add to cart",
+  },
   },
 };

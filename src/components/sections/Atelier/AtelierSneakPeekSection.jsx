@@ -1,7 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../utils/localization";
+import { useEffect, useState } from "react";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import SectionAtmosphere from "../../layout/SectionAtmosphere";
@@ -10,8 +7,6 @@ import CollectionAvenirHero from "./CollectionAvenirHero";
 import { getComingSoonCollections } from "../../../../backend/panassorApi";
 
 function AtelierSneakPeekSection() {
-  const { language } = useLanguage();
-
   const [comingSoonCollections, setComingSoonCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,26 +42,11 @@ function AtelierSneakPeekSection() {
 
   const collectionAVenir = comingSoonCollections[0];
 
-  const localizedCollectionAVenir = useMemo(() => {
-    if (!collectionAVenir) {
-      return null;
-    }
-
-    return {
-      ...collectionAVenir,
-      name: t(collectionAVenir, "name", language),
-      title: t(collectionAVenir, "title", language),
-      eyebrow: t(collectionAVenir, "eyebrow", language),
-      description: t(collectionAVenir, "description", language),
-      long_description: t(collectionAVenir, "long_description", language),
-    };
-  }, [collectionAVenir, language]);
-
   if (loading) {
     return null;
   }
 
-  if (!localizedCollectionAVenir) {
+  if (!collectionAVenir) {
     return null;
   }
 
@@ -90,7 +70,7 @@ function AtelierSneakPeekSection() {
         </div>
 
         <CollectionAvenirHero
-          collection={localizedCollectionAVenir}
+          collection={collectionAVenir}
           primaryAction={{
             label: "Suivre sur Facebook",
             href: "https://www.facebook.com/profile.php?id=61587079943525",

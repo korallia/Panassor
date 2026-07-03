@@ -1,7 +1,7 @@
 export const collectionsContent = {
   fr: {
     hero: {
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/00_banner_med_torsio.jpg",
       alt: "Collections Panassor",
       eyebrow: "Univers Panassor",
       title: "Collections",
@@ -19,7 +19,7 @@ export const collectionsContent = {
 
   en: {
     hero: {
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/00_banner_med_torsio.jpg",
       alt: "Panassor collections",
       eyebrow: "Panassor worlds",
       title: "Collections",

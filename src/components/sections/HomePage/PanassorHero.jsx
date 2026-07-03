@@ -7,7 +7,7 @@ import GreenButton from "../../ui/GreenButton";
 import GoldButton from "../../ui/GoldButton";
 import CornerFrame from "../../ui/CornerFrame";
 
-function PanassorHero({ collection }) {
+function PanassorHero({ collection, copy }) {
   const navigate = useNavigate();
   const { language } = useLanguage();
 
@@ -33,7 +33,7 @@ function PanassorHero({ collection }) {
           type="button"
           onClick={goToCollection}
           className="group relative block min-h-[calc(100svh-5rem)] w-full overflow-hidden text-center"
-          aria-label={`Découvrir la collection ${title}`}
+          aria-label={`${copy.discoverCollectionAria} ${title}`}
         >
           <img
             src={collection.hero_image_url}
@@ -105,7 +105,7 @@ function PanassorHero({ collection }) {
               className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
             >
               <span className="mr-3">✦</span>
-              Découvrir la collection
+              {copy.discoverCollection}
             </button>
 
             <button
@@ -113,7 +113,7 @@ function PanassorHero({ collection }) {
               onClick={() => navigate("/atelier")}
               className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
             >
-              Voir l’atelier
+              {copy.viewWorkshop}
             </button>
           </div>
         </div>
@@ -167,8 +167,8 @@ function PanassorHero({ collection }) {
             </p>
 
             <div className="mt-10 flex max-w-[42rem] flex-col gap-4 min-[920px]:flex-row">
-              <GoldButton collection_url={collectionUrl} />
-              <GreenButton />
+              <GoldButton collection_url={collectionUrl} label={copy.discoverCollection} />
+              <GreenButton label={copy.viewWorkshop} />
             </div>
           </div>
         </div>

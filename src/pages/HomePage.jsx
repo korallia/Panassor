@@ -1,6 +1,8 @@
 import { useCollections, useCollectionDetails } from "../context/CollectionsContext";
 import { useLanguage } from "../context/LanguageContext";
 import { getCollectionSlug, t } from "../utils/localization";
+import { getPageText } from "../utils/content";
+import { homeContent } from "../content/homeContent";
 
 import PanassorHero from "../components/sections/HomePage/PanassorHero";
 import FeaturedProductsCarousel from "../components/sections/HomePage/FeaturedProductsCarousel";
@@ -10,6 +12,8 @@ import CollectionsHeroCarousel from "../components/sections/HomePage/Collections
 function HomePage() {
   const collections = useCollections();
   const { language } = useLanguage();
+
+  const copy = getPageText(homeContent, language);
 
   const featured =
     collections.find((collection) => collection.featured) ?? collections[0];
@@ -22,9 +26,12 @@ function HomePage() {
 
   return (
     <>
-      <PanassorHero collection={featuredCollection} />
+      <PanassorHero collection={featuredCollection} copy={copy.hero} />
 
-      <FeaturedProductsCarousel collection={featuredCollection} />
+      <FeaturedProductsCarousel
+        collection={featuredCollection}
+        copy={copy.featuredProducts}
+      />
 
       <VideoPlayer
         video={{
@@ -34,7 +41,10 @@ function HomePage() {
         }}
       />
 
-      <CollectionsHeroCarousel collections={collections} />
+      <CollectionsHeroCarousel
+        collections={collections}
+        copy={copy.collectionsCarousel}
+      />
     </>
   );
 }

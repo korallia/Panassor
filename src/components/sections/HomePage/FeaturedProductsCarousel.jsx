@@ -12,6 +12,7 @@ import SectionAtmosphere from "../../layout/SectionAtmosphere";
 
 function FeaturedProductsCarousel({
   collection,
+  copy,
   className = "pt-20 pb-8 md:py-20",
   showCollectionButton = true,
 }) {
@@ -41,7 +42,7 @@ function FeaturedProductsCarousel({
       <div className="relative z-10 mx-auto max-w-[88rem]">
         <div className="relative mb-16">
           <SectionTitle
-            eyebrow="Produits de la collection"
+            eyebrow={copy.eyebrow}
             title={collectionTitle}
             align="center"
             showDivider={false}
@@ -57,13 +58,13 @@ function FeaturedProductsCarousel({
             <CarouselArrow
               direction="previous"
               onClick={() => scrollCarousel("left")}
-              label="Produits précédents"
+              label={copy.previousLabel}
             />
 
             <CarouselArrow
               direction="next"
               onClick={() => scrollCarousel("right")}
-              label="Produits suivants"
+              label={copy.nextLabel}
             />
           </div>
         </div>

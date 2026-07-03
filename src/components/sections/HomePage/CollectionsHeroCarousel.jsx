@@ -11,12 +11,7 @@ import GreenButton from "../../ui/GreenButton";
 import CarouselArrow from "../../ui/CarouselArrow";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
-function CollectionsHeroCarousel({
-  collections,
-  eyebrow = "Explorer Panassor",
-  title = "Nos collections",
-  description,
-}) {
+function CollectionsHeroCarousel({ collections, copy, description }) {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -113,8 +108,8 @@ function CollectionsHeroCarousel({
       <div className="relative mx-auto max-w-[88rem]">
         <div className="mx-auto mb-12 max-w-4xl text-center">
           <SectionTitle
-            eyebrow={eyebrow}
-            title={title}
+            eyebrow={copy.eyebrow}
+            title={copy.title}
             align="center"
             showDivider={false}
             className="mb-0"
@@ -142,7 +137,7 @@ function CollectionsHeroCarousel({
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               className="group relative block min-h-[30rem] w-full touch-pan-y overflow-hidden text-center"
-              aria-label={`Découvrir la collection ${activeName}`}
+              aria-label={`${copy.discoverCollectionAria} ${activeName}`}
             >
               <img
                 key={activeCollection.hero_image_url}
@@ -199,7 +194,7 @@ function CollectionsHeroCarousel({
                     className="inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
                   >
                     <span className="mr-3">✦</span>
-                    Découvrir la collection
+                    {copy.discoverCollection}
                   </button>
 
                   <button
@@ -207,7 +202,7 @@ function CollectionsHeroCarousel({
                     onClick={() => navigate("/atelier")}
                     className="inline-flex w-full items-center justify-center border border-[#b8964a] bg-[#1f3324]/95 px-6 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#e4c36a] shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] hover:text-[#f7ead2]"
                   >
-                    Voir l’atelier
+                    {copy.viewWorkshop}
                   </button>
                 </div>
 
@@ -226,7 +221,7 @@ function CollectionsHeroCarousel({
                               ? "border-[#c89b3c] bg-[#c89b3c]"
                               : "border-[#c89b3c]/60 bg-transparent"
                           }`}
-                          aria-label={`Voir la collection ${collectionName}`}
+                          aria-label={`${copy.viewCollectionAria} ${collectionName}`}
                         />
                       );
                     })}
@@ -275,8 +270,11 @@ function CollectionsHeroCarousel({
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <GoldButton collection_url={collectionUrl} />
-                <GreenButton />
+                <GoldButton
+                  collection_url={collectionUrl}
+                  label={copy.discoverCollection}
+                />
+                <GreenButton label={copy.viewWorkshop} />
               </div>
             </div>
           </div>
@@ -285,13 +283,13 @@ function CollectionsHeroCarousel({
             <CarouselArrow
               direction="previous"
               onClick={goPrevious}
-              label="Collection précédente"
+              label={copy.previousLabel}
             />
 
             <CarouselArrow
               direction="next"
               onClick={goNext}
-              label="Collection suivante"
+              label={copy.nextLabel}
             />
           </div>
 
@@ -309,7 +307,7 @@ function CollectionsHeroCarousel({
                       ? "border-[#c89b3c] bg-[#c89b3c]"
                       : "border-[#c89b3c]/60 bg-transparent hover:bg-[#c89b3c]/40"
                   }`}
-                  aria-label={`Voir la collection ${collectionName}`}
+                  aria-label={`${copy.viewCollectionAria} ${collectionName}`}
                 />
               );
             })}

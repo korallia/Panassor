@@ -23,7 +23,7 @@ function AtelierPage() {
         description={copy.hero.description}
       />
 
-      <AtelierConventionGallery />
+      <AtelierConventionGallery copy={copy.conventionGallery} />
 
       <AtelierVisionSection copy={copy.vision} />
 

@@ -85,10 +85,11 @@ function IndividualProductPage({
             </div>
 
             <div className="min-w-0">
-              <IndividualProductPanel
-                product={product}
-                collection={collection}
-              />
+             <IndividualProductPanel
+  product={product}
+  collection={collection}
+  copy={copy.individualPanel}
+/>
             </div>
           </div>
         </div>

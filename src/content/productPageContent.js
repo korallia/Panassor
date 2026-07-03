@@ -26,6 +26,14 @@ export const productPageContent = {
       },
     },
 
+    individualPanel: {
+      addToCart: "Ajouter au panier",
+      completeKit: "Kit complet",
+      viewCompleteKitPrefix: "Voir la trousse complète de la collection",
+      viewCompleteKitSuffix:
+        "avec les outils pensés pour accompagner cette pièce en jeu.",
+    },
+
     relatedProducts: {
       eyebrow: "Pièces associées",
       title: "Compléter la trousse",
@@ -76,6 +84,14 @@ export const productPageContent = {
         desktopDescriptionPrefix: "Choose the tool that will replace",
         select: "Select",
       },
+    },
+
+    individualPanel: {
+      addToCart: "Add to cart",
+      completeKit: "Complete kit",
+      viewCompleteKitPrefix: "View the complete kit from the",
+      viewCompleteKitSuffix:
+        "collection, with the tools designed to accompany this piece in play.",
     },
 
     relatedProducts: {

@@ -1,22 +1,66 @@
 import { Link } from "react-router-dom";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import {
+  getCollectionUrl,
+  getProductUrl,
+  t,
+} from "../../../utils/localization";
+
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductPanelTitle from "./ProductPanelTitle";
 
-function formatPrice(priceCents, currency = "CAD") {
+function formatPrice(priceCents, language = "fr", currency = "CAD") {
   if (priceCents == null) return "";
 
-  return new Intl.NumberFormat("fr-CA", {
+  const locale = language === "en" ? "en-CA" : "fr-CA";
+
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
   }).format(priceCents / 100);
 }
 
-function IndividualProductPanel({ product, collection }) {
+function IndividualProductPanel({ product, collection, copy = {} }) {
+  const { language } = useLanguage();
+
+  if (!product || !collection) {
+    return null;
+  }
+
+  const collectionName = t(collection, "name", language);
+  const productName = t(product, "name", language);
+  const productDescription =
+    t(product, "long_description", language) ||
+    t(product, "description", language);
+
   const kitProduct = collection.products?.find((item) => item.is_kit);
+
   const kitUrl = kitProduct
-    ? `/produits/${kitProduct.slug}`
-    : collection.url;
+    ? getProductUrl(kitProduct, language)
+    : getCollectionUrl(collection, language);
+
+  const kitProductName = kitProduct
+    ? t(kitProduct, "name", language)
+    : collectionName;
+
+  const addToCartLabel =
+    copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
+
+  const completeKitLabel =
+    copy.completeKit || (language === "en" ? "Complete kit" : "Kit complet");
+
+  const viewCompleteKitPrefix =
+    copy.viewCompleteKitPrefix ||
+    (language === "en"
+      ? "View the complete kit from the"
+      : "Voir la trousse complète de la collection");
+
+  const viewCompleteKitSuffix =
+    copy.viewCompleteKitSuffix ||
+    (language === "en"
+      ? "collection, with the tools designed to accompany this piece in play."
+      : "avec les outils pensés pour accompagner cette pièce en jeu.");
 
   return (
     <aside className="h-full">
@@ -25,14 +69,14 @@ function IndividualProductPanel({ product, collection }) {
 
         <div className="relative z-10 flex h-full flex-col">
           <ProductPanelTitle
-            collectionName={collection.name_fr}
-            productName={product.name_fr}
-            description={product.long_description_fr ?? product.description_fr}
+            collectionName={collectionName}
+            productName={productName}
+            description={productDescription}
           />
 
           <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(product.price_cents)}
+              {formatPrice(product.price_cents, language)}
             </p>
 
             <OrnamentDivider
@@ -45,7 +89,7 @@ function IndividualProductPanel({ product, collection }) {
               type="button"
               className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
             >
-              Ajouter au panier
+              {addToCartLabel}
             </button>
           </div>
 
@@ -67,20 +111,21 @@ function IndividualProductPanel({ product, collection }) {
                     collection.thumbnail_image_url ??
                     collection.hero_image_url
                   }
-                  alt=""
+                  alt={kitProductName}
                   className="h-full w-full object-contain object-center p-1 brightness-[0.82] contrast-[1.12] saturate-[0.9]"
                 />
               </div>
 
               <div className="flex flex-col justify-center px-4 py-4">
                 <p className="font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.2em] text-[#c89b3c]">
-                  Kit complet
+                  {completeKitLabel}
                 </p>
 
                 <p className="mt-2 font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/84">
-                  Voir la trousse complète de la collection{" "}
-                  {collection.name_fr}, avec les outils pensés pour accompagner
-                  cette pièce en jeu.
+                  {viewCompleteKitPrefix}{" "}
+                  <span className="text-[#fff1d2]">{collectionName}</span>
+                  {language === "en" ? " " : ", "}
+                  {viewCompleteKitSuffix}
                 </p>
               </div>
             </div>

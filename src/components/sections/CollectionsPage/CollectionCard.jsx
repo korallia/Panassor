@@ -1,5 +1,5 @@
 import { useLanguage } from "../../context/LanguageContext";
-import { t } from "../../utils/localization";
+import { t } from "../../../utils/localization";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";

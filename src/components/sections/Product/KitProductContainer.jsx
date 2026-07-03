@@ -1,18 +1,37 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import {
+  getCollectionUrl,
+  getProductSlug,
+  t,
+} from "../../../utils/localization";
+
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductMediaGallery from "./ProductMediaGallery";
 import ProductPurchasePanel from "./ProductPurchasePanel";
 import ProductNarrativeBanner from "./ProductNarrativeBanner";
 import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
-function KitProductContainer({ product, collection, relatedCollections = [] }) {
+function KitProductContainer({
+  product,
+  collection,
+  relatedCollections = [],
+  copy,
+}) {
+  const { language } = useLanguage();
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+
+  const productSlug = getProductSlug(product, language);
+  const productName = t(product, "name", language);
+  const collectionName = t(collection, "name", language);
+  const collectionTitle = t(collection, "title", language);
+  const collectionUrl = getCollectionUrl(collection, language);
 
   useEffect(() => {
     setSelectedColorIndex(0);
-  }, [product.slug]);
+  }, [productSlug]);
 
   const defaultProductImage =
     product.images?.find((image) => image.is_main)?.url ??
@@ -20,7 +39,7 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
     product.image_url;
 
   const kitImagesByColor =
-    product.slug === "kit-chirurgien"
+    product.slug_fr === "kit-chirurgien"
       ? [
           "/images/hero-kit-chirurgien.jpg",
           "/images/PlaceHolderRouge.png",
@@ -35,14 +54,14 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
     {
       type: "image",
       src: mainProductImage,
-      alt: product.name_fr,
+      alt: productName,
     },
     ...(product.images ?? [])
       .filter((image) => image.url !== mainProductImage)
       .map((image) => ({
         type: "image",
         src: image.url,
-        alt: image.alt_fr ?? product.name_fr,
+        alt: t(image, "alt", language) || productName,
       })),
     ...(collection.video_url
       ? [
@@ -50,19 +69,19 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
             type: "video",
             src: collection.video_url,
             poster: collection.video_poster_url,
-            alt: collection.title_fr ?? "Vidéo du produit",
+            alt: collectionTitle || copy.media.productVideo,
           },
         ]
       : []),
     {
       type: "image",
       src: collection.hero_image_url,
-      alt: collection.name_fr,
+      alt: collectionName,
     },
     {
       type: "image",
       src: collection.thumbnail_image_url,
-      alt: collection.name_fr,
+      alt: collectionName,
     },
   ].filter((item) => item.src);
 
@@ -74,9 +93,9 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
   const customizableItems = kitItems.filter((item) => item.customizable);
 
   const leatherColors = [
-    { name: "Brun foncé", value: "#2a160c" },
-    { name: "Bordeaux", value: "#401918" },
-    { name: "Noir", value: "#141414" },
+    { name: copy.leatherColors.darkBrown, value: "#2a160c" },
+    { name: copy.leatherColors.burgundy, value: "#401918" },
+    { name: copy.leatherColors.black, value: "#141414" },
   ];
 
   return (
@@ -87,14 +106,14 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
 
         <div className="relative mx-auto max-w-[88rem]">
           <nav
-            aria-label="Fil d’Ariane"
+            aria-label={copy.breadcrumbs.ariaLabel}
             className="mb-7 flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap pb-1 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.18em] text-[#a47b36] [scrollbar-width:none] md:mb-6 md:flex-wrap md:overflow-visible md:pb-0 md:text-[0.78rem] md:tracking-[0.2em] [&::-webkit-scrollbar]:hidden"
           >
             <Link
               to="/"
               className="hidden shrink-0 transition hover:text-[#c89b3c] md:inline"
             >
-              Accueil
+              {copy.breadcrumbs.home}
             </Link>
 
             <span className="hidden shrink-0 text-[#6f5423] md:inline">›</span>
@@ -103,23 +122,21 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
               to="/produits"
               className="shrink-0 transition hover:text-[#c89b3c]"
             >
-              Produits
+              {copy.breadcrumbs.products}
             </Link>
 
             <span className="shrink-0 text-[#6f5423]">›</span>
 
             <Link
-              to={`/collections/${collection.slug}`}
+              to={collectionUrl}
               className="shrink-0 transition hover:text-[#c89b3c]"
             >
-              {collection.name_fr}
+              {collectionName}
             </Link>
 
             <span className="shrink-0 text-[#6f5423]">›</span>
 
-            <span className="shrink-0 text-[#c89b3c]">
-              {product.name_fr}
-            </span>
+            <span className="shrink-0 text-[#c89b3c]">{productName}</span>
           </nav>
 
           <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
@@ -127,7 +144,7 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
               <ProductMediaGallery
                 key={selectedColorIndex}
                 media={productMedia}
-                productName={product.name_fr}
+                productName={productName}
               />
             </div>
 
@@ -165,8 +182,7 @@ function KitProductContainer({ product, collection, relatedCollections = [] }) {
 
       <CollectionsHeroCarousel
         collections={relatedCollections}
-        eyebrow="Explorer le reste de Panassor"
-        title="D’autres univers à faire vivre"
+        copy={copy.relatedCollections}
       />
     </main>
   );

@@ -6,20 +6,38 @@ import {
   useCollections,
   useCollectionDetails,
 } from "../context/CollectionsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { getCollectionSlug, getProductSlug, t } from "../utils/localization";
+import { getPageText } from "../utils/content";
+import { productPageContent } from "../content/productPageContent";
 
 import KitProductContainer from "../components/sections/Product/KitProductContainer";
 import IndividualProductPage from "../components/sections/Product/IndividualProductPage";
 
 const RETRY_DELAY_MS = 3000;
 
+function getProductCollectionSlug(product, language = "fr") {
+  if (!product) return "";
+
+  if (language === "en") {
+    return product.collection_slug_en || product.collection_slug_fr || "";
+  }
+
+  return product.collection_slug_fr || product.collection_slug_en || "";
+}
+
 function ProductPage() {
   const { slug } = useParams();
+  const { language } = useLanguage();
+
+  const copy = getPageText(productPageContent, language);
 
   const collections = useCollections();
   const [product, setProduct] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
-  const { collection } = useCollectionDetails(product?.collection_slug);
+  const collectionSlug = getProductCollectionSlug(product, language);
+  const { collection } = useCollectionDetails(collectionSlug);
 
   useEffect(() => {
     let isMounted = true;
@@ -68,21 +86,27 @@ function ProductPage() {
     return null;
   }
 
+  const productSlug = getProductSlug(product, language);
+  const collectionSlugCurrent = getCollectionSlug(collection, language);
+
   const relatedProducts = (collection.products ?? [])
-    .filter((item) => item.slug !== product.slug)
+    .filter((item) => getProductSlug(item, language) !== productSlug)
     .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
 
   const relatedCollections = collections.filter(
-    (item) => item.slug !== collection.slug
+    (item) => getCollectionSlug(item, language) !== collectionSlugCurrent
   );
+
+  const productMedia = buildProductMedia(product, collection, language, copy);
 
   if (!product.is_kit) {
     return (
       <IndividualProductPage
         product={product}
         collection={collection}
-        productMedia={buildProductMedia(product, collection)}
+        productMedia={productMedia}
         relatedProducts={relatedProducts}
+        copy={copy}
       />
     );
   }
@@ -92,11 +116,16 @@ function ProductPage() {
       product={product}
       collection={collection}
       relatedCollections={relatedCollections}
+      copy={copy}
     />
   );
 }
 
-function buildProductMedia(product, collection) {
+function buildProductMedia(product, collection, language, copy) {
+  const productName = t(product, "name", language);
+  const collectionName = t(collection, "name", language);
+  const collectionTitle = t(collection, "title", language);
+
   const defaultProductImage =
     product.images?.find((image) => image.is_main)?.url ??
     product.images?.[0]?.url ??
@@ -106,14 +135,14 @@ function buildProductMedia(product, collection) {
     {
       type: "image",
       src: defaultProductImage,
-      alt: product.name_fr,
+      alt: productName,
     },
     ...(product.images ?? [])
       .filter((image) => image.url !== defaultProductImage)
       .map((image) => ({
         type: "image",
         src: image.url,
-        alt: image.alt_fr ?? product.name_fr,
+        alt: t(image, "alt", language) || productName,
       })),
     ...(collection.video_url
       ? [
@@ -121,19 +150,19 @@ function buildProductMedia(product, collection) {
             type: "video",
             src: collection.video_url,
             poster: collection.video_poster_url,
-            alt: collection.title_fr ?? "Vidéo du produit",
+            alt: collectionTitle || copy.media.productVideo,
           },
         ]
       : []),
     {
       type: "image",
       src: collection.hero_image_url,
-      alt: collection.name_fr,
+      alt: collectionName,
     },
     {
       type: "image",
       src: collection.thumbnail_image_url,
-      alt: collection.name_fr,
+      alt: collectionName,
     },
   ].filter((item) => item.src);
 }

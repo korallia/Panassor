@@ -97,9 +97,13 @@ function ProductPage() {
     (item) => getCollectionSlug(item, language) !== collectionSlugCurrent
   );
 
-  const productMedia = buildProductMedia(product, collection, language, copy);
-
   if (!product.is_kit) {
+    const productMedia = buildIndividualProductMedia(
+      product,
+      collection,
+      language
+    );
+
     return (
       <IndividualProductPage
         product={product}
@@ -121,10 +125,9 @@ function ProductPage() {
   );
 }
 
-function buildProductMedia(product, collection, language, copy) {
+function buildIndividualProductMedia(product, collection, language) {
   const productName = t(product, "name", language);
   const collectionName = t(collection, "name", language);
-  const collectionTitle = t(collection, "title", language);
 
   const defaultProductImage =
     product.images?.find((image) => image.is_main)?.url ??
@@ -144,16 +147,6 @@ function buildProductMedia(product, collection, language, copy) {
         src: image.url,
         alt: t(image, "alt", language) || productName,
       })),
-    ...(collection.video_url
-      ? [
-          {
-            type: "video",
-            src: collection.video_url,
-            poster: collection.video_poster_url,
-            alt: collectionTitle || copy.media.productVideo,
-          },
-        ]
-      : []),
     {
       type: "image",
       src: collection.hero_image_url,

@@ -26,6 +26,7 @@ function KitProductContainer({
   const productSlug = getProductSlug(product, language);
   const productName = t(product, "name", language);
   const collectionName = t(collection, "name", language);
+  const collectionTitle = t(collection, "title", language);
   const collectionUrl = getCollectionUrl(collection, language);
 
   const colorConfig = productColorContent[product.slug_fr];
@@ -85,6 +86,16 @@ function KitProductContainer({
         src: image.url,
         alt: t(image, "alt", language) || productName,
       })),
+    ...(collection.video_url
+      ? [
+          {
+            type: "video",
+            src: collection.video_url,
+            poster: collection.video_poster_url,
+            alt: collectionTitle || copy.media.productVideo,
+          },
+        ]
+      : []),
   ].filter((item) => item.src);
 
   const kitItems =

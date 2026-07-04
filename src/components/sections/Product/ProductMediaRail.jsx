@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 import CarouselArrow from "../../ui/CarouselArrow";
 
 function ProductMediaRail({
@@ -7,6 +9,23 @@ function ProductMediaRail({
   onPrevious,
   onNext,
 }) {
+  const railRef = useRef(null);
+  const thumbnailRefs = useRef([]);
+
+  useEffect(() => {
+    const activeThumbnail = thumbnailRefs.current[selectedMediaIndex];
+
+    if (!activeThumbnail) {
+      return;
+    }
+
+    activeThumbnail.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [selectedMediaIndex]);
+
   if (!media.length) {
     return null;
   }
@@ -15,7 +34,10 @@ function ProductMediaRail({
     <div className="shrink-0 border-t border-[#6f5423]/55 bg-[#0b0705]/92 px-3 py-3 md:px-5 md:py-5">
       {/* MOBILE */}
       <div className="md:hidden">
-        <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]">
+        <div
+          ref={railRef}
+          className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
+        >
           {media.map((item, index) => {
             const thumbnailSrc =
               item.type === "video" ? item.poster ?? item.src : item.src;
@@ -23,6 +45,9 @@ function ProductMediaRail({
             return (
               <button
                 key={`${item.src}-${index}`}
+                ref={(element) => {
+                  thumbnailRefs.current[index] = element;
+                }}
                 type="button"
                 onClick={() => onSelectMedia(index)}
                 className={`relative h-20 w-20 shrink-0 overflow-hidden border bg-[#120c07] transition ${
@@ -59,17 +84,23 @@ function ProductMediaRail({
           label="Image précédente"
         />
 
-        <div className="grid grid-cols-5 gap-3">
-          {media.slice(0, 5).map((item, index) => {
+        <div
+          ref={railRef}
+          className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
+        >
+          {media.map((item, index) => {
             const thumbnailSrc =
               item.type === "video" ? item.poster ?? item.src : item.src;
 
             return (
               <button
                 key={`${item.src}-${index}`}
+                ref={(element) => {
+                  thumbnailRefs.current[index] = element;
+                }}
                 type="button"
                 onClick={() => onSelectMedia(index)}
-                className={`relative h-[92px] overflow-hidden border bg-[#120c07] transition ${
+                className={`relative h-[92px] w-[128px] shrink-0 overflow-hidden border bg-[#120c07] transition ${
                   selectedMediaIndex === index
                     ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
                     : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"

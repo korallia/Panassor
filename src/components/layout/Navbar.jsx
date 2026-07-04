@@ -2,13 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCollections } from "../../context/CollectionsContext";
-import { useLanguage } from "../../context/LanguageContext"
+import { useLanguage } from "../../context/LanguageContext";
+import { useCart } from "../../context/CartContext";
 import { getCollectionUrl, t } from "../../utils/localization";
 
 function Navbar() {
   const navigate = useNavigate();
   const collections = useCollections();
   const { language, toggleLanguage } = useLanguage();
+  const { openCart, itemCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dropdownItems = [
@@ -68,8 +70,16 @@ function Navbar() {
     setIsMenuOpen(false);
   };
 
+  const handleOpenCart = () => {
+    openCart();
+    setIsMenuOpen(false);
+  };
+
   const mobileCollectionLinkClass =
     "block w-full border-b border-[#6f5423]/30 py-3 text-left font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88 transition last:border-b-0 hover:text-[#d8a24c]";
+
+  const iconButtonClass =
+    "relative flex h-10 w-10 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
 
   const DesktopLanguageButton = () => (
     <button
@@ -90,6 +100,24 @@ function Navbar() {
       aria-label={language === "en" ? "Switch to French" : "Passer en anglais"}
     >
       {language === "fr" ? "EN" : "FR"}
+    </button>
+  );
+
+  const CartButton = ({ className = "" }) => (
+    <button
+      type="button"
+      onClick={handleOpenCart}
+      className={`${iconButtonClass} ${className}`}
+      aria-label={language === "en" ? "Open cart" : "Ouvrir le panier"}
+      title={language === "en" ? "Cart" : "Panier"}
+    >
+      ✦
+
+      {itemCount > 0 && (
+        <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center border border-[#c89b3c] bg-[#1f3324] px-1 font-['IM_Fell_English_SC'] text-[0.62rem] leading-none text-[#e7c97b]">
+          {itemCount}
+        </span>
+      )}
     </button>
   );
 
@@ -219,7 +247,9 @@ function Navbar() {
           <DesktopLanguageButton />
         </nav>
 
-        <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c]">
+        <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c] md:gap-4">
+          <CartButton />
+
           <button
             type="button"
             onClick={() => setIsMenuOpen((current) => !current)}

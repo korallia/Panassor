@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useCollections } from "../../context/CollectionsContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { useCart } from "../../context/CartContext";
 import { getCollectionUrl, t } from "../../utils/localization";
 import { getPageText } from "../../utils/content";
 import { footerContent } from "../../content/footerContent";
@@ -12,14 +13,15 @@ const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
 function Footer() {
   const navigate = useNavigate();
   const collections = useCollections();
-  const { language } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
+  const { openCart, itemCount } = useCart();
 
   const copy = getPageText(footerContent, language);
 
   const footerLinkClass = "text-left transition hover:text-[#d8a24c]";
 
   const iconButtonClass =
-    "flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] font-['IM_Fell_English_SC'] text-lg text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
+    "relative flex h-10 w-10 items-center justify-center border border-[#6f5423] bg-[#120c07] font-['IM_Fell_English_SC'] text-lg text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
 
   const contactButtonClass =
     "inline-flex items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805]";
@@ -156,7 +158,7 @@ function Footer() {
               {copy.contact.button}
             </a>
 
-            <div className="mt-7 flex gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <a
                 href={`mailto:${contactEmail}`}
                 className={iconButtonClass}
@@ -179,12 +181,30 @@ function Footer() {
 
               <button
                 type="button"
-                onClick={() => navigate("/collections")}
+                onClick={openCart}
                 className={iconButtonClass}
-                aria-label={copy.contact.collectionsAriaLabel}
-                title={copy.contact.collectionsTitle}
+                aria-label={language === "en" ? "Open cart" : "Ouvrir le panier"}
+                title={language === "en" ? "Cart" : "Panier"}
               >
-                ⌂
+                ✦
+
+                {itemCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center border border-[#c89b3c] bg-[#1f3324] px-1 font-['IM_Fell_English_SC'] text-[0.62rem] leading-none text-[#e7c97b]">
+                    {itemCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className={`${iconButtonClass} text-sm uppercase tracking-[0.08em]`}
+                aria-label={
+                  language === "en" ? "Switch to French" : "Passer en anglais"
+                }
+                title={language === "en" ? "Français" : "English"}
+              >
+                {language === "fr" ? "EN" : "FR"}
               </button>
             </div>
           </div>

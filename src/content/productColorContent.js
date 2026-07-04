@@ -18,7 +18,7 @@ export const productColorContent = {
   },
 
   "kit-tortionnaire": {
-    defaultColorKey: "brown",
+    defaultColorKey: "burgundy",
     colors: [
       {
         key: "brown",

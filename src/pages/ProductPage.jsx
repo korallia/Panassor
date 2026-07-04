@@ -98,11 +98,7 @@ function ProductPage() {
   );
 
   if (!product.is_kit) {
-    const productMedia = buildIndividualProductMedia(
-      product,
-      collection,
-      language
-    );
+    const productMedia = buildIndividualProductMedia(product, language);
 
     return (
       <IndividualProductPage
@@ -125,9 +121,8 @@ function ProductPage() {
   );
 }
 
-function buildIndividualProductMedia(product, collection, language) {
+function buildIndividualProductMedia(product, language) {
   const productName = t(product, "name", language);
-  const collectionName = t(collection, "name", language);
 
   const defaultProductImage =
     product.images?.find((image) => image.is_main)?.url ??
@@ -147,16 +142,6 @@ function buildIndividualProductMedia(product, collection, language) {
         src: image.url,
         alt: t(image, "alt", language) || productName,
       })),
-    {
-      type: "image",
-      src: collection.hero_image_url,
-      alt: collectionName,
-    },
-    {
-      type: "image",
-      src: collection.thumbnail_image_url,
-      alt: collectionName,
-    },
   ].filter((item) => item.src);
 }
 

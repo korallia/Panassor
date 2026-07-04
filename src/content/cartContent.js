@@ -2,7 +2,7 @@ export const cartContent = {
   fr: {
     header: {
       eyebrow: "Commande Panassor",
-      title: "Votre panier",
+      title: "Panier",
       description:
         "Vérifiez les pièces, les couleurs et les outils choisis avant de passer à l’étape suivante.",
     },
@@ -46,7 +46,7 @@ export const cartContent = {
   en: {
     header: {
       eyebrow: "Panassor Order",
-      title: "Your cart",
+      title: "Cart",
       description:
         "Review the pieces, colors, and selected tools before moving to the next step.",
     },

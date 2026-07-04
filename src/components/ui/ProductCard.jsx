@@ -61,17 +61,18 @@ function ProductCard({ product, variant = "carousel" }) {
           <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/16 via-transparent to-[#080504]/16" />
           <div className="absolute inset-0 shadow-[inset_0_0_54px_rgba(8,5,4,0.58)]" />
 
-          <div className="absolute inset-0 border border-[#080504]/55" />
-
-          <div className={`${cornerClass} left-4 top-4 border-l-2 border-t-2`} />
-          <div className={`${cornerClass} right-4 top-4 border-r-2 border-t-2`} />
-          <div className={`${cornerClass} bottom-4 left-4 border-b-2 border-l-2`} />
-          <div className={`${cornerClass} bottom-4 right-4 border-b-2 border-r-2`} />
-
-          <div className="absolute left-5 top-5 h-8 w-8 border-l border-t border-[#120c07]/70" />
-          <div className="absolute right-5 top-5 h-8 w-8 border-r border-t border-[#120c07]/70" />
-          <div className="absolute bottom-5 left-5 h-8 w-8 border-b border-l border-[#120c07]/70" />
-          <div className="absolute bottom-5 right-5 h-8 w-8 border-b border-r border-[#120c07]/70" />
+          <div
+            className={`${cornerClass} left-4 top-4 border-l-2 border-t-2`}
+          />
+          <div
+            className={`${cornerClass} right-4 top-4 border-r-2 border-t-2`}
+          />
+          <div
+            className={`${cornerClass} bottom-4 left-4 border-b-2 border-l-2`}
+          />
+          <div
+            className={`${cornerClass} bottom-4 right-4 border-b-2 border-r-2`}
+          />
         </div>
 
         <div className={`flex flex-1 flex-col ${contentPadding}`}>

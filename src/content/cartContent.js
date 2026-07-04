@@ -18,6 +18,7 @@ export const cartContent = {
       price: "Prix",
       lineTotal: "Total",
       selectedTools: "Outils inclus",
+      color: "Couleur",
     },
 
     quantity: {
@@ -62,6 +63,7 @@ export const cartContent = {
       price: "Price",
       lineTotal: "Total",
       selectedTools: "Included tools",
+      color: "Color",
     },
 
     quantity: {

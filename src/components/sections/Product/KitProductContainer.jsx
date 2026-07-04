@@ -56,6 +56,8 @@ function KitProductContainer({
 
   const leatherColors = availableColors.map((color) => ({
     name: color[language] || color.fr || color.key,
+    name_fr: color.fr || color.key,
+    name_en: color.en || color.fr || color.key,
     value: color.value,
     key: color.key,
   }));
@@ -166,16 +168,16 @@ function KitProductContainer({
             </div>
 
             <div className="min-w-0">
-             <ProductPurchasePanel
-              product={product}
-              collection={collection}
-              productImageUrl={defaultProductImage}
-              leatherColors={leatherColors}
-              customizableItems={customizableItems}
-              selectedColorIndex={selectedColorIndex}
-              onSelectColor={handleSelectColor}
-              copy={copy.purchasePanel}
-            />
+              <ProductPurchasePanel
+                product={product}
+                collection={collection}
+                productImageUrl={defaultProductImage}
+                leatherColors={leatherColors}
+                customizableItems={customizableItems}
+                selectedColorIndex={selectedColorIndex}
+                onSelectColor={handleSelectColor}
+                copy={copy.purchasePanel}
+              />
             </div>
           </div>
         </div>

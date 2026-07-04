@@ -9,6 +9,16 @@ function formatPrice(priceCents, language = "fr", currency = "CAD") {
   }).format(priceCents / 100);
 }
 
+function getLocalizedValue(item, field, language = "fr") {
+  if (!item) return "";
+
+  if (language === "en") {
+    return item[`${field}_en`] || item[`${field}_fr`] || item[field] || "";
+  }
+
+  return item[`${field}_fr`] || item[`${field}_en`] || item[field] || "";
+}
+
 function CartItemRow({
   item,
   copy,
@@ -18,9 +28,24 @@ function CartItemRow({
 }) {
   const snapshot = item.displaySnapshot || {};
 
-  const itemName = snapshot.name || item.productSlug || copy.fallbackProductName;
+  const itemName =
+    getLocalizedValue(snapshot, "name", language) ||
+    item.productSlug ||
+    copy.fallbackProductName;
+
   const itemImage = snapshot.imageUrl;
-  const itemMeta = snapshot.meta;
+
+  const colorName =
+    language === "en"
+      ? item.colorName_en || item.colorName_fr
+      : item.colorName_fr || item.colorName_en;
+
+  const itemMeta = colorName
+    ? language === "en"
+      ? `${copy.item.color}: ${colorName}`
+      : `${copy.item.color} : ${colorName}`
+    : "";
+
   const unitPriceCents = snapshot.priceCents || 0;
   const lineTotalCents = unitPriceCents * item.quantity;
 
@@ -84,9 +109,17 @@ function CartItemRow({
                 </p>
 
                 <div className="mt-3 grid gap-x-8 gap-y-1 font-['EB_Garamond'] text-[0.98rem] leading-5 text-[#e4c36a]/88 transition group-hover/item:text-[#e7c97b]/90 sm:grid-cols-2 sm:text-base sm:leading-6">
-                  {item.selectedItems.map((selectedItem) => (
-                    <p key={selectedItem.productId}>{selectedItem.name}</p>
-                  ))}
+                  {item.selectedItems.map((selectedItem) => {
+                    const selectedItemName =
+                      getLocalizedValue(selectedItem, "name", language) ||
+                      selectedItem.productSlug_fr ||
+                      selectedItem.productSlug_en ||
+                      "";
+
+                    return (
+                      <p key={selectedItem.productId}>{selectedItemName}</p>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -108,19 +108,22 @@ function ProductPurchasePanel({
       quantity: 1,
 
       colorKey: selectedColor?.key || null,
-      colorName: selectedColor?.name || "",
+      colorName_fr: selectedColor?.name_fr || selectedColor?.name || "",
+      colorName_en: selectedColor?.name_en || selectedColor?.name || "",
 
       selectedItems: selectedItems.map((item) => ({
         productId: item.id,
-        productSlug: getProductSlug(item, language),
-        name: t(item, "name", language),
+        productSlug_fr: getProductSlug(item, "fr"),
+        productSlug_en: getProductSlug(item, "en"),
+        name_fr: t(item, "name", "fr"),
+        name_en: t(item, "name", "en"),
       })),
 
       displaySnapshot: {
-        name: productName,
+        name_fr: t(product, "name", "fr"),
+        name_en: t(product, "name", "en"),
         imageUrl: productImageUrl || product.image_url,
         priceCents: product.price_cents,
-        meta: selectedColor?.name ? `Couleur : ${selectedColor.name}` : "",
       },
     });
   };

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { getProductUrl, t } from "../../utils/localization";
 
+import CornerFrame from "../ui/CornerFrame";
+
 function ProductCard({ product, variant = "carousel" }) {
   const navigate = useNavigate();
   const { language } = useLanguage();
@@ -28,9 +30,6 @@ function ProductCard({ product, variant = "carousel" }) {
   const contentPadding = isGrid ? "p-7" : "p-6";
   const titleHeight = isGrid ? "min-h-[4.5rem]" : "min-h-[5rem]";
   const descHeight = isGrid ? "min-h-[5.5rem]" : "min-h-[6.5rem]";
-
-  const cornerClass =
-    "absolute h-12 w-12 border-[#e0b24f] opacity-95 drop-shadow-[0_2px_4px_rgba(8,5,4,0.95)] transition duration-300 group-hover:opacity-100 group-hover:drop-shadow-[0_0_7px_rgba(224,178,79,0.42)]";
 
   return (
     <article
@@ -61,17 +60,11 @@ function ProductCard({ product, variant = "carousel" }) {
           <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/16 via-transparent to-[#080504]/16" />
           <div className="absolute inset-0 shadow-[inset_0_0_54px_rgba(8,5,4,0.58)]" />
 
-          <div
-            className={`${cornerClass} left-4 top-4 border-l-2 border-t-2`}
-          />
-          <div
-            className={`${cornerClass} right-4 top-4 border-r-2 border-t-2`}
-          />
-          <div
-            className={`${cornerClass} bottom-4 left-4 border-b-2 border-l-2`}
-          />
-          <div
-            className={`${cornerClass} bottom-4 right-4 border-b-2 border-r-2`}
+          <CornerFrame
+            inset="cardImage"
+            size="md"
+            thickness="strong"
+            color="gold"
           />
         </div>
 

@@ -1,6 +1,6 @@
 export const productColorContent = {
   "kit-chirurgien": {
-    defaultColorKey: "brown",
+    defaultColorKey: "black",
     colors: [
       {
         key: "brown",

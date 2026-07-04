@@ -80,7 +80,7 @@ function Navbar() {
       id: "all-collections",
       title: language === "en" ? "All collections" : "Toutes les collections",
       url: "/collections",
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/banniere/03_banner_med_torsio.jpg",
       eyebrow: language === "en" ? "Explore" : "Explorer",
     },
     ...collections.map((collection) => ({

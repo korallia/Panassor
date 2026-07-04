@@ -1,8 +1,11 @@
-import OrnamentDivider from "../ui/OrnamentDivider";
+import SectionAtmosphere from "../layout/SectionAtmosphere";
+import SectionTitle from "../layout/SectionTitle";
 
 function CartDrawerHeader({ copy, onClose }) {
   return (
-    <header className="relative z-10 shrink-0 px-6 pb-6 pt-8 sm:px-8">
+    <header className="relative z-10 shrink-0 overflow-hidden border-b border-[#6f5423]/55 px-6 pb-7 pt-8 sm:px-8">
+      <SectionAtmosphere />
+
       <button
         type="button"
         onClick={onClose}
@@ -12,19 +15,12 @@ function CartDrawerHeader({ copy, onClose }) {
         ×
       </button>
 
-      <div className="mx-auto max-w-[26rem] text-center">
-        <p className="font-['IM_Fell_English_SC'] text-[0.68rem] uppercase tracking-[0.34em] text-[#a47b36]">
-          {copy.eyebrow}
-        </p>
-
-        <h2 className="mt-3 font-['Uncial_Antiqua'] text-4xl leading-none text-[#e7c97b] sm:text-5xl">
-          {copy.title}
-        </h2>
-
-        <OrnamentDivider
-          className="mx-auto mt-6"
-          width={220}
-          opacity={0.72}
+      <div className="relative z-10 pr-12">
+        <SectionTitle
+          eyebrow={copy.header.eyebrow}
+          title={copy.header.title}
+          description={copy.header.description}
+          align="left"
         />
       </div>
     </header>

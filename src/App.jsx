@@ -14,7 +14,7 @@ import ContactPage from "./pages/ContactPage";
 import CartDrawer from "./components/cart/CartDrawer";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
 import  { LanguageProvider  } from "../src/context/LanguageContext"
-import  { CartContext  } from "../src/context/CartContext"
+import  { CartProvider   } from "../src/context/CartContext"
 function App() {
   return (
       <LanguageProvider>

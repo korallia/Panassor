@@ -4,7 +4,7 @@ import { getPageText } from "../../utils/content";
 import { cartContent } from "../../content/cartContent";
 
 import CartDrawerHeader from "./CartDrawerHeader";
-import CartDrawerItem from "./CartDrawerItem";
+import CartDrawerItems from "./CartDrawerItems";
 import CartDrawerFooter from "./CartDrawerFooter";
 import CartOrderNote from "./CartOrderNote";
 import CartEmptyState from "./CartEmptyState";
@@ -50,17 +50,14 @@ function CartDrawer() {
             {items.length === 0 ? (
               <CartEmptyState copy={copy.empty} />
             ) : (
-              <div className="space-y-5">
-                {items.map((item) => (
-                  <CartDrawerItem
-                    key={item.cartKey}
-                    item={item}
-                    copy={copy}
-                    language={language}
-                    onUpdateQuantity={updateQuantity}
-                    onRemove={removeItem}
-                  />
-                ))}
+              <div className="space-y-6">
+                <CartDrawerItems
+                  items={items}
+                  copy={copy}
+                  language={language}
+                  onUpdateQuantity={updateQuantity}
+                  onRemove={removeItem}
+                />
 
                 <CartOrderNote
                   value={orderNote}

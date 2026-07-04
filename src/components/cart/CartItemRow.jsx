@@ -9,7 +9,7 @@ function formatPrice(priceCents, language = "fr", currency = "CAD") {
   }).format(priceCents / 100);
 }
 
-function CartDrawerItem({
+function CartItemRow({
   item,
   copy,
   language,
@@ -25,29 +25,32 @@ function CartDrawerItem({
   const lineTotalCents = unitPriceCents * item.quantity;
 
   return (
-    <article className="relative border border-[#6f5423]/70 bg-[#0b0705]/72 p-4 shadow-[0_14px_36px_rgba(0,0,0,0.34)]">
-      <div className="grid gap-4 sm:grid-cols-[118px_1fr] sm:gap-5">
-        <div className="flex min-h-[138px] items-center justify-center border border-[#6f5423]/55 bg-[#120c07]/80 p-2">
+    <article className="relative py-6 sm:py-7">
+      <div className="grid gap-5 sm:grid-cols-[108px_1fr] sm:gap-5">
+        <div className="relative flex min-h-[132px] items-center justify-center bg-[#120c07]/55 p-2 sm:min-h-[148px]">
+          <div className="pointer-events-none absolute inset-y-3 left-0 w-px bg-[#6f5423]/45" />
+          <div className="pointer-events-none absolute inset-y-3 right-0 w-px bg-[#6f5423]/25" />
+
           {itemImage ? (
             <img
               src={itemImage}
               alt={itemName}
-              className="max-h-[136px] w-full object-contain brightness-[0.92] contrast-[1.04] saturate-[0.96]"
+              className="max-h-[136px] w-full object-contain brightness-[0.94] contrast-[1.04] saturate-[0.96] sm:max-h-[152px]"
             />
           ) : (
-            <div className="h-[136px] w-full bg-[#080504]" />
+            <div className="h-[132px] w-full bg-[#080504]/70 sm:h-[148px]" />
           )}
         </div>
 
         <div className="min-w-0">
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-start">
+          <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
             <div className="min-w-0">
-              <h3 className="font-['EB_Garamond'] text-[1.45rem] leading-7 text-[#e7c97b] sm:text-[1.6rem]">
+              <h3 className="font-['EB_Garamond'] text-[1.6rem] leading-7 text-[#f3e7cf] sm:text-[1.8rem] sm:leading-8">
                 {itemName}
               </h3>
 
               {itemMeta && (
-                <p className="mt-1 font-['EB_Garamond'] text-base leading-6 text-[#d7c8ad]/82">
+                <p className="mt-1 font-['EB_Garamond'] text-base leading-6 text-[#d7c8ad]/78">
                   {itemMeta}
                 </p>
               )}
@@ -58,19 +61,19 @@ function CartDrawerItem({
                 {copy.item.price}
               </p>
 
-              <p className="mt-1 whitespace-nowrap font-['EB_Garamond'] text-xl leading-none text-[#d8b56f]">
+              <p className="mt-1 whitespace-nowrap font-['EB_Garamond'] text-[1.55rem] leading-none text-[#d8b56f]">
                 {formatPrice(unitPriceCents, language)}
               </p>
             </div>
           </div>
 
           {item.selectedItems?.length > 0 && (
-            <div className="mt-3 font-['EB_Garamond'] text-sm leading-5 text-[#d7c8ad]/70 sm:text-base sm:leading-6">
-              <p className="mb-1 font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.18em] text-[#a47b36]">
+            <div className="mt-4">
+              <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#a47b36]">
                 {copy.item.selectedTools}
               </p>
 
-              <div className="grid gap-x-4 sm:grid-cols-2">
+              <div className="mt-2 grid gap-x-5 gap-y-1 font-['EB_Garamond'] text-[0.98rem] leading-5 text-[#d7c8ad]/70 sm:grid-cols-2 sm:text-base sm:leading-6">
                 {item.selectedItems.map((selectedItem) => (
                   <p key={selectedItem.productId}>{selectedItem.name}</p>
                 ))}
@@ -78,8 +81,8 @@ function CartDrawerItem({
             </div>
           )}
 
-          <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-[#6f5423]/40 pt-4">
-            <div className="inline-flex border border-[#c89b3c]/70 bg-[#080504] font-['IM_Fell_English_SC'] text-[#d8b56f]">
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+            <div className="inline-flex border border-[#c89b3c]/62 bg-[#080504]/82 font-['IM_Fell_English_SC'] text-[#d8b56f]">
               <button
                 type="button"
                 onClick={() => onUpdateQuantity(item.cartKey, item.quantity - 1)}
@@ -89,7 +92,7 @@ function CartDrawerItem({
                 −
               </button>
 
-              <span className="flex h-9 min-w-10 items-center justify-center text-sm">
+              <span className="flex h-9 min-w-10 items-center justify-center border-x border-[#c89b3c]/35 text-sm">
                 {item.quantity}
               </span>
 
@@ -109,7 +112,7 @@ function CartDrawerItem({
                   {copy.item.lineTotal}
                 </p>
 
-                <p className="mt-1 font-['EB_Garamond'] text-xl leading-none text-[#e7c97b]">
+                <p className="mt-1 font-['EB_Garamond'] text-[1.35rem] leading-none text-[#e7c97b]">
                   {formatPrice(lineTotalCents, language)}
                 </p>
               </div>
@@ -129,4 +132,4 @@ function CartDrawerItem({
   );
 }
 
-export default CartDrawerItem;
+export default CartItemRow;

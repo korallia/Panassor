@@ -41,8 +41,12 @@ function CartDrawer() {
         }`}
         aria-hidden={!isCartOpen}
       >
-        <div className="relative flex h-full flex-col overflow-hidden bg-[linear-gradient(180deg,#100a06_0%,#080504_48%,#050302_100%)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_8%,rgba(200,155,60,0.1),transparent_30%),radial-gradient(circle_at_88%_42%,rgba(7,38,23,0.18),transparent_34%)]" />
+        <div className="relative flex h-full flex-col overflow-hidden bg-[linear-gradient(180deg,#100a06_0%,#080504_42%,#050302_100%)]">
+          {/* atmosphère globale */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(200,155,60,0.08),transparent_28%),radial-gradient(circle_at_82%_36%,rgba(31,51,36,0.18),transparent_32%),radial-gradient(circle_at_28%_84%,rgba(31,51,36,0.12),transparent_28%)]" />
+
+          {/* voile léger */}
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,12,7,0.28),rgba(8,5,4,0)_18%,rgba(8,5,4,0.12)_100%)]" />
 
           <CartDrawerHeader copy={copy} onClose={closeCart} />
 

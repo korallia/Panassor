@@ -166,15 +166,16 @@ function KitProductContainer({
             </div>
 
             <div className="min-w-0">
-              <ProductPurchasePanel
-                product={product}
-                collection={collection}
-                leatherColors={leatherColors}
-                customizableItems={customizableItems}
-                selectedColorIndex={selectedColorIndex}
-                onSelectColor={handleSelectColor}
-                copy={copy.purchasePanel}
-              />
+             <ProductPurchasePanel
+              product={product}
+              collection={collection}
+              productImageUrl={defaultProductImage}
+              leatherColors={leatherColors}
+              customizableItems={customizableItems}
+              selectedColorIndex={selectedColorIndex}
+              onSelectColor={handleSelectColor}
+              copy={copy.purchasePanel}
+            />
             </div>
           </div>
         </div>

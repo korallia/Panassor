@@ -11,11 +11,14 @@ import RouteReset from "./components/RouteReset";
 import ProductsPage from "./pages/ProductsPage";
 import AtelierPage from "./pages/AtelierPage";
 import ContactPage from "./pages/ContactPage";
+import CartDrawer from "./components/cart/CartDrawer";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
 import  { LanguageProvider  } from "../src/context/LanguageContext"
+import  { CartContext  } from "../src/context/CartContext"
 function App() {
   return (
       <LanguageProvider>
+          <CartProvider>
       <CollectionsProvider>
     <div className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <Navbar />
@@ -32,7 +35,9 @@ function App() {
 
       <Footer />
     </div>
+     <CartDrawer />
     </CollectionsProvider>
+    </CartProvider>
     </LanguageProvider>
   );
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../utils/localization";
+import { useCart } from "../../../context/CartContext";
+import { getProductSlug, t } from "../../../utils/localization";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
@@ -24,6 +25,7 @@ function formatPrice(priceCents, language = "fr", currency = "CAD") {
 function ProductPurchasePanel({
   product,
   collection,
+  productImageUrl,
   leatherColors = [],
   customizableItems = [],
   selectedColorIndex = 0,
@@ -31,6 +33,7 @@ function ProductPurchasePanel({
   copy = {},
 }) {
   const { language } = useLanguage();
+  const { addItem } = useCart();
 
   const [selectedItems, setSelectedItems] = useState(customizableItems);
   const [toolOptions, setToolOptions] = useState([]);
@@ -64,9 +67,13 @@ function ProductPurchasePanel({
 
   const collectionName = t(collection, "name", language);
   const productName = t(product, "name", language);
+  const productSlug = getProductSlug(product, language);
+
   const productDescription =
     t(product, "long_description", language) ||
     t(product, "description", language);
+
+  const selectedColor = leatherColors[selectedColorIndex];
 
   const addToCartLabel =
     copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
@@ -90,6 +97,32 @@ function ProductPurchasePanel({
     );
 
     closeToolModal();
+  };
+
+  const handleAddToCart = () => {
+    addItem({
+      type: product.is_kit ? "kit" : "product",
+
+      productId: product.id,
+      productSlug,
+      quantity: 1,
+
+      colorKey: selectedColor?.key || null,
+      colorName: selectedColor?.name || "",
+
+      selectedItems: selectedItems.map((item) => ({
+        productId: item.id,
+        productSlug: getProductSlug(item, language),
+        name: t(item, "name", language),
+      })),
+
+      displaySnapshot: {
+        name: productName,
+        imageUrl: productImageUrl || product.image_url,
+        priceCents: product.price_cents,
+        meta: selectedColor?.name ? `Couleur : ${selectedColor.name}` : "",
+      },
+    });
   };
 
   return (
@@ -117,6 +150,7 @@ function ProductPurchasePanel({
 
             <button
               type="button"
+              onClick={handleAddToCart}
               className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
             >
               {addToCartLabel}
@@ -144,10 +178,10 @@ function ProductPurchasePanel({
               />
 
               <CustomizableItemsList
-  items={selectedItems}
-  onSelectItem={openToolModal}
-  copy={copy}
-/>
+                items={selectedItems}
+                onSelectItem={openToolModal}
+                copy={copy}
+              />
             </>
           )}
         </div>

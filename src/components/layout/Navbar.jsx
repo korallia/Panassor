@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useCollections } from "../../context/CollectionsContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
-import { getCollectionUrl, t } from "../../utils/localization";
+import { getCollectionUrl, getProductSlug, t } from "../../utils/localization";
+
+const contactEmail = "contact@panassor.ca";
+const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
 
 function CartIcon() {
   return (
@@ -26,12 +29,51 @@ function CartIcon() {
   );
 }
 
+function getCollectionByKey(collections, key) {
+  return collections.find((collection) => {
+    const values = [
+      collection.slug,
+      collection.slug_fr,
+      collection.slug_en,
+      collection.name_fr,
+      collection.name_en,
+      collection.title_fr,
+      collection.title_en,
+    ]
+      .filter(Boolean)
+      .map((value) => String(value).toLowerCase());
+
+    return values.some((value) => value.includes(key));
+  });
+}
+
+function getKitProduct(collection) {
+  return collection?.products?.find((product) => product.is_kit);
+}
+
+function getKitUrl(collection, language) {
+  const kitProduct = getKitProduct(collection);
+
+  if (!collection) {
+    return "/produits";
+  }
+
+  if (!kitProduct) {
+    return getCollectionUrl(collection, language);
+  }
+
+  return `/produits/${getProductSlug(kitProduct, language)}`;
+}
+
 function Navbar() {
   const navigate = useNavigate();
   const collections = useCollections();
   const { language, toggleLanguage } = useLanguage();
   const { openCart, itemCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const surgeonCollection = getCollectionByKey(collections, "chirurgien");
+  const torturerCollection = getCollectionByKey(collections, "tortionnaire");
 
   const dropdownItems = [
     {
@@ -64,25 +106,20 @@ function Navbar() {
       url: "/produits",
     },
     {
-      id: "atelier",
-      title: language === "en" ? "Workshop" : "Atelier",
-      url: "/atelier",
+      id: "surgeon-kit",
+      title: language === "en" ? "Surgeon Kit" : "Kit du chirurgien",
+      url: getKitUrl(surgeonCollection, language),
     },
     {
-      id: "contact",
-      title: "Contact",
-      url: "/contact",
+      id: "torturer-kit",
+      title: language === "en" ? "Torturer Kit" : "Kit tortionnaire",
+      url: getKitUrl(torturerCollection, language),
     },
     {
       id: "all-collections",
       title: language === "en" ? "All collections" : "Toutes les collections",
       url: "/collections",
     },
-    ...collections.map((collection) => ({
-      id: collection.id,
-      title: t(collection, "title", language) || t(collection, "name", language),
-      url: getCollectionUrl(collection, language),
-    })),
   ];
 
   const navigateAndClose = (url) => {
@@ -95,11 +132,14 @@ function Navbar() {
     setIsMenuOpen(false);
   };
 
+  const desktopIconButtonClass =
+    "relative hidden h-10 w-10 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:flex";
+
+  const mobileIconButtonClass =
+    "relative flex h-10 w-10 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
+
   const mobileCollectionLinkClass =
     "block w-full border-b border-[#6f5423]/30 py-3 text-left font-['EB_Garamond'] text-2xl leading-8 text-[#d7c8ad]/88 transition last:border-b-0 hover:text-[#d8a24c]";
-
-  const iconButtonClass =
-    "relative flex h-10 w-10 items-center justify-center border border-[#6f5423]/80 bg-[#120c07] font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805]";
 
   const DesktopLanguageButton = () => (
     <button
@@ -112,22 +152,29 @@ function Navbar() {
     </button>
   );
 
-  const MobileLanguageButton = () => (
-    <button
-      type="button"
-      onClick={toggleLanguage}
-      className="border border-[#6f5423]/80 bg-[#120c07] px-3 py-2 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.14em] text-[#d8a24c] transition hover:border-[#c89b3c] hover:bg-[#c89b3c] hover:text-[#100805] md:hidden"
-      aria-label={language === "en" ? "Switch to French" : "Passer en anglais"}
-    >
-      {language === "fr" ? "EN" : "FR"}
-    </button>
-  );
-
-  const CartButton = ({ className = "" }) => (
+  const DesktopCartButton = () => (
     <button
       type="button"
       onClick={handleOpenCart}
-      className={`${iconButtonClass} ${className}`}
+      className={desktopIconButtonClass}
+      aria-label={language === "en" ? "Open cart" : "Ouvrir le panier"}
+      title={language === "en" ? "Cart" : "Panier"}
+    >
+      <CartIcon />
+
+      {itemCount > 0 && (
+        <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center border border-[#c89b3c] bg-[#1f3324] px-1 font-['IM_Fell_English_SC'] text-[0.62rem] leading-none text-[#e7c97b]">
+          {itemCount}
+        </span>
+      )}
+    </button>
+  );
+
+  const MobileCartButton = () => (
+    <button
+      type="button"
+      onClick={handleOpenCart}
+      className={mobileIconButtonClass}
       aria-label={language === "en" ? "Open cart" : "Ouvrir le panier"}
       title={language === "en" ? "Cart" : "Panier"}
     >
@@ -269,8 +316,8 @@ function Navbar() {
           <DesktopLanguageButton />
         </nav>
 
-        <div className="flex shrink-0 items-center justify-self-end gap-3 text-[#d8a24c] md:gap-4">
-          <CartButton />
+        <div className="flex shrink-0 items-center justify-self-end gap-4 text-[#d8a24c]">
+          <DesktopCartButton />
 
           <button
             type="button"
@@ -293,8 +340,6 @@ function Navbar() {
                 : "Fermer"
               : "Menu"}
           </button>
-
-          <MobileLanguageButton />
         </div>
       </div>
 
@@ -307,9 +352,41 @@ function Navbar() {
               <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/45" />
             </div>
 
-            <p className="mb-4 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.28em] text-[#c89b3c]/80">
-              Navigation
-            </p>
+            <div className="mb-5 flex flex-wrap justify-center gap-3">
+              <a
+                href={`mailto:${contactEmail}`}
+                className={mobileIconButtonClass}
+                aria-label={language === "en" ? "Email Panassor" : "Envoyer un courriel à Panassor"}
+                title="Email"
+              >
+                ✉
+              </a>
+
+              <a
+                href={facebookUrl}
+                target="_blank"
+                rel="noreferrer"
+                className={mobileIconButtonClass}
+                aria-label="Facebook"
+                title="Facebook"
+              >
+                f
+              </a>
+
+              <MobileCartButton />
+
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className={mobileIconButtonClass}
+                aria-label={
+                  language === "en" ? "Switch to French" : "Passer en anglais"
+                }
+                title={language === "en" ? "Français" : "English"}
+              >
+                {language === "fr" ? "EN" : "FR"}
+              </button>
+            </div>
 
             <div className="border-y border-[#6f5423]/45 py-2">
               {mobileItems.map((item) => (

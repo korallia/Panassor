@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
 
-import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
 function ToolSelectionModal({
@@ -43,14 +42,17 @@ function ToolSelectionModal({
   }
 
   const labels = {
-    eyebrow: copy.eyebrow || (language === "en" ? "Change tool" : "Modifier l’outil"),
+    eyebrow:
+      copy.eyebrow || (language === "en" ? "Change tool" : "Modifier l’outil"),
     mobileTitle: copy.mobileTitle || (language === "en" ? "Choose" : "Choisir"),
     desktopTitle:
-      copy.desktopTitle || (language === "en" ? "Choose a tool" : "Choisir un outil"),
+      copy.desktopTitle ||
+      (language === "en" ? "Choose a tool" : "Choisir un outil"),
     close: copy.close || (language === "en" ? "Close" : "Fermer"),
     replacePrefix:
       copy.replacePrefix || (language === "en" ? "Replace" : "Remplacer"),
-    replaceSuffix: copy.replaceSuffix || (language === "en" ? "with:" : "par :"),
+    replaceSuffix:
+      copy.replaceSuffix || (language === "en" ? "with:" : "par :"),
     desktopDescriptionPrefix:
       copy.desktopDescriptionPrefix ||
       (language === "en"
@@ -61,6 +63,30 @@ function ToolSelectionModal({
 
   const replacedToolName =
     t(selectedItem, "title", language) || t(selectedItem, "name", language);
+
+  const imageCornerClass =
+    "pointer-events-none absolute h-10 w-10 border-[#e0b24f] opacity-95 drop-shadow-[0_2px_4px_rgba(8,5,4,0.95)] transition duration-300 group-hover/tool:opacity-100 group-hover/tool:drop-shadow-[0_0_7px_rgba(224,178,79,0.42)] md:h-11 md:w-11";
+
+  const imageOverlay = (
+    <>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/66 via-transparent to-[#080504]/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/16 via-transparent to-[#080504]/16" />
+      <div className="absolute inset-0 shadow-[inset_0_0_54px_rgba(8,5,4,0.58)]" />
+
+      <div
+        className={`${imageCornerClass} left-4 top-4 border-l-2 border-t-2`}
+      />
+      <div
+        className={`${imageCornerClass} right-4 top-4 border-r-2 border-t-2`}
+      />
+      <div
+        className={`${imageCornerClass} bottom-4 left-4 border-b-2 border-l-2`}
+      />
+      <div
+        className={`${imageCornerClass} bottom-4 right-4 border-b-2 border-r-2`}
+      />
+    </>
+  );
 
   return (
     <div className="fixed inset-0 z-50 bg-[#080504]/86 backdrop-blur-sm md:flex md:items-center md:justify-center md:px-6">
@@ -118,16 +144,10 @@ function ToolSelectionModal({
                       alt={toolName}
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full object-cover brightness-[0.82] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.05] group-hover/tool:brightness-[0.95]"
+                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
                     />
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/58 via-transparent to-[#080504]/8" />
-                    <div className="absolute inset-0 shadow-[inset_0_0_26px_rgba(8,5,4,0.58)]" />
-
-                    <div className="pointer-events-none absolute left-3 top-3 h-10 w-10 border-l border-t border-[#c89b3c]/80" />
-                    <div className="pointer-events-none absolute right-3 top-3 h-10 w-10 border-r border-t border-[#c89b3c]/80" />
-                    <div className="pointer-events-none absolute bottom-3 left-3 h-10 w-10 border-b border-l border-[#c89b3c]/80" />
-                    <div className="pointer-events-none absolute bottom-3 right-3 h-10 w-10 border-b border-r border-[#c89b3c]/80" />
+                    {imageOverlay}
                   </div>
 
                   <div className="relative z-10 flex min-w-0 flex-col px-4 py-4">
@@ -212,19 +232,10 @@ function ToolSelectionModal({
                       alt={toolName}
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full object-cover brightness-[0.88] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.08] group-hover/tool:-translate-y-1 group-hover/tool:brightness-[1]"
+                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
                     />
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/64 via-transparent to-[#080504]/8" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#080504]/14 via-transparent to-[#080504]/14" />
-                    <div className="absolute inset-0 shadow-[inset_0_0_46px_rgba(8,5,4,0.5)]" />
-
-                    <CornerFrame
-                      inset="cardImage"
-                      size="md"
-                      thickness="subtle"
-                      color="gold"
-                    />
+                    {imageOverlay}
                   </div>
 
                   <div className="relative z-10 flex flex-1 flex-col p-4">

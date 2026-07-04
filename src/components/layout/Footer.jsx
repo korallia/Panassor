@@ -10,6 +10,26 @@ import { footerContent } from "../../content/footerContent";
 const contactEmail = "contact@panassor.ca";
 const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
 
+function CartIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 6h15l-2 8H7L5 6Z" />
+      <path d="M5 6 4 3H2" />
+      <path d="M8 18.5h.01" />
+      <path d="M17 18.5h.01" />
+    </svg>
+  );
+}
+
 function Footer() {
   const navigate = useNavigate();
   const collections = useCollections();
@@ -186,7 +206,7 @@ function Footer() {
                 aria-label={language === "en" ? "Open cart" : "Ouvrir le panier"}
                 title={language === "en" ? "Cart" : "Panier"}
               >
-                ✦
+                <CartIcon />
 
                 {itemCount > 0 && (
                   <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center border border-[#c89b3c] bg-[#1f3324] px-1 font-['IM_Fell_English_SC'] text-[0.62rem] leading-none text-[#e7c97b]">

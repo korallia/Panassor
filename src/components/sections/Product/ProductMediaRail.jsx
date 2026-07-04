@@ -9,7 +9,6 @@ function ProductMediaRail({
   onPrevious,
   onNext,
 }) {
-  const railRef = useRef(null);
   const thumbnailRefs = useRef([]);
 
   useEffect(() => {
@@ -34,10 +33,7 @@ function ProductMediaRail({
     <div className="shrink-0 border-t border-[#6f5423]/55 bg-[#0b0705]/92 px-3 py-3 md:px-5 md:py-5">
       {/* MOBILE */}
       <div className="md:hidden">
-        <div
-          ref={railRef}
-          className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
-        >
+        <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {media.map((item, index) => {
             const thumbnailSrc =
               item.type === "video" ? item.poster ?? item.src : item.src;
@@ -84,10 +80,7 @@ function ProductMediaRail({
           label="Image précédente"
         />
 
-        <div
-          ref={railRef}
-          className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-color:#c89b3c_#120c07] [scrollbar-width:thin]"
-        >
+        <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {media.map((item, index) => {
             const thumbnailSrc =
               item.type === "video" ? item.poster ?? item.src : item.src;
@@ -123,11 +116,7 @@ function ProductMediaRail({
           })}
         </div>
 
-        <CarouselArrow
-          direction="next"
-          onClick={onNext}
-          label="Image suivante"
-        />
+        <CarouselArrow direction="next" onClick={onNext} label="Image suivante" />
       </div>
     </div>
   );

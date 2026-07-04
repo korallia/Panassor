@@ -26,7 +26,7 @@ function CartItemRow({
 
   return (
     <article className="relative py-5 sm:py-6">
-      <div className="group/item grid overflow-hidden border border-[#b8964a] bg-[#1f3324]/95 text-left shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#2a4630] sm:grid-cols-[118px_1fr]">
+      <div className="group/item grid overflow-hidden border border-[#b8964a] bg-[#1f3324]/95 text-left shadow-[0_0_24px_rgba(0,0,0,0.35)] transition hover:bg-[#243c2a] sm:grid-cols-[118px_1fr]">
         {/* IMAGE */}
         <div className="h-full min-h-[150px] overflow-hidden border-b border-[#b8964a]/80 bg-[#080504] sm:border-r sm:border-b-0">
           {itemImage ? (
@@ -55,23 +55,23 @@ function CartItemRow({
           <div className="pr-10">
             <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
               <div className="min-w-0">
-                <h3 className="font-['EB_Garamond'] text-[1.55rem] leading-7 text-[#e4c36a] transition group-hover/item:text-[#f7ead2] sm:text-[1.8rem] sm:leading-8">
+                <h3 className="font-['EB_Garamond'] text-[1.55rem] leading-7 text-[#e4c36a] transition group-hover/item:text-[#f0d88d] sm:text-[1.8rem] sm:leading-8">
                   {itemName}
                 </h3>
 
                 {itemMeta && (
-                  <p className="mt-1 font-['EB_Garamond'] text-base leading-6 text-[#e4c36a]/88 transition group-hover/item:text-[#f7ead2]/90">
+                  <p className="mt-1 font-['EB_Garamond'] text-base leading-6 text-[#e4c36a]/88 transition group-hover/item:text-[#e7c97b]/90">
                     {itemMeta}
                   </p>
                 )}
               </div>
 
               <div className="text-left sm:text-right">
-                <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#d8b56f]/80 transition group-hover/item:text-[#f7ead2]/90">
+                <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#d8b56f]/80 transition group-hover/item:text-[#e7c97b]/90">
                   {copy.item.price}
                 </p>
 
-                <p className="mt-1 whitespace-nowrap font-['EB_Garamond'] text-[1.55rem] leading-none text-[#e4c36a] transition group-hover/item:text-[#f7ead2]">
+                <p className="mt-1 whitespace-nowrap font-['EB_Garamond'] text-[1.55rem] leading-none text-[#e4c36a] transition group-hover/item:text-[#e7c97b]">
                   {formatPrice(unitPriceCents, language)}
                 </p>
               </div>
@@ -79,11 +79,11 @@ function CartItemRow({
 
             {item.selectedItems?.length > 0 && (
               <div className="mt-4">
-                <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#d8b56f]/80 transition group-hover/item:text-[#f7ead2]/90">
+                <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.2em] text-[#d8b56f]/80 transition group-hover/item:text-[#e7c97b]/90">
                   {copy.item.selectedTools}
                 </p>
 
-                <div className="mt-3 grid gap-x-8 gap-y-1 font-['EB_Garamond'] text-[0.98rem] leading-5 text-[#e4c36a]/88 transition group-hover/item:text-[#f7ead2]/90 sm:grid-cols-2 sm:text-base sm:leading-6">
+                <div className="mt-3 grid gap-x-8 gap-y-1 font-['EB_Garamond'] text-[0.98rem] leading-5 text-[#e4c36a]/88 transition group-hover/item:text-[#e7c97b]/90 sm:grid-cols-2 sm:text-base sm:leading-6">
                   {item.selectedItems.map((selectedItem) => (
                     <p key={selectedItem.productId}>{selectedItem.name}</p>
                   ))}
@@ -122,11 +122,11 @@ function CartItemRow({
                 </div>
 
                 <div className="text-right">
-                  <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.18em] text-[#d8b56f]/80 transition group-hover/item:text-[#f7ead2]/90">
+                  <p className="font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.18em] text-[#d8b56f]/80 transition group-hover/item:text-[#e7c97b]/90">
                     {copy.item.lineTotal}
                   </p>
 
-                  <p className="mt-1 font-['EB_Garamond'] text-[1.4rem] leading-none text-[#e4c36a] transition group-hover/item:text-[#f7ead2]">
+                  <p className="mt-1 font-['EB_Garamond'] text-[1.4rem] leading-none text-[#e4c36a] transition group-hover/item:text-[#e7c97b]">
                     {formatPrice(lineTotalCents, language)}
                   </p>
                 </div>

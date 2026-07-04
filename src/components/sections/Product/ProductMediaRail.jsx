@@ -80,43 +80,85 @@ function ProductMediaRail({
           label="Image précédente"
         />
 
-        <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {media.map((item, index) => {
-            const thumbnailSrc =
-              item.type === "video" ? item.poster ?? item.src : item.src;
+        {media.length <= 5 ? (
+          <div className="grid grid-cols-5 gap-3">
+            {media.map((item, index) => {
+              const thumbnailSrc =
+                item.type === "video" ? item.poster ?? item.src : item.src;
 
-            return (
-              <button
-                key={`${item.src}-${index}`}
-                ref={(element) => {
-                  thumbnailRefs.current[index] = element;
-                }}
-                type="button"
-                onClick={() => onSelectMedia(index)}
-                className={`relative h-[92px] w-[128px] shrink-0 overflow-hidden border bg-[#120c07] transition ${
-                  selectedMediaIndex === index
-                    ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
-                    : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
-                }`}
-                aria-label={`Voir le média ${index + 1}`}
-              >
-                <img
-                  src={thumbnailSrc}
-                  alt=""
-                  className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
-                />
+              return (
+                <button
+                  key={`${item.src}-${index}`}
+                  ref={(element) => {
+                    thumbnailRefs.current[index] = element;
+                  }}
+                  type="button"
+                  onClick={() => onSelectMedia(index)}
+                  className={`relative h-[92px] overflow-hidden border bg-[#120c07] transition ${
+                    selectedMediaIndex === index
+                      ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
+                      : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
+                  }`}
+                  aria-label={`Voir le média ${index + 1}`}
+                >
+                  <img
+                    src={thumbnailSrc}
+                    alt=""
+                    className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
+                  />
 
-                {item.type === "video" && (
-                  <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
-                    Vidéo
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+                  {item.type === "video" && (
+                    <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
+                      Vidéo
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {media.map((item, index) => {
+              const thumbnailSrc =
+                item.type === "video" ? item.poster ?? item.src : item.src;
 
-        <CarouselArrow direction="next" onClick={onNext} label="Image suivante" />
+              return (
+                <button
+                  key={`${item.src}-${index}`}
+                  ref={(element) => {
+                    thumbnailRefs.current[index] = element;
+                  }}
+                  type="button"
+                  onClick={() => onSelectMedia(index)}
+                  className={`relative h-[92px] w-[128px] shrink-0 overflow-hidden border bg-[#120c07] transition ${
+                    selectedMediaIndex === index
+                      ? "border-[#c89b3c] shadow-[0_0_18px_rgba(200,155,60,0.24)]"
+                      : "border-[#6f5423]/65 hover:border-[#c89b3c]/80"
+                  }`}
+                  aria-label={`Voir le média ${index + 1}`}
+                >
+                  <img
+                    src={thumbnailSrc}
+                    alt=""
+                    className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
+                  />
+
+                  {item.type === "video" && (
+                    <span className="absolute inset-x-2 bottom-2 border border-[#c89b3c]/65 bg-[#080504]/78 px-2 py-1 font-['IM_Fell_English_SC'] text-[0.58rem] uppercase tracking-[0.14em] text-[#d8b56f]">
+                      Vidéo
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <CarouselArrow
+          direction="next"
+          onClick={onNext}
+          label="Image suivante"
+        />
       </div>
     </div>
   );

@@ -350,10 +350,16 @@ app.get("/api/products", async (req, res) => {
         c.slug_en AS collection_slug_en,
         c.name_fr AS collection_name_fr,
         c.name_en AS collection_name_en,
+        ki.sort_order AS kit_sort_order,
         pi.url AS image_url
       FROM products p
       JOIN collections c
         ON c.id = p.collection_id
+      LEFT JOIN kit_items ki
+        ON ki.included_product_id = p.id
+      LEFT JOIN products kit
+        ON kit.id = ki.kit_product_id
+        AND kit.collection_id = p.collection_id
       LEFT JOIN product_images pi
         ON pi.product_id = p.id
         AND pi.is_main = TRUE
@@ -361,6 +367,11 @@ app.get("/api/products", async (req, res) => {
       ORDER BY
         c.name_fr ASC,
         p.is_kit DESC,
+        CASE
+          WHEN p.is_kit = TRUE THEN 0
+          WHEN ki.sort_order IS NOT NULL THEN ki.sort_order
+          ELSE 9999
+        END ASC,
         p.featured DESC,
         p.name_fr ASC;
     `);
@@ -464,7 +475,7 @@ app.get("/api/products/:slug", async (req, res) => {
           ON pi.product_id = included.id
           AND pi.is_main = TRUE
         WHERE ki.kit_product_id = $1
-        ORDER BY ki.sort_order ASC;
+        ORDER BY ki.sort_order ASC, included.name_fr ASC;
         `,
         [product.id]
       );

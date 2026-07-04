@@ -34,8 +34,8 @@ export const productColorContent = {
       },
       {
         key: "burgundy",
-        fr: "Bordeaux",
-        en: "Burgundy",
+        fr: "Rouge",
+        en: "Red",
         value: "#401918",
       },
     ],

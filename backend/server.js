@@ -160,7 +160,7 @@ app.get("/api/collections/:slug", async (req, res) => {
       });
     }
 
-    const productsResult = await pool.query(
+    const kitProductResult = await pool.query(
       `
       SELECT
         p.id,
@@ -185,14 +185,89 @@ app.get("/api/collections/:slug", async (req, res) => {
         ON pi.product_id = p.id
         AND pi.is_main = TRUE
       WHERE p.collection_id = $1
-      ORDER BY p.is_kit DESC, p.featured DESC, p.name_fr ASC;
+        AND p.is_kit = TRUE
+      ORDER BY p.featured DESC, p.name_fr ASC
+      LIMIT 1;
       `,
       [collection.id]
     );
 
+    const kitProduct = kitProductResult.rows[0];
+
+    let products = [];
+
+    if (kitProduct) {
+      const kitItemsResult = await pool.query(
+        `
+        SELECT
+          included.id,
+          included.collection_id,
+          included.slug_fr,
+          included.slug_en,
+          included.name_fr,
+          included.name_en,
+          included.title_fr,
+          included.title_en,
+          included.description_fr,
+          included.description_en,
+          included.long_description_fr,
+          included.long_description_en,
+          included.price_cents,
+          included.customizable,
+          included.is_kit,
+          included.featured,
+          ki.sort_order,
+          pi.url AS image_url
+        FROM kit_items ki
+        JOIN products included
+          ON included.id = ki.included_product_id
+        LEFT JOIN product_images pi
+          ON pi.product_id = included.id
+          AND pi.is_main = TRUE
+        WHERE ki.kit_product_id = $1
+        ORDER BY ki.sort_order ASC, included.name_fr ASC;
+        `,
+        [kitProduct.id]
+      );
+
+      products = [kitProduct, ...kitItemsResult.rows];
+    } else {
+      const productsResult = await pool.query(
+        `
+        SELECT
+          p.id,
+          p.collection_id,
+          p.slug_fr,
+          p.slug_en,
+          p.name_fr,
+          p.name_en,
+          p.title_fr,
+          p.title_en,
+          p.description_fr,
+          p.description_en,
+          p.long_description_fr,
+          p.long_description_en,
+          p.price_cents,
+          p.customizable,
+          p.is_kit,
+          p.featured,
+          pi.url AS image_url
+        FROM products p
+        LEFT JOIN product_images pi
+          ON pi.product_id = p.id
+          AND pi.is_main = TRUE
+        WHERE p.collection_id = $1
+        ORDER BY p.featured DESC, p.name_fr ASC;
+        `,
+        [collection.id]
+      );
+
+      products = productsResult.rows;
+    }
+
     res.json({
       ...collection,
-      products: productsResult.rows,
+      products,
     });
   } catch (error) {
     console.error("Failed to fetch collection:", error);

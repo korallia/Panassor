@@ -1,7 +1,7 @@
 export const productsContent = {
   fr: {
     hero: {
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/banniere/03_banner_med_torsio.jpg",
       alt: "Produits Panassor",
       eyebrow: "Catalogue Panassor",
       title: "Produits",
@@ -22,7 +22,7 @@ export const productsContent = {
 
   en: {
     hero: {
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/banniere/03_banner_med_torsio.jpg",
       alt: "Panassor products",
       eyebrow: "Panassor catalogue",
       title: "Products",

@@ -1,7 +1,7 @@
 export const contactContent = {
   fr: {
     hero: {
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/banniere/03_banner_med_torsio.jpg",
       alt: "Contact Panassor",
       eyebrow: "Correspondance",
       title: "Contact",
@@ -46,7 +46,7 @@ export const contactContent = {
 
   en: {
     hero: {
-      image: "/images/03_banner_med_torsio.jpg",
+      image: "/images/banniere/03_banner_med_torsio.jpg",
       alt: "Contact Panassor",
       eyebrow: "Correspondence",
       title: "Contact",

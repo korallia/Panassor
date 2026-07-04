@@ -6,6 +6,7 @@ import { cartContent } from "../../content/cartContent";
 import CartDrawerHeader from "./CartDrawerHeader";
 import CartDrawerItems from "./CartDrawerItems";
 import CartDrawerFooter from "./CartDrawerFooter";
+import CartOrderNote from "./CartOrderNote";
 import CartEmptyState from "./CartEmptyState";
 
 function CartDrawer() {
@@ -15,6 +16,8 @@ function CartDrawer() {
   const {
     items,
     subtotalCents,
+    orderNote,
+    setOrderNote,
     isCartOpen,
     closeCart,
     updateQuantity,
@@ -47,13 +50,21 @@ function CartDrawer() {
             {items.length === 0 ? (
               <CartEmptyState copy={copy.empty} />
             ) : (
-              <CartDrawerItems
-                items={items}
-                copy={copy}
-                language={language}
-                onUpdateQuantity={updateQuantity}
-                onRemove={removeItem}
-              />
+              <div className="space-y-3 sm:space-y-4">
+                <CartDrawerItems
+                  items={items}
+                  copy={copy}
+                  language={language}
+                  onUpdateQuantity={updateQuantity}
+                  onRemove={removeItem}
+                />
+
+                <CartOrderNote
+                  value={orderNote}
+                  onChange={setOrderNote}
+                  copy={copy.orderNote}
+                />
+              </div>
             )}
           </div>
 

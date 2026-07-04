@@ -1,24 +1,27 @@
+import { useState } from "react";
+
 function CartOrderNote({ value, onChange, copy }) {
+  const [isOpen, setIsOpen] = useState(Boolean(value));
+
   return (
-    <section className="relative overflow-hidden border-t border-[#6f5423]/35 pt-6">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_24%,rgba(31,51,36,0.16),transparent_30%)]" />
+    <section className="border-t border-[#6f5423]/35 pt-3 sm:pt-4">
+      <button
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+        className="flex w-full items-center justify-between gap-4 font-['IM_Fell_English_SC'] text-[0.62rem] uppercase tracking-[0.22em] text-[#c89b3c] transition hover:text-[#e7c97b] sm:text-[0.68rem]"
+      >
+        <span>{copy.label}</span>
+        <span className="text-base leading-none">{isOpen ? "−" : "+"}</span>
+      </button>
 
-      <div className="relative z-10">
-        <label
-          htmlFor="cart-order-note"
-          className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.24em] text-[#c89b3c]"
-        >
-          {copy.label}
-        </label>
-
+      {isOpen && (
         <textarea
-          id="cart-order-note"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={copy.placeholder}
-          className="mt-4 min-h-[130px] w-full resize-none border border-[#6f5423]/55 bg-[linear-gradient(180deg,rgba(8,5,4,0.88),rgba(12,18,14,0.72))] px-4 py-4 font-['EB_Garamond'] text-lg leading-7 text-[#f3e7cf] outline-none transition placeholder:text-[#8f7a58]/70 focus:border-[#c89b3c]/80"
+          className="mt-3 h-20 w-full resize-none border border-[#6f5423]/55 bg-[#080504]/82 px-3 py-2 font-['EB_Garamond'] text-sm leading-5 text-[#f3e7cf] outline-none transition placeholder:text-[#8f7a58]/70 focus:border-[#c89b3c]/80 sm:h-24 sm:px-4 sm:py-3 sm:text-base sm:leading-6"
         />
-      </div>
+      )}
     </section>
   );
 }

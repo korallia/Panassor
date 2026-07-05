@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 
+import { useCart } from "../../../context/CartContext";
 import { useLanguage } from "../../../context/LanguageContext";
 import {
   getCollectionUrl,
+  getProductSlug,
   getProductUrl,
   t,
 } from "../../../utils/localization";
@@ -23,6 +25,7 @@ function formatPrice(priceCents, language = "fr", currency = "CAD") {
 
 function IndividualProductPanel({ product, collection, copy = {} }) {
   const { language } = useLanguage();
+  const { addItem } = useCart();
 
   if (!product || !collection) {
     return null;
@@ -30,6 +33,8 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
 
   const collectionName = t(collection, "name", language);
   const productName = t(product, "name", language);
+  const productSlug = getProductSlug(product, language);
+
   const productDescription =
     t(product, "long_description", language) ||
     t(product, "description", language);
@@ -43,6 +48,11 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
   const kitProductName = kitProduct
     ? t(kitProduct, "name", language)
     : collectionName;
+
+  const productImageUrl =
+    product.images?.find((image) => image.is_main)?.url ||
+    product.images?.[0]?.url ||
+    product.image_url;
 
   const addToCartLabel =
     copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
@@ -61,6 +71,24 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
     (language === "en"
       ? "collection, with the tools designed to accompany this piece in play."
       : "avec les outils pensés pour accompagner cette pièce en jeu.");
+
+  const handleAddToCart = () => {
+    addItem({
+      type: "product",
+      productId: product.id,
+      productSlug,
+      quantity: 1,
+      colorKey: null,
+      colorName: "",
+      selectedItems: [],
+      displaySnapshot: {
+        name: productName,
+        imageUrl: productImageUrl,
+        priceCents: product.price_cents,
+        meta: collectionName,
+      },
+    });
+  };
 
   return (
     <aside className="h-full">
@@ -87,7 +115,8 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
 
             <button
               type="button"
-              className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
+              onClick={handleAddToCart}
+              className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805]"
             >
               {addToCartLabel}
             </button>
@@ -101,7 +130,7 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
 
           <Link
             to={kitUrl}
-            className="mt-9 block max-w-[360px] overflow-hidden border border-[#6f5423]/75 bg-[#080504]/45 hover:border-[#b8964a] hover:bg-[#102417]/80"
+            className="mt-9 block max-w-[360px] overflow-hidden border border-[#6f5423]/75 bg-[#080504]/45 transition hover:border-[#b8964a] hover:bg-[#102417]/80"
           >
             <div className="grid min-h-[108px] grid-cols-[96px_1fr]">
               <div className="overflow-hidden border-r border-[#6f5423]/70 bg-[#080504]">

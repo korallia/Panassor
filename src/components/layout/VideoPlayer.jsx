@@ -14,6 +14,8 @@ function VideoPlayer({ video, copy = {} }) {
   const description =
     copy.description ||
     "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Cette vidéo présente le contenu du kit, sa logique de rangement et son usage en scène.";
+  const buttonLabel = copy.buttonLabel || "Voir l’atelier";
+  const buttonHref = copy.buttonHref || "/atelier";
 
   return (
     <section
@@ -40,7 +42,7 @@ function VideoPlayer({ video, copy = {} }) {
           </p>
 
           <div className="flex justify-center xl:justify-start">
-            <GreenButton />
+            <GreenButton href={buttonHref} label={buttonLabel} />
           </div>
         </div>
 

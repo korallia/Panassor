@@ -8,7 +8,7 @@ function ProductMediaGallery({ media = [], productName }) {
 
   useEffect(() => {
     setSelectedMediaIndex(0);
-  }, [media]);
+  }, [productName]);
 
   const selectedMedia = media[selectedMediaIndex] ?? media[0];
 

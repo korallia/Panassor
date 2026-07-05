@@ -75,30 +75,36 @@ function KitProductContainer({
     visibleImages[0]?.url ??
     product.image_url;
 
-  const productMedia = [
-    {
+  const collectionVideoUrl = collection.video_url?.trim();
+const collectionVideoPoster = collection.video_poster_url?.trim();
+
+const productMedia = [
+  {
+    type: "image",
+    src: defaultProductImage,
+    alt: productName,
+  },
+  ...visibleImages
+    .filter((image) => image.url !== defaultProductImage)
+    .map((image) => ({
       type: "image",
-      src: defaultProductImage,
-      alt: productName,
-    },
-    ...visibleImages
-      .filter((image) => image.url !== defaultProductImage)
-      .map((image) => ({
-        type: "image",
-        src: image.url,
-        alt: t(image, "alt", language) || productName,
-      })),
-    ...(collection.video_url
-      ? [
-          {
-            type: "video",
-            src: collection.video_url,
-            poster: collection.video_poster_url,
-            alt: collectionTitle || copy.media.productVideo,
-          },
-        ]
-      : []),
-  ].filter((item) => item.src);
+      src: image.url,
+      alt: t(image, "alt", language) || productName,
+    })),
+  ...(collectionVideoUrl
+    ? [
+        {
+          type: "video",
+          src: collectionVideoUrl,
+          poster: collectionVideoPoster || defaultProductImage,
+          alt:
+            copy.media?.productVideo ||
+            (language === "en" ? "Product video" : "Vidéo du produit"),
+          title: collectionTitle || productName,
+        },
+      ]
+    : []),
+].filter((item) => item.src);
 
   const kitItems =
     product.kit_items?.length > 0

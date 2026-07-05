@@ -15,6 +15,22 @@ import ProductPurchasePanel from "./ProductPurchasePanel";
 import ProductNarrativeBanner from "./ProductNarrativeBanner";
 import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
+function isUsableVideoUrl(value) {
+  if (!value) return false;
+
+  const url = String(value).trim();
+
+  if (!url) return false;
+
+  const invalidValues = ["null", "undefined", "false", "none"];
+
+  if (invalidValues.includes(url.toLowerCase())) {
+    return false;
+  }
+
+  return url.startsWith("http") || url.startsWith("/videos/");
+}
+
 function KitProductContainer({
   product,
   collection,
@@ -75,36 +91,39 @@ function KitProductContainer({
     visibleImages[0]?.url ??
     product.image_url;
 
-  const collectionVideoUrl = collection.video_url?.trim();
-const collectionVideoPoster = collection.video_poster_url?.trim();
+  const collectionVideoUrl = isUsableVideoUrl(collection.video_url)
+    ? collection.video_url.trim()
+    : "";
 
-const productMedia = [
-  {
-    type: "image",
-    src: defaultProductImage,
-    alt: productName,
-  },
-  ...visibleImages
-    .filter((image) => image.url !== defaultProductImage)
-    .map((image) => ({
+  const collectionVideoPoster = collection.video_poster_url?.trim() || "";
+
+  const productMedia = [
+    {
       type: "image",
-      src: image.url,
-      alt: t(image, "alt", language) || productName,
-    })),
-  ...(collectionVideoUrl
-    ? [
-        {
-          type: "video",
-          src: collectionVideoUrl,
-          poster: collectionVideoPoster || defaultProductImage,
-          alt:
-            copy.media?.productVideo ||
-            (language === "en" ? "Product video" : "Vidéo du produit"),
-          title: collectionTitle || productName,
-        },
-      ]
-    : []),
-].filter((item) => item.src);
+      src: defaultProductImage,
+      alt: productName,
+    },
+    ...visibleImages
+      .filter((image) => image.url !== defaultProductImage)
+      .map((image) => ({
+        type: "image",
+        src: image.url,
+        alt: t(image, "alt", language) || productName,
+      })),
+    ...(collectionVideoUrl
+      ? [
+          {
+            type: "video",
+            src: collectionVideoUrl,
+            poster: collectionVideoPoster,
+            alt:
+              copy.media?.productVideo ||
+              (language === "en" ? "Product video" : "Vidéo du produit"),
+            title: collectionTitle || productName,
+          },
+        ]
+      : []),
+  ].filter((item) => item.src);
 
   const kitItems =
     product.kit_items?.length > 0

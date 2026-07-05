@@ -1,12 +1,20 @@
 import CornerFrame from "../../ui/CornerFrame";
+import { useLanguage } from "../../../context/LanguageContext";
 
 function ProductMediaViewer({ selectedMedia, productName }) {
+  const { language } = useLanguage();
+
   if (!selectedMedia?.src) {
     return null;
   }
 
   const isVideo = selectedMedia.type === "video";
   const mediaTitle = selectedMedia.title || selectedMedia.alt || productName;
+
+  const unsupportedLabel =
+    language === "en"
+      ? "Your browser does not support video playback."
+      : "Votre navigateur ne supporte pas la lecture vidéo.";
 
   return (
     <div className="relative min-h-[420px] flex-1 overflow-hidden bg-[#080504] md:min-h-[560px] lg:min-h-[680px]">
@@ -23,7 +31,7 @@ function ProductMediaViewer({ selectedMedia, productName }) {
           preload="metadata"
           aria-label={mediaTitle}
         >
-          Votre navigateur ne supporte pas la lecture vidéo.
+          {unsupportedLabel}
         </video>
       ) : (
         <img

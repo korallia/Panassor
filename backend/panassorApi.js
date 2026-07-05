@@ -44,5 +44,5 @@ export function getCustomizableProducts() {
 }
 
 export function getAtelierVideos() {
-  return request("/atelier/videos");
+  return request("/api/atelier/videos");
 }

@@ -1,7 +1,29 @@
 import { useState } from "react";
 
+import { useLanguage } from "../../context/LanguageContext";
+
 function LazyVideoPlayer({ src, poster, title }) {
   const [isVideoActive, setIsVideoActive] = useState(false);
+  const { language } = useLanguage();
+
+  if (!src) {
+    return null;
+  }
+
+  const labels = {
+    unsupported:
+      language === "en"
+        ? "Your browser does not support video playback."
+        : "Votre navigateur ne supporte pas la lecture vidéo.",
+    play:
+      language === "en"
+        ? `Play video: ${title || "video"}`
+        : `Lire la vidéo : ${title || "vidéo"}`,
+    preview:
+      language === "en"
+        ? `Video preview: ${title || "video"}`
+        : `Aperçu vidéo : ${title || "vidéo"}`,
+  };
 
   if (isVideoActive) {
     return (
@@ -10,9 +32,10 @@ function LazyVideoPlayer({ src, poster, title }) {
         src={src}
         controls
         autoPlay
+        playsInline
         preload="metadata"
       >
-        Votre navigateur ne supporte pas la lecture vidéo.
+        {labels.unsupported}
       </video>
     );
   }
@@ -21,16 +44,20 @@ function LazyVideoPlayer({ src, poster, title }) {
     <button
       type="button"
       onClick={() => setIsVideoActive(true)}
-      className="group relative h-full w-full"
-      aria-label={`Lire la vidéo : ${title}`}
+      className="group relative h-full w-full bg-[#080504]"
+      aria-label={labels.play}
     >
-      <img
-        src={poster}
-        alt={`Aperçu vidéo : ${title}`}
-        loading="lazy"
-        decoding="async"
-        className="h-full w-full object-cover brightness-[0.72] contrast-[1.08] transition duration-500 group-hover:scale-[1.03] group-hover:brightness-[0.85]"
-      />
+      {poster ? (
+        <img
+          src={poster}
+          alt={labels.preview}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover brightness-[0.72] contrast-[1.08] transition duration-500 group-hover:scale-[1.03] group-hover:brightness-[0.85]"
+        />
+      ) : (
+        <div className="h-full w-full bg-[radial-gradient(circle_at_50%_42%,rgba(200,155,60,0.14),transparent_30%),linear-gradient(180deg,#120c07_0%,#080504_100%)]" />
+      )}
 
       <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/75 via-transparent to-[#080504]/30" />
 

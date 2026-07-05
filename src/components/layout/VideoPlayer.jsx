@@ -2,13 +2,18 @@ import LazyVideoPlayer from "../ui/LazyVideoPlayer";
 import GreenButton from "../ui/GreenButton";
 import CornerFrame from "../ui/CornerFrame";
 
-function VideoPlayer({
-  video,
-  eyebrow = "Vidéo du produit",
-  title = "Voir le kit en action",
-  description = "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Cette vidéo présente le contenu du kit, sa logique de rangement et son usage en scène.",
-}) {
-  if (!video?.src) return null;
+function VideoPlayer({ video, copy = {} }) {
+  const videoSrc = video?.src?.trim();
+
+  if (!videoSrc) {
+    return null;
+  }
+
+  const eyebrow = copy.eyebrow || "Vidéo du produit";
+  const title = copy.title || "Voir le kit en action";
+  const description =
+    copy.description ||
+    "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Cette vidéo présente le contenu du kit, sa logique de rangement et son usage en scène.";
 
   return (
     <section
@@ -44,9 +49,9 @@ function VideoPlayer({
 
           <div className="relative aspect-video overflow-hidden bg-[#080504]">
             <LazyVideoPlayer
-              src={video.src}
-              poster={video.poster}
-              title={video.title}
+              src={videoSrc}
+              poster={video?.poster || undefined}
+              title={video?.title || title}
             />
           </div>
         </div>

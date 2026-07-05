@@ -1,59 +1,78 @@
 import { useState } from "react";
 
+import { useLanguage } from "../../../context/LanguageContext";
+import { t } from "../../../utils/localization";
+
 import LazyVideoPlayer from "../../ui/LazyVideoPlayer";
 import CornerFrame from "../../ui/CornerFrame";
 import CarouselArrow from "../../ui/CarouselArrow";
 
-const atelierVideos = [
-  {
-    id: "kit-chirurgien",
-    eyebrow: "Présentation produit",
-    title: "Kit Chirurgien",
-    description:
-      "Une première présentation du kit chirurgien, de son contenu et de sa présence en jeu.",
-    src: "/video/kit-chirurgien-panassor.mp4",
-    poster: "/images/video-kit-chirurgien-poster.jpg",
-  },
-  {
-    id: "vision-kit-chirurgien",
-    eyebrow: "Vision Panassor Chirurgien",
-    title: "La vision derrière le kit du chirurgien",
-    description: "Une vidéo sur la vision du kit de chirurgien.",
-    src: "/video/kit-chirurgien-panassor.mp4",
-    poster: "/images/video-kit-chirurgien-poster.jpg",
-  },
-  {
-    id: "kit-tortionnaire",
-    eyebrow: "Présentation produit",
-    title: "Kit Tortionnaire",
-    description:
-      "Une première présentation du kit tortionnaire, de son contenu et de sa présence en jeu.",
-    src: "/video/kit-chirurgien-panassor.mp4",
-    poster: "/images/PochetteTortionaire.png",
-  },
-  {
-    id: "vision-kit-tortionnaire",
-    eyebrow: "Vision Panassor Tortionnaire",
-    title: "La vision derrière le kit du tortionnaire",
-    description: "Une vidéo sur la vision du kit de tortionnaire.",
-    src: "/video/kit-chirurgien-panassor.mp4",
-    poster: "/images/PochetteTortionaire.png",
-  },
-];
+function getVideoUrl(video) {
+  if (!video?.video_url) return "";
 
-function AtelierVideoShowcase() {
+  const url = String(video.video_url).trim();
+
+  if (!url) return "";
+
+  const invalidValues = ["null", "undefined", "false", "none"];
+
+  if (invalidValues.includes(url.toLowerCase())) {
+    return "";
+  }
+
+  return url;
+}
+
+function AtelierVideoShowcase({ videos = [], copy = {} }) {
+  const { language } = useLanguage();
+
+  const validVideos = videos.filter((video) => getVideoUrl(video));
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectedVideo = atelierVideos[selectedIndex];
+
+  if (!validVideos.length) {
+    return null;
+  }
+
+  const selectedVideo = validVideos[selectedIndex] ?? validVideos[0];
+
+  const selectedVideoUrl = getVideoUrl(selectedVideo);
+  const selectedPoster = selectedVideo.poster_url?.trim() || "";
+
+  const selectedTitle =
+    t(selectedVideo, "title", language) ||
+    selectedVideo.title_fr ||
+    selectedVideo.title_en;
+
+  const selectedEyebrow =
+    t(selectedVideo, "eyebrow", language) ||
+    selectedVideo.eyebrow_fr ||
+    selectedVideo.eyebrow_en;
+
+  const selectedDescription =
+    t(selectedVideo, "description", language) ||
+    selectedVideo.description_fr ||
+    selectedVideo.description_en;
+
+  const previousLabel =
+    copy.previousLabel ||
+    (language === "en" ? "Previous video" : "Vidéo précédente");
+
+  const nextLabel =
+    copy.nextLabel || (language === "en" ? "Next video" : "Vidéo suivante");
+
+  const viewVideoLabel =
+    copy.viewVideoLabel ||
+    (language === "en" ? "View video" : "Voir la vidéo");
 
   const goPrevious = () => {
     setSelectedIndex((current) =>
-      current === 0 ? atelierVideos.length - 1 : current - 1
+      current === 0 ? validVideos.length - 1 : current - 1
     );
   };
 
   const goNext = () => {
     setSelectedIndex((current) =>
-      current === atelierVideos.length - 1 ? 0 : current + 1
+      current === validVideos.length - 1 ? 0 : current + 1
     );
   };
 
@@ -69,89 +88,80 @@ function AtelierVideoShowcase() {
           <div className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_46px_rgba(8,5,4,0.72)]" />
 
           <div className="relative aspect-video overflow-hidden">
-            {selectedVideo.src ? (
-              <LazyVideoPlayer
-                key={selectedVideo.id}
-                src={selectedVideo.src}
-                poster={selectedVideo.poster}
-                title={selectedVideo.title}
-              />
-            ) : (
+            <LazyVideoPlayer
+              key={selectedVideo.id}
+              src={selectedVideoUrl}
+              poster={selectedPoster || undefined}
+              title={selectedTitle}
+            />
+
+            {validVideos.length > 1 && (
               <>
-                <img
-                  src={selectedVideo.poster}
-                  alt={selectedVideo.title}
-                  className="h-full w-full object-cover opacity-25"
-                />
+                <div className="absolute left-5 top-1/2 z-30 -translate-y-1/2">
+                  <CarouselArrow
+                    direction="previous"
+                    onClick={goPrevious}
+                    label={previousLabel}
+                  />
+                </div>
 
-                <div className="absolute inset-0 bg-[#080504]/65" />
+                <div className="absolute right-5 top-1/2 z-30 -translate-y-1/2">
+                  <CarouselArrow
+                    direction="next"
+                    onClick={goNext}
+                    label={nextLabel}
+                  />
+                </div>
 
-                <div className="absolute inset-0 flex items-center justify-center px-8 text-center">
-                  <div>
-                    <p className="mb-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.28em] text-[#c89b3c]">
-                      À venir
-                    </p>
+                <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 gap-3">
+                  {validVideos.map((video, index) => {
+                    const videoTitle =
+                      t(video, "title", language) ||
+                      video.title_fr ||
+                      video.title_en;
 
-                    <p className="font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2] md:text-7xl">
-                      Vidéo en préparation
-                    </p>
-                  </div>
+                    return (
+                      <button
+                        key={video.id}
+                        type="button"
+                        onClick={() => setSelectedIndex(index)}
+                        className={`h-2.5 w-2.5 rounded-full border transition ${
+                          index === selectedIndex
+                            ? "border-[#c89b3c] bg-[#c89b3c]"
+                            : "border-[#c89b3c]/60 bg-transparent hover:bg-[#c89b3c]/40"
+                        }`}
+                        aria-label={`${viewVideoLabel} ${videoTitle}`}
+                      />
+                    );
+                  })}
                 </div>
               </>
             )}
-
-            <div className="absolute left-5 top-1/2 z-30 -translate-y-1/2">
-              <CarouselArrow
-                direction="previous"
-                onClick={goPrevious}
-                label="Vidéo précédente"
-              />
-            </div>
-
-            <div className="absolute right-5 top-1/2 z-30 -translate-y-1/2">
-              <CarouselArrow
-                direction="next"
-                onClick={goNext}
-                label="Vidéo suivante"
-              />
-            </div>
-
-            <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 gap-3">
-              {atelierVideos.map((video, index) => (
-                <button
-                  key={video.id}
-                  type="button"
-                  onClick={() => setSelectedIndex(index)}
-                  className={`h-2.5 w-2.5 rounded-full border transition ${
-                    index === selectedIndex
-                      ? "border-[#c89b3c] bg-[#c89b3c]"
-                      : "border-[#c89b3c]/60 bg-transparent hover:bg-[#c89b3c]/40"
-                  }`}
-                  aria-label={`Voir la vidéo ${video.title}`}
-                />
-              ))}
-            </div>
           </div>
         </div>
 
         <div className="relative z-20 px-1 pt-7">
-          <div className="mb-4 flex items-center gap-4">
-            <div className="h-px w-16 bg-[#c89b3c]/75" />
+          {selectedEyebrow && (
+            <div className="mb-4 flex items-center gap-4">
+              <div className="h-px w-16 bg-[#c89b3c]/75" />
 
-            <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.24em] text-[#c89b3c]/85">
-              {selectedVideo.eyebrow}
-            </p>
+              <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.24em] text-[#c89b3c]/85">
+                {selectedEyebrow}
+              </p>
 
-            <div className="hidden h-px w-16 bg-[#c89b3c]/55 sm:block" />
-          </div>
+              <div className="hidden h-px w-16 bg-[#c89b3c]/55 sm:block" />
+            </div>
+          )}
 
           <h3 className="font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] md:text-5xl">
-            {selectedVideo.title}
+            {selectedTitle}
           </h3>
 
-          <p className="mt-3 max-w-4xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/78">
-            {selectedVideo.description}
-          </p>
+          {selectedDescription && (
+            <p className="mt-3 max-w-4xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/78">
+              {selectedDescription}
+            </p>
+          )}
         </div>
       </div>
     </div>

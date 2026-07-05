@@ -42,3 +42,7 @@ export function getProductBySlug(slug) {
 export function getCustomizableProducts() {
   return request("/api/products/customizable");
 }
+
+export function getAtelierVideos() {
+  return fetchJson("/atelier/videos");
+}

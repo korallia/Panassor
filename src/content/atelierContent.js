@@ -61,6 +61,14 @@ export const atelierContent = {
       ],
     },
 
+    videos: {
+      eyebrow: "Vidéos d’atelier",
+      title: "Voir la vision Panassor",
+      previousLabel: "Vidéo précédente",
+      nextLabel: "Vidéo suivante",
+      viewVideoLabel: "Voir la vidéo",
+    },
+
     sneakPeek: {
       eyebrow: "Sneak peek",
       title: "Un nouveau kit se prépare",
@@ -136,6 +144,14 @@ export const atelierContent = {
         "Panassor creates immersive kits for characters who build the story differently: healers, artisans, thieves, scholars, manipulators, and everyone who brings a world to life without necessarily carrying a sword.",
         "Our goal is simple: to create objects with enough presence to be noticed, enough strength to be used, and enough soul to become part of the character.",
       ],
+    },
+
+    videos: {
+      eyebrow: "Workshop videos",
+      title: "See the Panassor vision",
+      previousLabel: "Previous video",
+      nextLabel: "Next video",
+      viewVideoLabel: "View video",
     },
 
     sneakPeek: {

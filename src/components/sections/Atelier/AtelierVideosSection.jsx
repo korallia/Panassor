@@ -1,7 +1,7 @@
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import PanassorSectionHeader from "../../layout/PanassorSectionHeader";
 
-function AtelierVideosSection({ children }) {
+function AtelierVideosSection({ children, copy = {} }) {
   return (
     <section className="relative overflow-hidden bg-[#080504] px-6 pt-8 pb-24 text-[#f3e7cf]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_40%,rgba(35,72,40,0.22),transparent_35%)]" />
@@ -9,8 +9,8 @@ function AtelierVideosSection({ children }) {
 
       <div className="relative z-10 mx-auto max-w-[92rem]">
         <PanassorSectionHeader
-          eyebrow="Vidéos d’atelier"
-          title="Voir la vision Panassor"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
           showAtmosphere={false}
           showTitleDivider={false}
           showOrnament={true}

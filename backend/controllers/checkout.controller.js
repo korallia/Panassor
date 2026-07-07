@@ -1,4 +1,11 @@
-import { normalizeLanguage, getBuyerLanguageKey, getRedirectUrl } from "../utils/language.js";
+import { randomUUID } from "crypto";
+
+import { env } from "../config/env.js";
+import {
+  normalizeLanguage,
+  getBuyerLanguageKey,
+  getThankYouPath,
+} from "../utils/language.js";
 import {
   calculateSubtotalCents,
   calculateTaxCents,
@@ -10,7 +17,20 @@ import {
   buildSquareLineItems,
 } from "../services/cart.service.js";
 import { createSquarePaymentLink } from "../services/square.service.js";
-import { createLocalOrder } from "../services/orders.service.js";
+import {
+  attachSquarePaymentLinkToLocalOrder,
+  createPendingLocalOrder,
+} from "../services/orders.service.js";
+
+function buildThankYouRedirectUrl({ language, localOrderId, thankYouToken }) {
+  const thankYouPath = getThankYouPath(language);
+  const params = new URLSearchParams();
+
+  params.set("orderId", String(localOrderId));
+  params.set("key", thankYouToken);
+
+  return `${env.siteUrl}${thankYouPath}?${params.toString()}`;
+}
 
 export async function createCheckout(req, res) {
   try {
@@ -27,30 +47,43 @@ export async function createCheckout(req, res) {
     const taxCents = calculateTaxCents(subtotalCents);
     const totalCents = calculateTotalCents(subtotalCents, taxCents);
 
-    const lineItems = buildSquareLineItems(normalizedItems);
+    const thankYouToken = randomUUID();
 
-    const { squareBody, paymentLink } = await createSquarePaymentLink({
-      normalizedLanguage,
-      lineItems,
-      redirectUrl: getRedirectUrl(normalizedLanguage),
-      buyerLanguageKey: getBuyerLanguageKey(normalizedLanguage),
-      orderNote,
-    });
-
-    const localOrder = await createLocalOrder({
-      paymentLink,
-      normalizedLanguage,
+    const localOrder = await createPendingLocalOrder({
+      thankYouToken,
       normalizedItems,
       subtotalCents,
       taxCents,
       totalCents,
       orderNote,
+    });
+
+    const redirectUrl = buildThankYouRedirectUrl({
+      language: normalizedLanguage,
+      localOrderId: localOrder.id,
+      thankYouToken,
+    });
+
+    const lineItems = buildSquareLineItems(normalizedItems);
+
+    const { squareBody, paymentLink } = await createSquarePaymentLink({
+      normalizedLanguage,
+      lineItems,
+      redirectUrl,
+      buyerLanguageKey: getBuyerLanguageKey(normalizedLanguage),
+      orderNote,
+    });
+
+    await attachSquarePaymentLinkToLocalOrder({
+      localOrderId: localOrder.id,
+      paymentLink,
       squareBody,
     });
 
     res.json({
       checkoutUrl: paymentLink.url,
       localOrderId: localOrder.id,
+      thankYouToken,
       squareOrderId: paymentLink.order_id,
       squarePaymentLinkId: paymentLink.id,
     });

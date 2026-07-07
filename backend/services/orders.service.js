@@ -7,6 +7,91 @@ import {
   getShipmentDetailsByOrderId,
 } from "./shipments.service.js";
 
+export async function createPendingLocalOrder({
+  thankYouToken,
+  normalizedItems,
+  subtotalCents,
+  taxCents,
+  totalCents,
+  orderNote,
+}) {
+  const result = await pool.query(
+    `
+    INSERT INTO orders (
+      status,
+      thank_you_token,
+
+      subtotal_cents,
+      tax_cents,
+      total_cents,
+      currency,
+
+      order_note,
+      cart_snapshot
+    )
+    VALUES (
+      'pending',
+      $1,
+
+      $2,
+      $3,
+      $4,
+      'CAD',
+
+      $5,
+      $6::jsonb
+    )
+    RETURNING
+      id,
+      thank_you_token;
+    `,
+    [
+      thankYouToken,
+
+      subtotalCents,
+      taxCents,
+      totalCents,
+
+      orderNote?.trim() || null,
+      JSON.stringify(normalizedItems),
+    ]
+  );
+
+  return result.rows[0];
+}
+
+export async function attachSquarePaymentLinkToLocalOrder({
+  localOrderId,
+  paymentLink,
+  squareBody,
+}) {
+  const result = await pool.query(
+    `
+    UPDATE orders
+    SET
+      square_order_id = $1,
+      square_payment_link_id = $2,
+      checkout_url = $3,
+      square_payload = $4::jsonb
+    WHERE id = $5
+    RETURNING
+      id,
+      square_order_id,
+      square_payment_link_id,
+      checkout_url;
+    `,
+    [
+      paymentLink.order_id,
+      paymentLink.id,
+      paymentLink.url,
+      JSON.stringify(squareBody),
+      localOrderId,
+    ]
+  );
+
+  return result.rows[0] || null;
+}
+
 export async function createLocalOrder({
   paymentLink,
   normalizedItems,
@@ -15,18 +100,23 @@ export async function createLocalOrder({
   totalCents,
   orderNote,
   squareBody,
+  thankYouToken = null,
 }) {
   const result = await pool.query(
     `
     INSERT INTO orders (
       status,
+      thank_you_token,
+
       square_order_id,
       square_payment_link_id,
       checkout_url,
+
       subtotal_cents,
       tax_cents,
       total_cents,
       currency,
+
       order_note,
       cart_snapshot,
       square_payload
@@ -34,25 +124,33 @@ export async function createLocalOrder({
     VALUES (
       'pending',
       $1,
+
       $2,
       $3,
       $4,
+
       $5,
       $6,
-      'CAD',
       $7,
-      $8::jsonb,
-      $9::jsonb
+      'CAD',
+
+      $8,
+      $9::jsonb,
+      $10::jsonb
     )
     RETURNING id;
     `,
     [
+      thankYouToken,
+
       paymentLink.order_id,
       paymentLink.id,
       paymentLink.url,
+
       subtotalCents,
       taxCents,
       totalCents,
+
       orderNote?.trim() || null,
       JSON.stringify(normalizedItems),
       JSON.stringify(squareBody),
@@ -289,7 +387,8 @@ export async function findLocalOrderById(id) {
     `
     SELECT
       id,
-      square_order_id
+      square_order_id,
+      thank_you_token
     FROM orders
     WHERE id = $1;
     `,
@@ -335,7 +434,32 @@ function mapShipmentForOrderSummary(shipment) {
   };
 }
 
-export async function getOrderSummaryById(id) {
+function normalizeCartSnapshot(cartSnapshot) {
+  if (Array.isArray(cartSnapshot)) {
+    return cartSnapshot;
+  }
+
+  if (typeof cartSnapshot === "string") {
+    try {
+      const parsedCartSnapshot = JSON.parse(cartSnapshot);
+      return Array.isArray(parsedCartSnapshot) ? parsedCartSnapshot : [];
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
+}
+
+export async function getOrderSummaryById(id, thankYouToken = null) {
+  const queryParams = [id];
+  let tokenCondition = "";
+
+  if (thankYouToken) {
+    queryParams.push(thankYouToken);
+    tokenCondition = "AND thank_you_token = $2";
+  }
+
   const result = await pool.query(
     `
     SELECT
@@ -349,9 +473,10 @@ export async function getOrderSummaryById(id) {
       created_at,
       updated_at
     FROM orders
-    WHERE id = $1;
+    WHERE id = $1
+      ${tokenCondition};
     `,
-    [id]
+    queryParams
   );
 
   const order = result.rows[0];
@@ -373,7 +498,7 @@ export async function getOrderSummaryById(id) {
       currency: order.currency,
     },
 
-    items: Array.isArray(order.cart_snapshot) ? order.cart_snapshot : [],
+    items: normalizeCartSnapshot(order.cart_snapshot),
 
     shipment: mapShipmentForOrderSummary(shipment),
 

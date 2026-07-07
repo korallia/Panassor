@@ -1,5 +1,3 @@
-import { env } from "../config/env.js";
-
 export function normalizeLanguage(language) {
   return language === "en" ? "en" : "fr";
 }
@@ -10,13 +8,10 @@ export function getBuyerLanguageKey(language) {
   return normalizedLanguage === "en" ? "en-CA" : "fr-CA";
 }
 
-export function getRedirectUrl(language) {
+export function getThankYouPath(language) {
   const normalizedLanguage = normalizeLanguage(language);
-  const siteUrl = env.siteUrl;
 
-  return normalizedLanguage === "en"
-    ? `${siteUrl}/thank-you`
-    : `${siteUrl}/merci`;
+  return normalizedLanguage === "en" ? "/thank-you" : "/merci";
 }
 
 export function getLocalizedValue(source, baseKey, language = "fr") {

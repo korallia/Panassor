@@ -9,6 +9,7 @@ import CornerFrame from "../components/ui/CornerFrame";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
 
 const LAST_CHECKOUT_STORAGE_KEY = "panassor_last_checkout";
+const LAST_PAID_ORDER_STORAGE_KEY = "panassor_last_paid_order_id";
 const CART_STORAGE_KEY = "panassor_cart_v1";
 
 const USE_MOCK_ORDER = false;
@@ -76,6 +77,15 @@ function getStatusLabel(status, language = "fr") {
   };
 
   return labels[status]?.[language] || status;
+}
+
+function getOrderAccessFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+
+  return {
+    orderId: params.get("orderId"),
+    key: params.get("key"),
+  };
 }
 
 function getStoredCheckout() {
@@ -157,10 +167,18 @@ function normalizeShipment(shipment) {
   };
 }
 
-function clearStoredCheckoutAndCart() {
+function clearStoredCartAndCheckout() {
   try {
     window.localStorage.removeItem(CART_STORAGE_KEY);
     window.sessionStorage.removeItem(LAST_CHECKOUT_STORAGE_KEY);
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function storeLastPaidOrderId(orderId) {
+  try {
+    window.localStorage.setItem(LAST_PAID_ORDER_STORAGE_KEY, String(orderId));
   } catch {
     // ignore storage errors
   }
@@ -170,19 +188,22 @@ function MerciPage() {
   const { language } = useLanguage();
   const { clearCart } = useCart();
 
+  const isEnglishPath = window.location.pathname === "/thank-you";
+  const pageLanguage = isEnglishPath ? "en" : language;
+
   const [order, setOrder] = useState(USE_MOCK_ORDER ? MOCK_ORDER : null);
   const [isLoading, setIsLoading] = useState(!USE_MOCK_ORDER);
 
   const copy = useMemo(
     () =>
-      language === "en"
+      pageLanguage === "en"
         ? {
             eyebrow: "Panassor",
             title: "Thank you",
             subtitle: "We have received your order.",
             loading: "Loading order...",
             emptyTitle: "Thank you",
-            emptyText: "No order summary is available for this session.",
+            emptyText: "No order summary is available for this link.",
             order: "Order",
             status: "Status",
             customer: "Customer",
@@ -203,7 +224,7 @@ function MerciPage() {
             loading: "Chargement de la commande...",
             emptyTitle: "Merci",
             emptyText:
-              "Aucun résumé de commande n’est disponible pour cette session.",
+              "Aucun résumé de commande n’est disponible pour ce lien.",
             order: "Commande",
             status: "Statut",
             customer: "Client",
@@ -217,7 +238,7 @@ function MerciPage() {
             noShipping: "Information non disponible.",
             backHome: "Retour à l’accueil",
           },
-    [language]
+    [pageLanguage]
   );
 
   useEffect(() => {
@@ -226,29 +247,38 @@ function MerciPage() {
     let isMounted = true;
 
     async function loadOrderSummary() {
-      const storedCheckout = getStoredCheckout();
-      const localOrderId = storedCheckout?.localOrderId;
+      const { orderId, key } = getOrderAccessFromUrl();
 
-      if (!localOrderId) {
+      if (!orderId || !key) {
         if (!isMounted) return;
         setIsLoading(false);
         return;
       }
 
       try {
-        await syncSquareOrder(localOrderId).catch((error) => {
+        await syncSquareOrder(orderId, key).catch((error) => {
           console.warn("Square sync on thank-you page failed:", error);
         });
 
-        const orderSummary = await getOrderSummary(localOrderId);
+        const orderSummary = await getOrderSummary(orderId, key);
 
         if (!isMounted) return;
 
         setOrder(orderSummary);
 
         if (orderSummary?.status === "paid") {
+          storeLastPaidOrderId(orderSummary.id);
+        }
+
+        const storedCheckout = getStoredCheckout();
+
+        const shouldClearCart =
+          orderSummary?.status === "paid" &&
+          String(storedCheckout?.localOrderId) === String(orderSummary.id);
+
+        if (shouldClearCart) {
           clearCart();
-          clearStoredCheckoutAndCart();
+          clearStoredCartAndCheckout();
         }
       } catch (error) {
         console.error("Failed to fetch order summary:", error);
@@ -328,7 +358,7 @@ function MerciPage() {
                       </p>
 
                       <p className="mt-1 font-['IM_Fell_English_SC'] text-2xl uppercase text-[#fff1d2] md:text-3xl">
-                        {getStatusLabel(order.status, language)}
+                        {getStatusLabel(order.status, pageLanguage)}
                       </p>
                     </div>
                   </div>
@@ -451,7 +481,7 @@ function MerciPage() {
                               {formatMoney(
                                 item.totalPriceCents,
                                 order.totals.currency,
-                                language
+                                pageLanguage
                               )}
                             </p>
                           </div>
@@ -470,7 +500,7 @@ function MerciPage() {
                               {formatMoney(
                                 order.totals.subtotalCents,
                                 order.totals.currency,
-                                language
+                                pageLanguage
                               )}
                             </span>
                           </div>
@@ -481,7 +511,7 @@ function MerciPage() {
                               {formatMoney(
                                 order.totals.taxCents,
                                 order.totals.currency,
-                                language
+                                pageLanguage
                               )}
                             </span>
                           </div>
@@ -492,7 +522,7 @@ function MerciPage() {
                               {formatMoney(
                                 order.totals.totalCents,
                                 order.totals.currency,
-                                language
+                                pageLanguage
                               )}
                             </span>
                           </div>

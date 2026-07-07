@@ -60,12 +60,24 @@ export function createCheckout(payload) {
     body: JSON.stringify(payload),
   });
 }
-export function getOrderSummary(orderId) {
-  return request(`/api/orders/${orderId}/summary`);
+export function getOrderSummary(orderId, key) {
+  const params = new URLSearchParams();
+
+  if (key) {
+    params.set("key", key);
+  }
+
+  return request(`/api/orders/${orderId}/summary?${params.toString()}`);
 }
 
-export function syncSquareOrder(orderId) {
-  return request(`/api/orders/${orderId}/sync-square`, {
+export function syncSquareOrder(orderId, key) {
+  const params = new URLSearchParams();
+
+  if (key) {
+    params.set("key", key);
+  }
+
+  return request(`/api/orders/${orderId}/sync-square?${params.toString()}`, {
     method: "POST",
   });
 }

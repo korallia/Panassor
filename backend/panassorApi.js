@@ -60,3 +60,6 @@ export function createCheckout(payload) {
     body: JSON.stringify(payload),
   });
 }
+export function getOrderSummary(orderId) {
+  return request(`/api/orders/${orderId}/summary`);
+}

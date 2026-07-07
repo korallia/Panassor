@@ -1,7 +1,31 @@
 import {
   findLocalOrderById,
+  getOrderSummaryById,
   syncLocalOrderFromSquareOrder,
 } from "../services/orders.service.js";
+
+export async function getOrderSummary(req, res) {
+  try {
+    const { id } = req.params;
+
+    const orderSummary = await getOrderSummaryById(id);
+
+    if (!orderSummary) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    res.json(orderSummary);
+  } catch (error) {
+    console.error("Failed to fetch order summary:", error);
+
+    res.status(error.status || 500).json({
+      message: error.message || "Failed to fetch order summary",
+      errors: error.errors || [],
+    });
+  }
+}
 
 export async function syncSquareOrder(req, res) {
   try {

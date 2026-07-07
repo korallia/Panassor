@@ -4,6 +4,8 @@ import { createCheckout } from "../../backend/panassorApi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 
+const LAST_CHECKOUT_STORAGE_KEY = "panassor_last_checkout";
+
 export function useCheckout() {
   const { items, orderNote } = useCart();
   const { language } = useLanguage();
@@ -34,6 +36,15 @@ export function useCheckout() {
       if (!checkout?.checkoutUrl) {
         throw new Error("Missing checkout URL");
       }
+
+      window.sessionStorage.setItem(
+        LAST_CHECKOUT_STORAGE_KEY,
+        JSON.stringify({
+          localOrderId: checkout.localOrderId,
+          squareOrderId: checkout.squareOrderId,
+          squarePaymentLinkId: checkout.squarePaymentLinkId,
+        })
+      );
 
       window.location.href = checkout.checkoutUrl;
     } catch (error) {

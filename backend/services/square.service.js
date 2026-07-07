@@ -142,7 +142,7 @@ export function verifySquareWebhookSignature(req, rawBody) {
   const expectedBuffer = Buffer.from(expectedSignature);
   const receivedBuffer = Buffer.from(squareSignature);
 
-  if (expectedBuffer.length !== receivedBuffer.length) {
+  if (expectedBuffer.length !== receivedBuffer.length) {non 
     return false;
   }
 

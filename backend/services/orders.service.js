@@ -196,3 +196,80 @@ export async function findLocalOrderById(id) {
 
   return result.rows[0] || null;
 }
+
+export async function getOrderSummaryById(id) {
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      status,
+      language,
+      subtotal_cents,
+      tax_cents,
+      total_cents,
+      currency,
+
+      customer_email,
+      customer_phone,
+      customer_first_name,
+      customer_last_name,
+
+      shipping_address_line_1,
+      shipping_address_line_2,
+      shipping_locality,
+      shipping_province,
+      shipping_postal_code,
+      shipping_country,
+
+      cart_snapshot,
+
+      paid_at,
+      created_at,
+      updated_at
+    FROM orders
+    WHERE id = $1;
+    `,
+    [id]
+  );
+
+  const order = result.rows[0];
+
+  if (!order) {
+    return null;
+  }
+
+  return {
+    id: order.id,
+    status: order.status,
+    language: order.language,
+
+    customer: {
+      email: order.customer_email,
+      phone: order.customer_phone,
+      firstName: order.customer_first_name,
+      lastName: order.customer_last_name,
+    },
+
+    shippingAddress: {
+      line1: order.shipping_address_line_1,
+      line2: order.shipping_address_line_2,
+      locality: order.shipping_locality,
+      province: order.shipping_province,
+      postalCode: order.shipping_postal_code,
+      country: order.shipping_country,
+    },
+
+    totals: {
+      subtotalCents: order.subtotal_cents,
+      taxCents: order.tax_cents,
+      totalCents: order.total_cents,
+      currency: order.currency,
+    },
+
+    items: Array.isArray(order.cart_snapshot) ? order.cart_snapshot : [],
+
+    paidAt: order.paid_at,
+    createdAt: order.created_at,
+    updatedAt: order.updated_at,
+  };
+}

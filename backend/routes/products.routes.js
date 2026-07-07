@@ -7,8 +7,9 @@ import {
 
 const router = Router();
 
+router.get("/customizable", getCustomizableProducts);
 router.get("/", getAllProducts);
 router.get("/:slug", getProductBySlug);
-router.get("/customizable", getCustomizableProducts);
+
 
 export default router;

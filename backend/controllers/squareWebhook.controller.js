@@ -2,8 +2,12 @@ import {
   getSquareOrder,
   verifySquareWebhookSignature,
 } from "../services/square.service.js";
-import { updateLocalOrderFromSquarePayment } from "../services/orders.service.js";
-import { updateLocalOrderShippingFromSquareOrder } from "../services/shipping.service.js";
+import {
+  updateLocalOrderFromSquarePayment,
+  updateLocalOrderSquareOrderSnapshot,
+} from "../services/orders.service.js";
+import { extractSquareShipmentRecipient } from "../services/shipping.service.js";
+import { ensureShipmentForOrderId } from "../services/shipments.service.js";
 
 export async function handleSquareWebhook(req, res) {
   try {
@@ -39,26 +43,34 @@ export async function handleSquareWebhook(req, res) {
 
     const updatedOrder = await updateLocalOrderFromSquarePayment(payment);
 
-    let shippingOrder = null;
+    let snapshotOrder = null;
+    let shipment = null;
 
     try {
       const squareOrder = await getSquareOrder(payment.order_id);
 
-      shippingOrder = await updateLocalOrderShippingFromSquareOrder(
-        squareOrder,
-        payment
-      );
+      snapshotOrder = await updateLocalOrderSquareOrderSnapshot(squareOrder);
+
+      const shippingRecipient = extractSquareShipmentRecipient(squareOrder);
+      const shipmentOrderId = updatedOrder?.id || snapshotOrder?.id;
+
+      if (shipmentOrderId) {
+        shipment = await ensureShipmentForOrderId(
+          shipmentOrderId,
+          shippingRecipient
+        );
+      }
     } catch (shippingError) {
-      console.warn("Failed to update shipping from Square webhook:", shippingError);
+      console.warn("Failed to process Square order shipping data:", shippingError);
     }
 
     res.json({
       received: true,
       paymentId: payment.id,
       squareOrderId: payment.order_id,
-      localOrderId: updatedOrder?.id || shippingOrder?.id || null,
-      status: updatedOrder?.status || null,
-      shippingUpdated: Boolean(shippingOrder),
+      localOrderId: updatedOrder?.id || snapshotOrder?.id || null,
+      status: updatedOrder?.status || snapshotOrder?.status || null,
+      shipmentId: shipment?.id || null,
     });
   } catch (error) {
     console.error("Square webhook failed:", error);

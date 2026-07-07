@@ -1,4 +1,5 @@
 import {
+  fakeSquarePaidShippingForLocalOrder,
   findLocalOrderById,
   getOrderSummaryById,
   syncLocalOrderFromSquareOrder,
@@ -57,13 +58,49 @@ export async function syncSquareOrder(req, res) {
       paymentStatus: syncResult.payment?.status || null,
       paymentId: syncResult.payment?.id || null,
       updatedOrder: syncResult.localOrder,
-      shippingOrder: syncResult.shippingOrder,
+      shipment: syncResult.shipment,
     });
   } catch (error) {
     console.error("Manual Square order sync failed:", error);
 
     res.status(error.status || 500).json({
       message: error.message || "Manual Square order sync failed",
+      errors: error.errors || [],
+    });
+  }
+}
+
+export async function fakeSquarePaidShipping(req, res) {
+  try {
+    if (process.env.NODE_ENV === "production") {
+      return res.status(403).json({
+        message: "Fake Square shipping test is disabled in production",
+      });
+    }
+
+    const { id } = req.params;
+
+    const result = await fakeSquarePaidShippingForLocalOrder(id);
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Local order not found",
+      });
+    }
+
+    res.json({
+      ok: true,
+      localOrderId: result.localOrderId,
+      squareOrderId: result.squareOrderId,
+      paymentStatus: result.fakePayment.status,
+      shippingRecipient: result.shippingRecipient,
+      shipment: result.shipment,
+    });
+  } catch (error) {
+    console.error("Fake Square paid shipping test failed:", error);
+
+    res.status(error.status || 500).json({
+      message: error.message || "Fake Square paid shipping test failed",
       errors: error.errors || [],
     });
   }

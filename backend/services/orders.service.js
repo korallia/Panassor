@@ -1,10 +1,14 @@
 import pool from "../db/pool.js";
+
 import { getSquareOrder, getSquarePayment } from "./square.service.js";
-import { updateLocalOrderShippingFromSquareOrder } from "./shipping.service.js";
+import { extractSquareShipmentRecipient } from "./shipping.service.js";
+import {
+  ensureShipmentForOrderId,
+  getShipmentDetailsByOrderId,
+} from "./shipments.service.js";
 
 export async function createLocalOrder({
   paymentLink,
-  normalizedLanguage,
   normalizedItems,
   subtotalCents,
   taxCents,
@@ -19,7 +23,6 @@ export async function createLocalOrder({
       square_order_id,
       square_payment_link_id,
       checkout_url,
-      language,
       subtotal_cents,
       tax_cents,
       total_cents,
@@ -36,11 +39,10 @@ export async function createLocalOrder({
       $4,
       $5,
       $6,
-      $7,
       'CAD',
-      $8,
-      $9::jsonb,
-      $10::jsonb
+      $7,
+      $8::jsonb,
+      $9::jsonb
     )
     RETURNING id;
     `,
@@ -48,7 +50,6 @@ export async function createLocalOrder({
       paymentLink.order_id,
       paymentLink.id,
       paymentLink.url,
-      normalizedLanguage,
       subtotalCents,
       taxCents,
       totalCents,
@@ -92,15 +93,7 @@ export async function updateLocalOrderFromSquarePayment(payment) {
     SET
       status = $1::order_status,
       square_payment_id = $2,
-      square_payment_snapshot = $3::jsonb,
-      paid_at = CASE
-        WHEN $1 = 'paid' THEN COALESCE(paid_at, NOW())
-        ELSE paid_at
-      END,
-      failed_at = CASE
-        WHEN $1 = 'failed' THEN COALESCE(failed_at, NOW())
-        ELSE failed_at
-      END
+      square_payment_snapshot = $3::jsonb
     WHERE square_order_id = $4
     RETURNING id, status;
     `,
@@ -129,6 +122,25 @@ export async function updateLocalOrderFromSquarePayment(payment) {
   return updatedOrder;
 }
 
+export async function updateLocalOrderSquareOrderSnapshot(squareOrder) {
+  if (!squareOrder?.id) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+    UPDATE orders
+    SET
+      square_order_snapshot = $1::jsonb
+    WHERE square_order_id = $2
+    RETURNING id, status;
+    `,
+    [JSON.stringify(squareOrder), squareOrder.id]
+  );
+
+  return result.rows[0] || null;
+}
+
 export function getPaymentIdFromSquareOrder(squareOrder) {
   const tenders = squareOrder?.tenders || [];
 
@@ -141,53 +153,143 @@ export function getPaymentIdFromSquareOrder(squareOrder) {
 
 export async function syncLocalOrderFromSquareOrder(squareOrderId) {
   const squareOrder = await getSquareOrder(squareOrderId);
+  const snapshotOrder = await updateLocalOrderSquareOrderSnapshot(squareOrder);
+
   const paymentId = getPaymentIdFromSquareOrder(squareOrder);
 
   if (!paymentId) {
-    const shippingOrder = await updateLocalOrderShippingFromSquareOrder(
-      squareOrder,
-      null
-    );
-
     console.log("Square order has no payment/tender yet:", {
       squareOrderId,
       state: squareOrder?.state,
     });
 
     return {
-      synced: Boolean(shippingOrder),
-      reason: "Square order has no payment/tender yet.",
+      synced: Boolean(snapshotOrder),
+      reason: "Square order snapshot updated, but no payment/tender found.",
       squareOrder,
       payment: null,
-      localOrder: null,
-      shippingOrder,
+      localOrder: snapshotOrder,
+      shipment: null,
     };
   }
 
   const payment = await getSquarePayment(paymentId);
   const localOrder = await updateLocalOrderFromSquarePayment(payment);
-  const shippingOrder = await updateLocalOrderShippingFromSquareOrder(
-    squareOrder,
-    payment
-  );
+  const shippingRecipient = extractSquareShipmentRecipient(squareOrder);
+
+  let shipment = null;
+  const shipmentOrderId = localOrder?.id || snapshotOrder?.id;
+
+  if (shipmentOrderId) {
+    shipment = await ensureShipmentForOrderId(
+      shipmentOrderId,
+      shippingRecipient
+    );
+  }
 
   return {
-    synced: Boolean(localOrder || shippingOrder),
+    synced: Boolean(localOrder || snapshotOrder || shipment),
     reason:
-      localOrder || shippingOrder
+      localOrder || snapshotOrder || shipment
         ? "Local order updated."
         : "No matching local order found.",
     squareOrder,
     payment,
-    localOrder,
-    shippingOrder,
+    localOrder: localOrder || snapshotOrder,
+    shipment,
+  };
+}
+
+export async function fakeSquarePaidShippingForLocalOrder(orderId) {
+  const localOrder = await findLocalOrderById(orderId);
+
+  if (!localOrder) {
+    return null;
+  }
+
+  if (!localOrder.square_order_id) {
+    throw new Error("Local order has no Square order ID");
+  }
+
+  const fakePayment = {
+    id: `fake-payment-${localOrder.id}`,
+    order_id: localOrder.square_order_id,
+    status: "COMPLETED",
+    source_type: "CARD",
+    total_money: {
+      amount: 33918,
+      currency: "CAD",
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const fakeSquareOrder = {
+    id: localOrder.square_order_id,
+    state: "COMPLETED",
+    tenders: [
+      {
+        id: "fake-tender-1",
+        payment_id: fakePayment.id,
+      },
+    ],
+    fulfillments: [
+      {
+        uid: "fake-fulfillment-1",
+        type: "SHIPMENT",
+        state: "PROPOSED",
+        shipment_details: {
+          recipient: {
+            display_name: "Jane Doe",
+            email_address: "jane.doe@example.com",
+            phone_number: "+12025550143",
+            address: {
+              address_line_1: "123 rue des Artisans",
+              address_line_2: "Appartement 4",
+              locality: "Montréal",
+              administrative_district_level_1: "QC",
+              postal_code: "H2X 1Y4",
+              country: "CA",
+            },
+          },
+        },
+      },
+    ],
+  };
+
+  const snapshotOrder = await updateLocalOrderSquareOrderSnapshot(
+    fakeSquareOrder
+  );
+
+  const localOrderUpdate = await updateLocalOrderFromSquarePayment(fakePayment);
+
+  const shippingRecipient = extractSquareShipmentRecipient(fakeSquareOrder);
+
+  const shipmentOrderId = localOrderUpdate?.id || snapshotOrder?.id || orderId;
+
+  const shipment = await ensureShipmentForOrderId(
+    shipmentOrderId,
+    shippingRecipient
+  );
+
+  return {
+    localOrderId: orderId,
+    squareOrderId: localOrder.square_order_id,
+    fakePayment,
+    fakeSquareOrder,
+    localOrderUpdate,
+    snapshotOrder,
+    shippingRecipient,
+    shipment,
   };
 }
 
 export async function findLocalOrderById(id) {
   const result = await pool.query(
     `
-    SELECT id, square_order_id
+    SELECT
+      id,
+      square_order_id
     FROM orders
     WHERE id = $1;
     `,
@@ -197,33 +299,53 @@ export async function findLocalOrderById(id) {
   return result.rows[0] || null;
 }
 
+function mapShipmentForOrderSummary(shipment) {
+  if (!shipment) {
+    return null;
+  }
+
+  return {
+    id: shipment.id,
+    status: shipment.status,
+
+    recipient: {
+      displayName: shipment.recipient_display_name,
+      email: shipment.recipient_email,
+      phone: shipment.recipient_phone,
+    },
+
+    address: {
+      line1: shipment.address_line_1,
+      line2: shipment.address_line_2,
+      locality: shipment.locality,
+      province: shipment.province,
+      postalCode: shipment.postal_code,
+      country: shipment.country,
+    },
+
+    tracking: {
+      carrier: shipment.carrier,
+      trackingNumber: shipment.tracking_number,
+      trackingUrl: shipment.tracking_url,
+    },
+
+    notes: shipment.notes,
+    createdAt: shipment.created_at,
+    updatedAt: shipment.updated_at,
+  };
+}
+
 export async function getOrderSummaryById(id) {
   const result = await pool.query(
     `
     SELECT
       id,
       status,
-      language,
       subtotal_cents,
       tax_cents,
       total_cents,
       currency,
-
-      customer_email,
-      customer_phone,
-      customer_first_name,
-      customer_last_name,
-
-      shipping_address_line_1,
-      shipping_address_line_2,
-      shipping_locality,
-      shipping_province,
-      shipping_postal_code,
-      shipping_country,
-
       cart_snapshot,
-
-      paid_at,
       created_at,
       updated_at
     FROM orders
@@ -238,26 +360,11 @@ export async function getOrderSummaryById(id) {
     return null;
   }
 
+  const shipment = await getShipmentDetailsByOrderId(order.id);
+
   return {
     id: order.id,
     status: order.status,
-    language: order.language,
-
-    customer: {
-      email: order.customer_email,
-      phone: order.customer_phone,
-      firstName: order.customer_first_name,
-      lastName: order.customer_last_name,
-    },
-
-    shippingAddress: {
-      line1: order.shipping_address_line_1,
-      line2: order.shipping_address_line_2,
-      locality: order.shipping_locality,
-      province: order.shipping_province,
-      postalCode: order.shipping_postal_code,
-      country: order.shipping_country,
-    },
 
     totals: {
       subtotalCents: order.subtotal_cents,
@@ -268,7 +375,8 @@ export async function getOrderSummaryById(id) {
 
     items: Array.isArray(order.cart_snapshot) ? order.cart_snapshot : [],
 
-    paidAt: order.paid_at,
+    shipment: mapShipmentForOrderSummary(shipment),
+
     createdAt: order.created_at,
     updatedAt: order.updated_at,
   };

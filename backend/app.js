@@ -7,6 +7,7 @@ import productsRoutes from "./routes/products.routes.js";
 import atelierRoutes from "./routes/atelier.routes.js";
 import checkoutRoutes from "./routes/checkout.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
+import shipmentsRoutes from "./routes/shipments.routes.js";
 import squareWebhookRoutes from "./routes/squareWebhook.routes.js";
 
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
@@ -50,6 +51,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/atelier", atelierRoutes);
 app.use("/api/checkout", checkoutRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use("/api/shipments", shipmentsRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

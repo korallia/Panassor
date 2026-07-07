@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getOrderSummary } from "../../backend/panassorApi";
+import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 
 import CornerFrame from "../components/ui/CornerFrame";
@@ -9,25 +10,25 @@ import OrnamentDivider from "../components/ui/OrnamentDivider";
 
 const LAST_CHECKOUT_STORAGE_KEY = "panassor_last_checkout";
 
-const USE_MOCK_ORDER = true;
+const USE_MOCK_ORDER = false;
 
 const MOCK_ORDER = {
   id: 12,
   status: "paid",
-  language: "fr",
-  customer: {
-    firstName: "Jane",
-    lastName: "Doe",
-    email: "jane.doe@example.com",
-    phone: "+1 202 555-0143",
-  },
-  shippingAddress: {
-    line1: "123 rue des Artisans",
-    line2: "Appartement 4",
-    locality: "Montréal",
-    province: "QC",
-    postalCode: "H2X 1Y4",
-    country: "Canada",
+  shipment: {
+    recipient: {
+      displayName: "Jane Doe",
+      email: "jane.doe@example.com",
+      phone: "+1 202 555-0143",
+    },
+    address: {
+      line1: "123 rue des Artisans",
+      line2: "Appartement 4",
+      locality: "Montréal",
+      province: "QC",
+      postalCode: "H2X 1Y4",
+      country: "CA",
+    },
   },
   totals: {
     subtotalCents: 29500,
@@ -102,6 +103,7 @@ function hasShippingAddress(address) {
 
 function MerciPage() {
   const { language } = useLanguage();
+  const { clearCart } = useCart();
 
   const [order, setOrder] = useState(USE_MOCK_ORDER ? MOCK_ORDER : null);
   const [isLoading, setIsLoading] = useState(!USE_MOCK_ORDER);
@@ -174,6 +176,11 @@ function MerciPage() {
         if (!isMounted) return;
 
         setOrder(orderSummary);
+
+        if (orderSummary?.status === "paid") {
+          clearCart();
+          window.sessionStorage.removeItem(LAST_CHECKOUT_STORAGE_KEY);
+        }
       } catch (error) {
         console.error("Failed to fetch order summary:", error);
       } finally {
@@ -187,17 +194,16 @@ function MerciPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [clearCart]);
 
-  const customerName = [order?.customer?.firstName, order?.customer?.lastName]
-    .filter(Boolean)
-    .join(" ");
+  const shipment = order?.shipment;
+  const recipient = shipment?.recipient;
+  const shippingAddress = shipment?.address;
 
   const hasCustomerInfo = Boolean(
-    customerName || order?.customer?.email || order?.customer?.phone
+    recipient?.displayName || recipient?.email || recipient?.phone
   );
 
-  const shippingAddress = order?.shippingAddress;
   const showShippingAddress = hasShippingAddress(shippingAddress);
 
   return (
@@ -227,12 +233,15 @@ function MerciPage() {
                       : copy.emptyText}
                 </p>
 
-                <OrnamentDivider className="mt-7 md:mt-9" width={112} opacity={0.65} />
+                <OrnamentDivider
+                  className="mt-7 md:mt-9"
+                  width={112}
+                  opacity={0.65}
+                />
               </div>
 
               {order && (
                 <div className="mx-auto mt-9 max-w-4xl md:mt-12">
-                  {/* COMMANDE / STATUT */}
                   <div className="grid border-t border-[#6f5423]/70 md:grid-cols-2 md:divide-x md:divide-[#6f5423]/40">
                     <div className="border-b border-[#6f5423]/40 py-5 md:border-b-0 md:pr-10">
                       <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">
@@ -255,7 +264,6 @@ function MerciPage() {
                     </div>
                   </div>
 
-                  {/* CLIENT / LIVRAISON */}
                   <div className="grid border-y border-[#6f5423]/70 border-t-[#6f5423]/40 md:grid-cols-2 md:divide-x md:divide-[#6f5423]/40">
                     <div className="border-b border-[#6f5423]/40 py-5 md:border-b-0 md:pr-10">
                       <section>
@@ -265,19 +273,19 @@ function MerciPage() {
 
                         {hasCustomerInfo ? (
                           <div className="mt-2 space-y-1 font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 md:text-xl">
-                            {customerName && (
+                            {recipient?.displayName && (
                               <p className="font-medium text-[#fff1d2]">
-                                {customerName}
+                                {recipient.displayName}
                               </p>
                             )}
-                            {order.customer?.email && (
+                            {recipient?.email && (
                               <p className="text-[#d7c8ad]/70">
-                                {order.customer.email}
+                                {recipient.email}
                               </p>
                             )}
-                            {order.customer?.phone && (
+                            {recipient?.phone && (
                               <p className="text-[#d7c8ad]/70">
-                                {order.customer.phone}
+                                {recipient.phone}
                               </p>
                             )}
                           </div>
@@ -330,7 +338,6 @@ function MerciPage() {
                     </div>
                   </div>
 
-                  {/* ITEMS / TOTAL */}
                   <section className="py-6 md:py-8">
                     <div className="space-y-6 md:space-y-7">
                       {(order.items || []).map((item, index) => (

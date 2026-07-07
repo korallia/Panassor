@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { getOrderSummary } from "../../backend/panassorApi";
 import { useLanguage } from "../context/LanguageContext";
 
-import SectionTitle from "../components/layout/SectionTitle";
 import CornerFrame from "../components/ui/CornerFrame";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
 
@@ -203,23 +202,24 @@ function MerciPage() {
 
   return (
     <main className="bg-[#080504] text-[#f3e7cf]">
-      <section className="relative overflow-hidden px-4 py-10 md:px-6 md:py-14">
+      <section className="relative overflow-hidden px-3 py-6 md:px-6 md:py-14">
         <div className="relative mx-auto max-w-[88rem]">
           <div className="relative overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)]">
             <CornerFrame size="lg" />
 
-            <div className="relative z-10 px-5 py-10 md:px-16 md:py-16">
+            <div className="relative z-10 px-4 py-8 md:px-16 md:py-16">
               <div className="mx-auto max-w-4xl text-center">
-                <SectionTitle
-                  eyebrow={copy.eyebrow}
-                  title={order ? copy.title : copy.emptyTitle}
-                  align="center"
-                  showDivider={false}
-                />
+                <p className="mb-3 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.22em] text-[#c89b3c] md:text-sm">
+                  {copy.eyebrow}
+                </p>
 
-                <div className="mx-auto mt-6 h-px w-72 max-w-full bg-gradient-to-r from-transparent via-[#c89b3c]/85 to-transparent" />
+                <h1 className="font-['IM_Fell_English_SC'] text-4xl uppercase leading-none text-[#fff1d2] md:text-7xl">
+                  {order ? copy.title : copy.emptyTitle}
+                </h1>
 
-                <p className="mx-auto mt-7 max-w-2xl font-['EB_Garamond'] text-2xl leading-9 text-[#d7c8ad]/86">
+                <div className="mx-auto mt-5 h-px w-56 max-w-full bg-gradient-to-r from-transparent via-[#c89b3c]/85 to-transparent md:mt-6 md:w-72" />
+
+                <p className="mx-auto mt-6 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/86 md:mt-7 md:text-2xl md:leading-9">
                   {isLoading
                     ? copy.loading
                     : order
@@ -227,99 +227,132 @@ function MerciPage() {
                       : copy.emptyText}
                 </p>
 
-                <OrnamentDivider className="mt-9" width={112} opacity={0.65} />
+                <OrnamentDivider className="mt-7 md:mt-9" width={112} opacity={0.65} />
               </div>
 
               {order && (
-                <div className="mx-auto mt-12 max-w-4xl">
-                  
-                  {/* BLOC SUPÉRIEUR : COMMANDE & STATUT */}
-                  <div className="grid border-t border-[#6f5423]/70 md:divide-x divide-[#6f5423]/40 md:grid-cols-2">
-                    <div className="py-6 pr-6 md:pr-10">
+                <div className="mx-auto mt-9 max-w-4xl md:mt-12">
+                  {/* COMMANDE / STATUT */}
+                  <div className="grid border-t border-[#6f5423]/70 md:grid-cols-2 md:divide-x md:divide-[#6f5423]/40">
+                    <div className="border-b border-[#6f5423]/40 py-5 md:border-b-0 md:pr-10">
                       <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">
                         {copy.order}
                       </p>
+
                       <p className="mt-1 font-['IM_Fell_English_SC'] text-3xl uppercase text-[#fff1d2]">
                         #{order.id}
                       </p>
                     </div>
 
-                    <div className="py-6 pl-6 md:pl-10">
+                    <div className="py-5 md:pl-10">
                       <p className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">
                         {copy.status}
                       </p>
-                      <p className="mt-1 font-['IM_Fell_English_SC'] text-3xl uppercase text-[#fff1d2]">
+
+                      <p className="mt-1 font-['IM_Fell_English_SC'] text-2xl uppercase text-[#fff1d2] md:text-3xl">
                         {getStatusLabel(order.status, language)}
                       </p>
                     </div>
                   </div>
 
-                  {/* LIGNE DE SÉPARATION VISUELLE COMPLÈTE & BLOC INFÉRIEUR : CLIENT & LIVRAISON */}
-                  <div className="grid border-y border-[#6f5423]/70 border-t-[#6f5423]/40 md:divide-x divide-[#6f5423]/40 md:grid-cols-2">
-                    <div className="py-6 pr-6 md:pr-10">
+                  {/* CLIENT / LIVRAISON */}
+                  <div className="grid border-y border-[#6f5423]/70 border-t-[#6f5423]/40 md:grid-cols-2 md:divide-x md:divide-[#6f5423]/40">
+                    <div className="border-b border-[#6f5423]/40 py-5 md:border-b-0 md:pr-10">
                       <section>
                         <h2 className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">
                           {copy.customer}
                         </h2>
+
                         {hasCustomerInfo ? (
-                          <div className="mt-2 space-y-1 font-['EB_Garamond'] text-xl leading-7 text-[#d7c8ad]/88">
-                            {customerName && <p className="font-medium text-[#fff1d2]">{customerName}</p>}
-                            {order.customer?.email && <p className="text-[#d7c8ad]/70">{order.customer.email}</p>}
-                            {order.customer?.phone && <p className="text-[#d7c8ad]/70">{order.customer.phone}</p>}
+                          <div className="mt-2 space-y-1 font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 md:text-xl">
+                            {customerName && (
+                              <p className="font-medium text-[#fff1d2]">
+                                {customerName}
+                              </p>
+                            )}
+                            {order.customer?.email && (
+                              <p className="text-[#d7c8ad]/70">
+                                {order.customer.email}
+                              </p>
+                            )}
+                            {order.customer?.phone && (
+                              <p className="text-[#d7c8ad]/70">
+                                {order.customer.phone}
+                              </p>
+                            )}
                           </div>
                         ) : (
-                          <p className="mt-2 font-['EB_Garamond'] text-xl text-[#d7c8ad]/60">{copy.noCustomer}</p>
+                          <p className="mt-2 font-['EB_Garamond'] text-lg text-[#d7c8ad]/60 md:text-xl">
+                            {copy.noCustomer}
+                          </p>
                         )}
                       </section>
                     </div>
 
-                    <div className="py-6 pl-6 md:pl-10">
+                    <div className="py-5 md:pl-10">
                       <section>
                         <h2 className="font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.22em] text-[#c89b3c]">
                           {copy.shipping}
                         </h2>
+
                         {showShippingAddress ? (
-                          <div className="mt-2 space-y-1 font-['EB_Garamond'] text-xl leading-7 text-[#d7c8ad]/88">
-                            {shippingAddress.line1 && <p>{shippingAddress.line1}</p>}
-                            {shippingAddress.line2 && <p>{shippingAddress.line2}</p>}
-                            {(shippingAddress.locality || shippingAddress.province) && (
+                          <div className="mt-2 space-y-1 font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 md:text-xl">
+                            {shippingAddress.line1 && (
+                              <p>{shippingAddress.line1}</p>
+                            )}
+                            {shippingAddress.line2 && (
+                              <p>{shippingAddress.line2}</p>
+                            )}
+                            {(shippingAddress.locality ||
+                              shippingAddress.province) && (
                               <p>
-                                {[shippingAddress.locality, shippingAddress.province].filter(Boolean).join(", ")}
+                                {[
+                                  shippingAddress.locality,
+                                  shippingAddress.province,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ")}
                               </p>
                             )}
-                            {shippingAddress.postalCode && <p>{shippingAddress.postalCode}</p>}
-                            {shippingAddress.country && <p>{shippingAddress.country}</p>}
+                            {shippingAddress.postalCode && (
+                              <p>{shippingAddress.postalCode}</p>
+                            )}
+                            {shippingAddress.country && (
+                              <p>{shippingAddress.country}</p>
+                            )}
                           </div>
                         ) : (
-                          <p className="mt-2 font-['EB_Garamond'] text-xl text-[#d7c8ad]/60">{copy.noShipping}</p>
+                          <p className="mt-2 font-['EB_Garamond'] text-lg text-[#d7c8ad]/60 md:text-xl">
+                            {copy.noShipping}
+                          </p>
                         )}
                       </section>
                     </div>
                   </div>
 
-                  {/* ARTICLES & FINANCES */}
-                  <section className="py-8">
-                    <div className="space-y-7">
+                  {/* ITEMS / TOTAL */}
+                  <section className="py-6 md:py-8">
+                    <div className="space-y-6 md:space-y-7">
                       {(order.items || []).map((item, index) => (
                         <article
                           key={`${item.cartKey || item.name}-${index}`}
-                          className="border-b border-[#6f5423]/55 pb-7 last:border-b-0"
+                          className="border-b border-[#6f5423]/55 pb-6 md:pb-7"
                         >
-                          <div className="grid md:grid-cols-2 md:gap-20">
+                          <div className="grid gap-4 md:grid-cols-2 md:gap-20">
                             <div>
-                              <h3 className="font-['IM_Fell_English_SC'] text-3xl uppercase text-[#fff1d2]">
+                              <h3 className="font-['IM_Fell_English_SC'] text-2xl uppercase text-[#fff1d2] md:text-3xl">
                                 {item.name}
                               </h3>
 
                               {item.colorName && (
-                                <p className="mt-2 font-['EB_Garamond'] text-xl text-[#d7c8ad]/88">
+                                <p className="mt-2 font-['EB_Garamond'] text-lg text-[#d7c8ad]/88 md:text-xl">
                                   {item.colorName}
                                 </p>
                               )}
 
                               {Array.isArray(item.selectedItems) &&
                                 item.selectedItems.length > 0 && (
-                                  <p className="mt-3 max-w-2xl font-['EB_Garamond'] text-xl leading-7 text-[#d7c8ad]/88">
+                                  <p className="mt-3 max-w-2xl font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 md:text-xl">
                                     {copy.selectedItems} :{" "}
                                     {item.selectedItems
                                       .map((selectedItem) => selectedItem.name)
@@ -327,12 +360,12 @@ function MerciPage() {
                                   </p>
                                 )}
 
-                              <p className="mt-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/88">
+                              <p className="mt-3 font-['EB_Garamond'] text-lg text-[#d7c8ad]/88 md:text-xl">
                                 {copy.quantity} : {item.quantity}
                               </p>
                             </div>
 
-                            <p className="mt-4 font-['IM_Fell_English_SC'] text-2xl uppercase text-[#c89b3c] md:mt-0 md:text-right">
+                            <p className="font-['IM_Fell_English_SC'] text-2xl uppercase text-[#c89b3c] md:text-right">
                               {formatMoney(
                                 item.totalPriceCents,
                                 order.totals.currency,
@@ -344,12 +377,12 @@ function MerciPage() {
                       ))}
                     </div>
 
-                    <div className="mt-8 border-t border-[#6f5423]/70 pt-6">
+                    <div className="mt-7 border-t border-[#6f5423]/70 pt-5 md:mt-8 md:pt-6">
                       <div className="grid md:grid-cols-2 md:gap-20">
                         <div />
 
-                        <div className="space-y-3 font-['EB_Garamond'] text-xl text-[#d7c8ad]/88">
-                          <div className="grid grid-cols-[1fr_auto] gap-8">
+                        <div className="space-y-3 font-['EB_Garamond'] text-lg text-[#d7c8ad]/88 md:text-xl">
+                          <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
                             <span>{copy.subtotal}</span>
                             <span>
                               {formatMoney(
@@ -360,7 +393,7 @@ function MerciPage() {
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-[1fr_auto] gap-8">
+                          <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
                             <span>{copy.taxes}</span>
                             <span>
                               {formatMoney(
@@ -371,7 +404,7 @@ function MerciPage() {
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-[1fr_auto] gap-8 border-t border-[#6f5423]/70 pt-4 font-['IM_Fell_English_SC'] text-3xl uppercase text-[#fff1d2]">
+                          <div className="grid grid-cols-[1fr_auto] gap-6 border-t border-[#6f5423]/70 pt-4 font-['IM_Fell_English_SC'] text-2xl uppercase text-[#fff1d2] md:gap-8 md:text-3xl">
                             <span>{copy.total}</span>
                             <span>
                               {formatMoney(
@@ -388,11 +421,10 @@ function MerciPage() {
                 </div>
               )}
 
-              {/* BOUTON RETOUR */}
-              <div className="mx-auto mt-16 flex max-w-4xl justify-center pt-4 pb-2">
+              <div className="mx-auto mt-10 flex max-w-4xl justify-center pb-2 pt-2 md:mt-16 md:pt-4">
                 <Link
                   to="/"
-                  className="inline-flex items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-7 py-4 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904]"
+                  className="inline-flex items-center justify-center border border-[#c89b3c] bg-[#8b5e1a] px-6 py-4 font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.08em] text-[#f8edd3] shadow-[0_0_24px_rgba(0,0,0,0.45)] transition hover:bg-[#d4a64a] hover:text-[#120904] md:px-7 md:text-sm"
                 >
                   <span className="mr-3">✦</span>
                   {copy.backHome}

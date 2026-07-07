@@ -185,14 +185,26 @@ function storeLastPaidOrderId(orderId) {
 }
 
 function MerciPage() {
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const { clearCart } = useCart();
 
   const isEnglishPath = window.location.pathname === "/thank-you";
-  const pageLanguage = isEnglishPath ? "en" : language;
+  const isFrenchPath = window.location.pathname === "/merci";
+  const pageLanguage = isEnglishPath ? "en" : isFrenchPath ? "fr" : language;
 
   const [order, setOrder] = useState(USE_MOCK_ORDER ? MOCK_ORDER : null);
   const [isLoading, setIsLoading] = useState(!USE_MOCK_ORDER);
+
+  useEffect(() => {
+    if (isEnglishPath) {
+      setLanguage?.("en");
+      return;
+    }
+
+    if (isFrenchPath) {
+      setLanguage?.("fr");
+    }
+  }, [isEnglishPath, isFrenchPath, setLanguage]);
 
   const copy = useMemo(
     () =>

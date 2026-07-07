@@ -20,8 +20,20 @@ function getStoredCartItems() {
   }
 }
 
+function normalizeAddQuantity(quantity) {
+  const parsedQuantity = Number(quantity);
+
+  if (!Number.isFinite(parsedQuantity) || parsedQuantity < 1) {
+    return 1;
+  }
+
+  return Math.floor(parsedQuantity);
+}
+
 function sortSelectedItems(selectedItems = []) {
-  return [...selectedItems].sort((a, b) => Number(a.productId) - Number(b.productId));
+  return [...selectedItems].sort(
+    (a, b) => Number(a.productId) - Number(b.productId)
+  );
 }
 
 function buildSelectedItemsKey(selectedItems = []) {
@@ -61,7 +73,7 @@ export function CartProvider({ children }) {
   const addItem = (item) => {
     const normalizedItem = {
       ...item,
-      quantity: item.quantity || 1,
+      quantity: normalizeAddQuantity(item.quantity),
       selectedItems: sortSelectedItems(item.selectedItems || []),
     };
 
@@ -77,7 +89,9 @@ export function CartProvider({ children }) {
           currentItem.cartKey === cartKey
             ? {
                 ...currentItem,
-                quantity: currentItem.quantity + normalizedItem.quantity,
+                quantity:
+                  normalizeAddQuantity(currentItem.quantity) +
+                  normalizedItem.quantity,
               }
             : currentItem
         );
@@ -96,14 +110,23 @@ export function CartProvider({ children }) {
   };
 
   const updateQuantity = (cartKey, quantity) => {
-    if (quantity <= 0) {
+    const parsedQuantity = Number(quantity);
+
+    if (!Number.isFinite(parsedQuantity) || parsedQuantity <= 0) {
       removeItem(cartKey);
       return;
     }
 
+    const normalizedQuantity = Math.floor(parsedQuantity);
+
     setItems((currentItems) =>
       currentItems.map((item) =>
-        item.cartKey === cartKey ? { ...item, quantity } : item
+        item.cartKey === cartKey
+          ? {
+              ...item,
+              quantity: normalizedQuantity,
+            }
+          : item
       )
     );
   };
@@ -120,11 +143,15 @@ export function CartProvider({ children }) {
   };
 
   const subtotalCents = items.reduce((total, item) => {
-    return total + (item.displaySnapshot?.priceCents || 0) * item.quantity;
+    return (
+      total +
+      (item.displaySnapshot?.priceCents || 0) *
+        normalizeAddQuantity(item.quantity)
+    );
   }, 0);
 
   const itemCount = items.reduce((total, item) => {
-    return total + item.quantity;
+    return total + normalizeAddQuantity(item.quantity);
   }, 0);
 
   const value = useMemo(

@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -39,10 +40,7 @@ export function CollectionsProvider({ children }) {
 
         if (!isMounted) return;
 
-        retryTimeoutId = window.setTimeout(
-          loadCollections,
-          RETRY_DELAY_MS
-        );
+        retryTimeoutId = window.setTimeout(loadCollections, RETRY_DELAY_MS);
       }
     }
 
@@ -88,14 +86,17 @@ export function CollectionsProvider({ children }) {
     return request;
   }, []);
 
+  const value = useMemo(
+    () => ({
+      collections,
+      collectionDetailsBySlug,
+      loadCollectionDetails,
+    }),
+    [collections, collectionDetailsBySlug, loadCollectionDetails]
+  );
+
   return (
-    <CollectionsContext.Provider
-      value={{
-        collections,
-        collectionDetailsBySlug,
-        loadCollectionDetails,
-      }}
-    >
+    <CollectionsContext.Provider value={value}>
       {children}
     </CollectionsContext.Provider>
   );
@@ -120,9 +121,9 @@ export function useCollectionDetails(slug) {
     );
   }
 
-  const cachedCollection = slug
-    ? context.collectionDetailsBySlug[slug]
-    : null;
+  const { collectionDetailsBySlug, loadCollectionDetails } = context;
+
+  const cachedCollection = slug ? collectionDetailsBySlug[slug] : null;
 
   const [collection, setCollection] = useState(cachedCollection ?? null);
   const [notFound, setNotFound] = useState(false);
@@ -137,7 +138,7 @@ export function useCollectionDetails(slug) {
       try {
         setNotFound(false);
 
-        const data = await context.loadCollectionDetails(slug);
+        const data = await loadCollectionDetails(slug);
 
         if (!isMounted) return;
 
@@ -170,7 +171,7 @@ export function useCollectionDetails(slug) {
         window.clearTimeout(retryTimeoutId);
       }
     };
-  }, [slug, cachedCollection, context]);
+  }, [slug, cachedCollection, loadCollectionDetails]);
 
   return {
     collection,

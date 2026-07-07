@@ -15,6 +15,7 @@ function CartDrawer() {
 
   const {
     items,
+    itemCount,
     subtotalCents,
     orderNote,
     setOrderNote,
@@ -70,7 +71,7 @@ function CartDrawer() {
 
           <CartDrawerFooter
             subtotalCents={subtotalCents}
-            itemCount={items.length}
+            itemCount={itemCount}
             copy={copy.footer}
             language={language}
           />

@@ -1,8 +1,14 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 
-async function request(path) {
-  const response = await fetch(`${API_BASE_URL}${path}`);
+async function request(path, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
@@ -12,6 +18,7 @@ async function request(path) {
     );
 
     error.status = response.status;
+    error.errors = errorBody?.errors || [];
 
     throw error;
   }
@@ -45,4 +52,11 @@ export function getCustomizableProducts() {
 
 export function getAtelierVideos() {
   return request("/api/atelier/videos");
+}
+
+export function createCheckout(payload) {
+  return request("/api/checkout", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }

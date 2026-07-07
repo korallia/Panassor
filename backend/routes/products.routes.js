@@ -1,14 +1,12 @@
 import { Router } from "express";
 import {
-  fakeSquarePaidShipping,
-  getOrderSummary,
-  syncSquareOrder,
-} from "../controllers/orders.controller.js";
+  getProduct,
+  getProducts,
+} from "../controllers/products.controller.js";
 
 const router = Router();
 
-router.get("/:id/summary", getOrderSummary);
-router.post("/:id/sync-square", syncSquareOrder);
-router.post("/:id/fake-square-paid-shipping", fakeSquarePaidShipping);
+router.get("/", getProducts);
+router.get("/:slug", getProduct);
 
 export default router;

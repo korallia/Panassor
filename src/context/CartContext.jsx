@@ -137,11 +137,16 @@ export function CartProvider({ children }) {
     );
   };
 
-  const clearCart = () => {
-    setItems([]);
-    setOrderNote("");
-  };
+const clearCart = () => {
+  setItems([]);
+  setOrderNote("");
 
+  try {
+    window.localStorage.removeItem(CART_STORAGE_KEY);
+  } catch {
+    // ignore localStorage errors
+  }
+};
   const subtotalCents = items.reduce((total, item) => {
     return (
       total +

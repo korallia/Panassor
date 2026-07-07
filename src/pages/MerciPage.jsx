@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { getOrderSummary } from "../../backend/panassorApi";
+import { getOrderSummary, syncSquareOrder } from "../../backend/panassorApi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -9,6 +9,7 @@ import CornerFrame from "../components/ui/CornerFrame";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
 
 const LAST_CHECKOUT_STORAGE_KEY = "panassor_last_checkout";
+const CART_STORAGE_KEY = "panassor_cart_v1";
 
 const USE_MOCK_ORDER = false;
 
@@ -71,6 +72,7 @@ function getStatusLabel(status, language = "fr") {
     failed: { fr: "Paiement non complété", en: "Payment not completed" },
     cancelled: { fr: "Commande annulée", en: "Order cancelled" },
     refunded: { fr: "Commande remboursée", en: "Order refunded" },
+    abandoned: { fr: "Commande abandonnée", en: "Order abandoned" },
   };
 
   return labels[status]?.[language] || status;
@@ -99,6 +101,69 @@ function hasShippingAddress(address) {
       address?.postalCode ||
       address?.country
   );
+}
+
+function normalizeShipment(shipment) {
+  if (!shipment) {
+    return {
+      recipient: null,
+      address: null,
+    };
+  }
+
+  const recipient = shipment.recipient || {
+    displayName:
+      shipment.recipientDisplayName ||
+      shipment.recipient_display_name ||
+      shipment.displayName ||
+      null,
+    email:
+      shipment.recipientEmail ||
+      shipment.recipient_email ||
+      shipment.email ||
+      null,
+    phone:
+      shipment.recipientPhone ||
+      shipment.recipient_phone ||
+      shipment.phone ||
+      null,
+  };
+
+  const address = shipment.address || {
+    line1:
+      shipment.addressLine1 ||
+      shipment.address_line_1 ||
+      shipment.line1 ||
+      null,
+    line2:
+      shipment.addressLine2 ||
+      shipment.address_line_2 ||
+      shipment.line2 ||
+      null,
+    locality: shipment.locality || null,
+    province: shipment.province || null,
+    postalCode:
+      shipment.postalCode ||
+      shipment.postal_code ||
+      shipment.postal ||
+      null,
+    country: shipment.country || null,
+  };
+
+  return {
+    ...shipment,
+    recipient,
+    address,
+  };
+}
+
+function clearStoredCheckoutAndCart() {
+  try {
+    window.localStorage.removeItem(CART_STORAGE_KEY);
+    window.sessionStorage.removeItem(LAST_CHECKOUT_STORAGE_KEY);
+  } catch {
+    // ignore storage errors
+  }
 }
 
 function MerciPage() {
@@ -171,6 +236,10 @@ function MerciPage() {
       }
 
       try {
+        await syncSquareOrder(localOrderId).catch((error) => {
+          console.warn("Square sync on thank-you page failed:", error);
+        });
+
         const orderSummary = await getOrderSummary(localOrderId);
 
         if (!isMounted) return;
@@ -179,7 +248,7 @@ function MerciPage() {
 
         if (orderSummary?.status === "paid") {
           clearCart();
-          window.sessionStorage.removeItem(LAST_CHECKOUT_STORAGE_KEY);
+          clearStoredCheckoutAndCart();
         }
       } catch (error) {
         console.error("Failed to fetch order summary:", error);
@@ -196,9 +265,9 @@ function MerciPage() {
     };
   }, [clearCart]);
 
-  const shipment = order?.shipment;
-  const recipient = shipment?.recipient;
-  const shippingAddress = shipment?.address;
+  const shipment = normalizeShipment(order?.shipment);
+  const recipient = shipment.recipient;
+  const shippingAddress = shipment.address;
 
   const hasCustomerInfo = Boolean(
     recipient?.displayName || recipient?.email || recipient?.phone
@@ -278,11 +347,13 @@ function MerciPage() {
                                 {recipient.displayName}
                               </p>
                             )}
+
                             {recipient?.email && (
                               <p className="text-[#d7c8ad]/70">
                                 {recipient.email}
                               </p>
                             )}
+
                             {recipient?.phone && (
                               <p className="text-[#d7c8ad]/70">
                                 {recipient.phone}
@@ -308,9 +379,11 @@ function MerciPage() {
                             {shippingAddress.line1 && (
                               <p>{shippingAddress.line1}</p>
                             )}
+
                             {shippingAddress.line2 && (
                               <p>{shippingAddress.line2}</p>
                             )}
+
                             {(shippingAddress.locality ||
                               shippingAddress.province) && (
                               <p>
@@ -322,9 +395,11 @@ function MerciPage() {
                                   .join(", ")}
                               </p>
                             )}
+
                             {shippingAddress.postalCode && (
                               <p>{shippingAddress.postalCode}</p>
                             )}
+
                             {shippingAddress.country && (
                               <p>{shippingAddress.country}</p>
                             )}

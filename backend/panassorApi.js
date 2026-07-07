@@ -63,3 +63,9 @@ export function createCheckout(payload) {
 export function getOrderSummary(orderId) {
   return request(`/api/orders/${orderId}/summary`);
 }
+
+export function syncSquareOrder(orderId) {
+  return request(`/api/orders/${orderId}/sync-square`, {
+    method: "POST",
+  });
+}

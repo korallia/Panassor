@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { syncSquareOrder } from "../controllers/orders.controller.js";
+import { handleSquareWebhook } from "../controllers/squareWebhook.controller.js";
 
 const router = Router();
 
-router.post("/:id/sync-square", syncSquareOrder);
+router.post("/", handleSquareWebhook);
 
 export default router;

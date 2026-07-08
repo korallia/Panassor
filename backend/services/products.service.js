@@ -16,6 +16,8 @@ export async function fetchCustomizableProducts() {
       p.long_description_fr,
       p.long_description_en,
       p.price_cents,
+      COALESCE(pcp.price_delta_cents, 0) AS price_delta_cents,
+      p.price_cents + COALESCE(pcp.price_delta_cents, 0) AS final_price_cents,
       p.customizable,
       p.is_kit,
       p.featured,
@@ -23,13 +25,17 @@ export async function fetchCustomizableProducts() {
       c.slug_en AS collection_slug_en,
       c.name_fr AS collection_name_fr,
       c.name_en AS collection_name_en,
-      pi.url AS image_url
+      pi.url AS image_url,
+      pi.color_key
     FROM products p
     JOIN collections c
       ON c.id = p.collection_id
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
+    LEFT JOIN product_color_prices pcp
+      ON pcp.product_id = p.id
+      AND pcp.color_key = pi.color_key
     WHERE p.customizable = TRUE
       AND c.status = 'published'
     ORDER BY c.name_fr ASC, p.name_fr ASC;
@@ -54,6 +60,8 @@ export async function fetchAllProducts() {
       p.long_description_fr,
       p.long_description_en,
       p.price_cents,
+      COALESCE(pcp.price_delta_cents, 0) AS price_delta_cents,
+      p.price_cents + COALESCE(pcp.price_delta_cents, 0) AS final_price_cents,
       p.customizable,
       p.is_kit,
       p.featured,
@@ -62,7 +70,8 @@ export async function fetchAllProducts() {
       c.name_fr AS collection_name_fr,
       c.name_en AS collection_name_en,
       ki.sort_order AS kit_sort_order,
-      pi.url AS image_url
+      pi.url AS image_url,
+      pi.color_key
     FROM products p
     JOIN collections c
       ON c.id = p.collection_id
@@ -74,6 +83,9 @@ export async function fetchAllProducts() {
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
+    LEFT JOIN product_color_prices pcp
+      ON pcp.product_id = p.id
+      AND pcp.color_key = pi.color_key
     WHERE c.status = 'published'
     ORDER BY
       c.name_fr ASC,
@@ -130,16 +142,20 @@ export async function fetchProductImages(productId) {
   const result = await pool.query(
     `
     SELECT
-      id,
-      url,
-      alt_fr,
-      alt_en,
-      sort_order,
-      color_key,
-      is_main
-    FROM product_images
-    WHERE product_id = $1
-    ORDER BY sort_order ASC, id ASC;
+      pi.id,
+      pi.url,
+      pi.alt_fr,
+      pi.alt_en,
+      pi.sort_order,
+      pi.color_key,
+      pi.is_main,
+      COALESCE(pcp.price_delta_cents, 0) AS price_delta_cents
+    FROM product_images pi
+    LEFT JOIN product_color_prices pcp
+      ON pcp.product_id = pi.product_id
+      AND pcp.color_key = pi.color_key
+    WHERE pi.product_id = $1
+    ORDER BY pi.sort_order ASC, pi.id ASC;
     `,
     [productId]
   );
@@ -161,16 +177,22 @@ export async function fetchKitItemsForProduct(productId) {
       included.description_fr,
       included.description_en,
       included.price_cents,
+      COALESCE(pcp.price_delta_cents, 0) AS price_delta_cents,
+      included.price_cents + COALESCE(pcp.price_delta_cents, 0) AS final_price_cents,
       included.customizable,
       ki.quantity,
       ki.sort_order,
-      pi.url AS image_url
+      pi.url AS image_url,
+      pi.color_key
     FROM kit_items ki
     JOIN products included
       ON included.id = ki.included_product_id
     LEFT JOIN product_images pi
       ON pi.product_id = included.id
       AND pi.is_main = TRUE
+    LEFT JOIN product_color_prices pcp
+      ON pcp.product_id = included.id
+      AND pcp.color_key = pi.color_key
     WHERE ki.kit_product_id = $1
     ORDER BY ki.sort_order ASC, included.name_fr ASC;
     `,

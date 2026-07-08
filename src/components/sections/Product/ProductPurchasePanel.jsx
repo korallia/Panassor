@@ -75,6 +75,14 @@ function ProductPurchasePanel({
 
   const selectedColor = leatherColors[selectedColorIndex];
 
+  const basePriceCents = Number(product.price_cents || 0);
+  const selectedColorPriceDeltaCents = Number(
+    selectedColor?.priceDeltaCents ?? 0
+  );
+  const finalPriceCents =
+    selectedColor?.finalPriceCents ??
+    basePriceCents + selectedColorPriceDeltaCents;
+
   const addToCartLabel =
     copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
 
@@ -123,7 +131,9 @@ function ProductPurchasePanel({
         name_fr: t(product, "name", "fr"),
         name_en: t(product, "name", "en"),
         imageUrl: productImageUrl || product.image_url,
-        priceCents: product.price_cents,
+        priceCents: finalPriceCents,
+        basePriceCents,
+        colorPriceDeltaCents: selectedColorPriceDeltaCents,
       },
     });
   };
@@ -142,8 +152,22 @@ function ProductPurchasePanel({
 
           <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(product.price_cents, language)}
+              {formatPrice(finalPriceCents, language)}
             </p>
+
+            {selectedColorPriceDeltaCents > 0 && (
+              <p className="mt-2 font-['EB_Garamond'] text-base text-[#d7c8ad]/70">
+                {language === "en"
+                  ? `Includes ${formatPrice(
+                      selectedColorPriceDeltaCents,
+                      language
+                    )} color supplement`
+                  : `Inclut un supplément couleur de ${formatPrice(
+                      selectedColorPriceDeltaCents,
+                      language
+                    )}`}
+              </p>
+            )}
 
             <OrnamentDivider
               className="mt-4 w-52 justify-start"

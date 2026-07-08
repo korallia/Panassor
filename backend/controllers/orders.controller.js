@@ -1,3 +1,4 @@
+import { env } from "../config/env.js";
 import {
   fakeSquarePaidShippingForLocalOrder,
   findLocalOrderById,
@@ -5,11 +6,30 @@ import {
   syncLocalOrderFromSquareOrder,
 } from "../services/orders.service.js";
 
+function isProduction() {
+  return env.nodeEnv === "production";
+}
+
+function hasValidThankYouKey(localOrder, key) {
+  return Boolean(
+    key &&
+      localOrder?.thank_you_token &&
+      String(localOrder.thank_you_token) === String(key)
+  );
+}
+
 export async function getOrderSummary(req, res) {
   try {
     const { id } = req.params;
+    const { key } = req.query;
 
-    const orderSummary = await getOrderSummaryById(id);
+    if (isProduction() && !key) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    const orderSummary = await getOrderSummaryById(id, key);
 
     if (!orderSummary) {
       return res.status(404).json({
@@ -31,10 +51,17 @@ export async function getOrderSummary(req, res) {
 export async function syncSquareOrder(req, res) {
   try {
     const { id } = req.params;
+    const { key } = req.query;
 
     const localOrder = await findLocalOrderById(id);
 
     if (!localOrder) {
+      return res.status(404).json({
+        message: "Local order not found",
+      });
+    }
+
+    if (isProduction() && !hasValidThankYouKey(localOrder, key)) {
       return res.status(404).json({
         message: "Local order not found",
       });
@@ -72,9 +99,9 @@ export async function syncSquareOrder(req, res) {
 
 export async function fakeSquarePaidShipping(req, res) {
   try {
-    if (process.env.NODE_ENV === "production") {
-      return res.status(403).json({
-        message: "Fake Square shipping test is disabled in production",
+    if (isProduction()) {
+      return res.status(404).json({
+        message: "Not found",
       });
     }
 

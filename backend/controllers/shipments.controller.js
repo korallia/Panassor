@@ -1,3 +1,4 @@
+import { env } from "../config/env.js";
 import {
   getShipmentDetailsById,
   getShipmentDetailsByOrderId,
@@ -6,8 +7,24 @@ import {
   updateShipmentTracking,
 } from "../services/shipments.service.js";
 
+function blockShipmentRoutesInProduction(res) {
+  if (env.nodeEnv !== "production") {
+    return false;
+  }
+
+  res.status(404).json({
+    message: "Not found",
+  });
+
+  return true;
+}
+
 export async function getShipmentById(req, res) {
   try {
+    if (blockShipmentRoutesInProduction(res)) {
+      return;
+    }
+
     const { id } = req.params;
 
     const shipment = await getShipmentDetailsById(id);
@@ -31,6 +48,10 @@ export async function getShipmentById(req, res) {
 
 export async function getShipmentByOrderId(req, res) {
   try {
+    if (blockShipmentRoutesInProduction(res)) {
+      return;
+    }
+
     const { orderId } = req.params;
 
     const shipment = await getShipmentDetailsByOrderId(orderId);
@@ -54,6 +75,10 @@ export async function getShipmentByOrderId(req, res) {
 
 export async function patchShipmentStatus(req, res) {
   try {
+    if (blockShipmentRoutesInProduction(res)) {
+      return;
+    }
+
     const { id } = req.params;
     const { status, source, actorName, actorExternalId, message } = req.body;
 
@@ -91,6 +116,10 @@ export async function patchShipmentStatus(req, res) {
 
 export async function patchShipmentItemStatus(req, res) {
   try {
+    if (blockShipmentRoutesInProduction(res)) {
+      return;
+    }
+
     const { itemId } = req.params;
     const { status, source, actorName, actorExternalId, message } = req.body;
 
@@ -128,6 +157,10 @@ export async function patchShipmentItemStatus(req, res) {
 
 export async function patchShipmentTracking(req, res) {
   try {
+    if (blockShipmentRoutesInProduction(res)) {
+      return;
+    }
+
     const { id } = req.params;
     const {
       carrier,

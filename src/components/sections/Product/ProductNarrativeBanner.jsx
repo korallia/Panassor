@@ -92,7 +92,7 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
             <div className="mb-7 text-center">
               <div className="mx-auto mb-4 flex max-w-[16rem] items-center justify-center gap-3 text-[#c89b3c]">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
-                <span className="h-1.5 w-1.5 rotate-45 border border-[#c89b3c] bg-[#c89b3c]/40" />
+                <span className="text-lg">✦</span>
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
               </div>
 
@@ -103,13 +103,12 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
 
             <div className="grid gap-3">
               {badges.map((label) => (
-                <div
-                  key={label}
-                  className="border border-[#6f5423]/65 bg-[#080504]/34 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)] backdrop-blur-[1px]"
-                >
-                  <div className="mb-3 h-px w-14 bg-[#c89b3c]/70" />
+                <div key={label} className="flex items-center gap-3">
+                  <span className="shrink-0 font-['IM_Fell_English_SC'] text-sm text-[#c89b3c]">
+                    ✦
+                  </span>
 
-                  <span className="block font-['IM_Fell_English_SC'] text-[0.74rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
+                  <span className="font-['IM_Fell_English_SC'] text-[0.74rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
                     {label}
                   </span>
                 </div>
@@ -136,7 +135,7 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
 
           <CornerFrame size="md" />
 
-          <div className="relative z-10 grid min-h-[300px] gap-9 px-12 py-10 md:grid-cols-[1fr_250px]">
+          <div className="relative z-10 grid min-h-[300px] gap-9 px-12 py-10 md:grid-cols-[1fr_230px]">
             <div className="flex max-w-3xl flex-col justify-center">
               <div className="mb-5">
                 <div className="mb-4 flex w-72 max-w-full items-center gap-4 text-[#c89b3c]">
@@ -177,15 +176,14 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
               </Link>
             </div>
 
-            <div className="flex flex-col justify-center gap-3">
+            <div className="flex flex-col justify-center gap-4">
               {badges.map((label) => (
-                <div
-                  key={label}
-                  className="border-l border-[#c89b3c]/70 bg-[#080504]/46 px-5 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)]"
-                >
-                  <div className="mb-2 h-px w-12 bg-[#c89b3c]/70" />
+                <div key={label} className="flex items-center gap-3">
+                  <span className="shrink-0 font-['IM_Fell_English_SC'] text-sm text-[#c89b3c]">
+                    ✦
+                  </span>
 
-                  <span className="block font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b]">
+                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b]">
                     {label}
                   </span>
                 </div>

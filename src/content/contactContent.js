@@ -29,8 +29,8 @@ export const contactContent = {
         "Vous avez une idée de kit, d’accessoire ou de rôle que vous aimeriez voir chez Panassor? Venez nous en parler.",
         "On prend toujours les suggestions.",
       ],
-      emailButton: "Écrire à l’atelier",
       messengerButton: "Nous écrire sur Messenger",
+      emailButton: "Écrire à l’atelier",
       emailSubject: "Suggestion Panassor",
     },
 
@@ -74,8 +74,8 @@ export const contactContent = {
         "Do you have an idea for a kit, accessory, or role you would like to see at Panassor? Come tell us about it.",
         "We are always open to suggestions.",
       ],
-      emailButton: "Write to the workshop",
       messengerButton: "Message us on Messenger",
+      emailButton: "Write to the workshop",
       emailSubject: "Panassor suggestion",
     },
 

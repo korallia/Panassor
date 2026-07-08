@@ -26,7 +26,7 @@ export const footerContent = {
     contact: {
       title: "Contact",
       description:
-        "Venez nous suivre sur Facebook ou écrivez-nous pour une question, une commande unique ou une demande spéciale.",
+        "Venez nous suivre sur Facebook ou écrivez-nous pour une question, une suggestion ou une demande spéciale.",
       button: "Nous contacter",
       emailAriaLabel: "Nous contacter par courriel",
       emailTitle: "Nous contacter",
@@ -68,7 +68,7 @@ export const footerContent = {
     contact: {
       title: "Contact",
       description:
-        "Follow us on Facebook or write to us for a question, a unique order, or a special request.",
+        "Follow us on Facebook or write to us for a question, a suggestion, or a special request.",
       button: "Contact us",
       emailAriaLabel: "Contact us by email",
       emailTitle: "Contact us",

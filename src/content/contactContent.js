@@ -27,7 +27,7 @@ export const contactContent = {
       title: "Une idée hors collection?",
       paragraphs: [
         "Vous avez une idée de kit, d’accessoire ou de rôle que vous aimeriez voir chez Panassor? Venez nous en parler.",
-        "On prend toujours les suggestions. C’est comme ça que certains projets naissent, dont le kit de voleur.",
+        "On prend toujours les suggestions.",
       ],
       emailButton: "Écrire à l’atelier",
       messengerButton: "Nous écrire sur Messenger",
@@ -72,7 +72,7 @@ export const contactContent = {
       title: "An idea outside the collection?",
       paragraphs: [
         "Do you have an idea for a kit, accessory, or role you would like to see at Panassor? Come tell us about it.",
-        "We are always open to suggestions. That is how some projects begin, including the thief kit.",
+        "We are always open to suggestions.",
       ],
       emailButton: "Write to the workshop",
       messengerButton: "Message us on Messenger",

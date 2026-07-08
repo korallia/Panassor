@@ -13,25 +13,25 @@ export const contactContent = {
       eyebrow: "Correspondance",
       title: "Nous contacter",
       description:
-        "Venez nous suivre sur Facebook, nous dire salut et suivre les aperçus des prochains kits. Pour toute question, commande unique, collaboration ou demande spéciale, contactez-nous par Messenger ou par courriel.",
+        "Venez nous suivre sur Facebook, nous dire salut et suivre les aperçus des prochains kits. Pour toute question, collaboration, suggestion ou demande spéciale, contactez-nous par Messenger ou par courriel.",
       facebookButton: "Suivre sur Facebook",
     },
 
     customOrder: {
       image: "/images/kit_de_voleur.jpg",
-      imageAlt: "Commande unique Panassor",
-      imageEyebrow: "Commande unique",
-      imageTitle: "Un objet pour votre personnage",
+      imageAlt: "Aperçu d’un projet Panassor à venir",
+      imageEyebrow: "Idées et suggestions",
+      imageTitle: "Une idée hors collection?",
 
-      eyebrow: "Commandes et projets spéciaux",
+      eyebrow: "Suggestions et projets futurs",
       title: "Une idée hors collection?",
       paragraphs: [
-        "Vous avez une idée pour un accessoire, une commande unique ou un projet spécial? Écrivez-nous simplement ce que vous avez en tête.",
-        "Que ce soit pour un personnage, un événement ou une collaboration, on pourra regarder avec vous si le projet est possible.",
+        "Vous avez une idée de kit, d’accessoire ou de rôle que vous aimeriez voir chez Panassor? Venez nous en parler.",
+        "On prend toujours les suggestions. C’est comme ça que certains projets naissent, dont le kit de voleur.",
       ],
       emailButton: "Écrire à l’atelier",
       messengerButton: "Nous écrire sur Messenger",
-      emailSubject: "Commande unique Panassor",
+      emailSubject: "Suggestion Panassor",
     },
 
     facebook: {
@@ -58,25 +58,25 @@ export const contactContent = {
       eyebrow: "Correspondence",
       title: "Contact us",
       description:
-        "Follow us on Facebook, come say hello, and keep an eye on previews of our next kits. For any question, custom order, collaboration, or special request, contact us through Messenger or by email.",
+        "Follow us on Facebook, come say hello, and keep an eye on previews of our next kits. For any question, collaboration, suggestion, or special request, contact us through Messenger or by email.",
       facebookButton: "Follow us on Facebook",
     },
 
     customOrder: {
       image: "/images/kit_de_voleur.jpg",
-      imageAlt: "Custom Panassor order",
-      imageEyebrow: "Custom order",
-      imageTitle: "An object for your character",
+      imageAlt: "Preview of an upcoming Panassor project",
+      imageEyebrow: "Ideas and suggestions",
+      imageTitle: "An idea outside the collection?",
 
-      eyebrow: "Orders and special projects",
+      eyebrow: "Suggestions and future projects",
       title: "An idea outside the collection?",
       paragraphs: [
-        "Do you have an idea for an accessory, a custom order, or a special project? Simply write to us with what you have in mind.",
-        "Whether it is for a character, an event, or a collaboration, we can look at the project with you and see what is possible.",
+        "Do you have an idea for a kit, accessory, or role you would like to see at Panassor? Come tell us about it.",
+        "We are always open to suggestions. That is how some projects begin, including the thief kit.",
       ],
       emailButton: "Write to the workshop",
       messengerButton: "Message us on Messenger",
-      emailSubject: "Custom Panassor order",
+      emailSubject: "Panassor suggestion",
     },
 
     facebook: {

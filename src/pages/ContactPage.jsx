@@ -124,20 +124,20 @@ function ContactPage() {
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <a
-                  href={`mailto:${contactEmail}?subject=${emailSubject}`}
-                  className={goldButtonClass}
-                >
-                  <span className="mr-2">✦</span>
-                  {copy.customOrder.emailButton}
-                </a>
-
-                <a
                   href={facebookUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className={greenButtonClass}
+                  className={goldButtonClass}
                 >
                   {copy.customOrder.messengerButton}
+                </a>
+
+                <a
+                  href={`mailto:${contactEmail}?subject=${emailSubject}`}
+                  className={greenButtonClass}
+                >
+                  <span className="mr-2">✦</span>
+                  {copy.customOrder.emailButton}
                 </a>
               </div>
             </div>

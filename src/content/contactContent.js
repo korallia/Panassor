@@ -30,7 +30,7 @@ export const contactContent = {
         "On prend toujours les suggestions.",
       ],
       messengerButton: "Nous écrire sur Messenger",
-      emailButton: "Écrire à l’atelier",
+      emailButton: "Nous écrire",
       emailSubject: "Suggestion Panassor",
     },
 
@@ -75,7 +75,7 @@ export const contactContent = {
         "We are always open to suggestions.",
       ],
       messengerButton: "Message us on Messenger",
-      emailButton: "Write to the workshop",
+      emailButton: "Contact us",
       emailSubject: "Panassor suggestion",
     },
 

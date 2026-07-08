@@ -48,7 +48,7 @@ export const atelierContent = {
     vision: {
       logoAlt: "Logo Panassor",
       eyebrow: "Vision Panassor",
-      title: "Des kits pour faire vivre l’histoire",
+      title: "Des kits pour faire vivre votre histoire",
       points: [
         "Des kits immersifs pour les personnages qui construisent l’histoire.",
     "Des objets assez beaux pour attirer le regard.",

@@ -48,15 +48,16 @@ export const atelierContent = {
     vision: {
       logoAlt: "Logo Panassor",
       eyebrow: "Vision Panassor",
-      title: "Donner du poids aux rôles oubliés",
+      title: "Des kits pour faire vivre l’histoire",
       points: [
-        "Des objets pour les rôles qui font vivre l’univers.",
-        "Une présence forte, sans voler la scène aux joueurs.",
-        "Des accessoires faits pour être vus, manipulés et incarnés.",
+        "Des kits immersifs pour les personnages qui construisent l’histoire.",
+    "Des objets assez beaux pour attirer le regard.",
+    "Assez solides pour être utilisés en jeu.",
+    "Assez vivants pour devenir une partie du personnage.",
       ],
       desktopParagraphs: [
-        "Panassor crée des kits immersifs pour les personnages qui construisent l’histoire autrement : soigneurs, artisans, voleurs, érudits, manipulateurs et tous ceux qui font vivre un univers sans forcément porter l’épée.",
-        "Notre objectif est simple : créer des objets qui ont assez de présence pour être remarqués, assez de solidité pour être utilisés, et assez d’âme pour devenir une partie du personnage.",
+        "Panassor crée des kits immersifs pour les personnages qui construisent l’histoire.",
+        "Notre objectif est simple : créer des objets assez beaux pour attirer le regard, assez solides pour être utilisés, et assez vivants pour devenir une partie du personnage.",
       ],
     },
 
@@ -133,16 +134,17 @@ export const atelierContent = {
     vision: {
       logoAlt: "Panassor logo",
       eyebrow: "Panassor vision",
-      title: "Giving weight to forgotten roles",
-      points: [
-        "Objects made for the roles that bring a world to life.",
-        "A strong presence, without stealing the scene from the players.",
-        "Accessories made to be seen, handled, and embodied.",
-      ],
-      desktopParagraphs: [
-        "Panassor creates immersive kits for characters who build the story differently: healers, artisans, thieves, scholars, manipulators, and everyone who brings a world to life without necessarily carrying a sword.",
-        "Our goal is simple: to create objects with enough presence to be noticed, enough strength to be used, and enough soul to become part of the character.",
-      ],
+      title: "Kits made to bring the story to life",
+  points: [
+    "Immersive kits for characters who build the story.",
+    "Objects beautiful enough to draw the eye.",
+    "Strong enough to be used in play.",
+    "Alive enough to become part of the character.",
+  ],
+  desktopParagraphs: [
+    "Panassor creates immersive kits for characters who build the story.",
+    "Our goal is simple: to create objects beautiful enough to draw the eye, strong enough to be used, and alive enough to become part of the character.",
+  ],
     },
 
     videos: {

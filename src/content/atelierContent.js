@@ -6,38 +6,37 @@ export const atelierContent = {
       eyebrow: "Dans l’atelier",
       title: "Atelier",
       description:
-        "Photos, vidéos et sneak peeks futurs dans l’univers Panassor.",
+        "À l’intérieur de l’atelier.",
     },
 
     conventionGallery: {
       images: [
         {
           src: "/images/Kiosque.jpg",
-          alt: "Kiosque Panassor au Salon de la Passion Médiévale",
+          alt: "L’équipe Panassor prête à vous accueillir au Salon de la Passion Médiévale",
         },
         {
           src: "/images/Emile.jpg",
-          alt: "Présentation des kits Panassor au Salon de la Passion Médiévale",
+          alt: "Émile échange avec les visiteurs autour des kits Panassor",
         },
         {
           src: "/images/Kiosque2.jpg",
-          alt: "Table Panassor avec accessoires médiévaux en convention",
+          alt: "La table Panassor avec nos premiers kits présentés au public",
         },
       ],
 
       eyebrow: "Galerie",
       title: "Panassor en convention",
       mobileDescription:
-        "Une première rencontre avec la communauté, les kits sur table, et l’univers Panassor hors de l’atelier.",
+        "Une première rencontre avec la communauté, les kits sur table, et le plaisir d’échanger avec vous. ",
       desktopDescription:
-        "Les photos montrent une partie de l’expérience, mais rien ne remplace le moment où l’on peut prendre les kits en main, voir les détails de près et discuter avec nous de vos personnages, scènes et idées de jeu.",
-
+        "Quelques images de notre première sortie au Salon de la Passion Médiévale. Ce fut un vrai plaisir de vous rencontrer, d’échanger avec vous et d’entendre parler de vos personnages, de vos scènes et de vos idées de jeu. Continuez de venir nous voir!",
       featuredEyebrow: "Première sortie officielle",
       featuredTitle: "Salon de la Passion Médiévale",
       featuredMobileDescription:
         "Les premiers kits Panassor présentés au public.",
       featuredDesktopDescription:
-        "Cette année, Panassor présentait ses premiers kits au public lors du Salon de la Passion Médiévale. Une première rencontre avec la communauté, nos accessoires sur table, et le début concret de l’univers Panassor hors de l’atelier.",
+        "Cette année, Panassor présentait ses premiers kits au public lors du Salon de la Passion Médiévale. Une première sortie officielle, et le tout début de notre aventure auprès de la communauté.",
 
       viewImage: "Voir l’image",
       close: "Fermer",
@@ -91,38 +90,38 @@ export const atelierContent = {
       eyebrow: "Inside the workshop",
       title: "Workshop",
       description:
-        "Photos, videos, and future sneak peeks from the world of Panassor.",
+        "Inside the workshop.",
     },
 
     conventionGallery: {
       images: [
         {
           src: "/images/Kiosque.jpg",
-          alt: "Panassor booth at the Salon de la Passion Médiévale",
+          alt: "The Panassor team ready to welcome you at the Salon de la Passion Médiévale",
         },
         {
           src: "/images/Emile.jpg",
-          alt: "Panassor kits presented at the Salon de la Passion Médiévale",
+          alt: "Émile sharing with visitors  the Panassor kits",
         },
         {
           src: "/images/Kiosque2.jpg",
-          alt: "Panassor table with medieval accessories at a convention",
+          alt: "The Panassor table with our first kits presented to the public",
         },
       ],
 
       eyebrow: "Gallery",
       title: "Panassor at convention",
       mobileDescription:
-        "A first meeting with the community, the kits on the table, and the Panassor world beyond the workshop.",
+        "Our first meeting with the community, with the kits on the table and great conversations all around.",
       desktopDescription:
-        "Photos show part of the experience, but nothing replaces the moment when people can hold the kits, see the details up close, and talk with us about their characters, scenes, and play ideas.",
+        "A few images from our first outing at the Salon de la Passion Médiévale. It was a real pleasure to meet you, talk with you, and hear about your characters and unforgettable scenes. Keep coming to see us!",
 
       featuredEyebrow: "First official outing",
       featuredTitle: "Salon de la Passion Médiévale",
       featuredMobileDescription:
         "The first Panassor kits presented to the public.",
       featuredDesktopDescription:
-        "This year, Panassor presented its first kits to the public at the Salon de la Passion Médiévale. It was a first meeting with the community, our accessories on the table, and the concrete beginning of the Panassor world beyond the workshop.",
+        "TThis year, Panassor presented its first kits to the public at the Salon de la Passion Médiévale. Our first official outing, and the very beginning of our journey with the community.",
 
       viewImage: "View image",
       close: "Close",

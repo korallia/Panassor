@@ -57,7 +57,6 @@ function ProductsPage() {
         alt={copy.hero.alt}
         eyebrow={copy.hero.eyebrow}
         title={copy.hero.title}
-        description={copy.hero.description}
       />
 
       <section className="relative overflow-hidden bg-[#080504] px-6 pt-24 pb-32">

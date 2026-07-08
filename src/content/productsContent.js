@@ -5,15 +5,14 @@ export const productsContent = {
       alt: "Produits Panassor",
       eyebrow: "Catalogue Panassor",
       title: "Produits",
-      description:
-        "Des instruments immersifs, durables et sécuritaires pensés pour enrichir vos scènes de jeu et donner du poids aux rôles non-combattants.",
+     
     },
 
     index: {
       eyebrow: "Tous les produits",
       title: "Explorer le catalogue",
       description:
-        "Chaque accessoire est conçu pour soutenir une ambiance, un geste et une présence en jeu.",
+        "Des instruments immersifs, durables et sécuritaires pensés pour enrichir vos scènes de jeu et donner du poids aux rôles non-combattants.",
     },
     purchasePanel: {
   addToCart: "Ajouter au panier",

@@ -34,7 +34,7 @@ function CollectionProductsPage() {
       <CollectionProductsGrid
         eyebrow={copy.productsGrid.eyebrow}
         title={collectionTitle}
-        description={copy.productsGrid.description}
+        description={t(collection, "description", language)}
         products={collection.products}
       />
 

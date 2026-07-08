@@ -19,23 +19,22 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
     copy.badges ||
     (language === "en"
       ? [
-          "Made in Quebec",
-          "Decorum first",
-          "Designed for LARP",
-          "Safe for play",
-          "Inspired by history",
+          ["⚜", "Made in Quebec"],
+          ["✦", "Decorum-focused"],
+          ["✦", "Designed for LARP"],
+          ["✦", "Safe for play"],
+          ["✦", "Inspired by history"],
         ]
       : [
-          "Fabrication québécoise",
-          "Décorum d’abord",
-          "Pensé pour le GN",
-          "Sécuritaire en jeu",
-          "Inspiré de l’histoire",
+          ["⚜", "Fabrication québécoise"],
+          ["✦", "Exigence décorum"],
+          ["✦", "Pensé pour le GN"],
+          ["✦", "Sécuritaire en jeu"],
+          ["✦", "Inspiré de l’histoire"],
         ]);
 
   const eyebrow =
-    copy.eyebrow ||
-    (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
+    copy.eyebrow || (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
 
   const title =
     copy.title ||
@@ -102,13 +101,16 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
             </div>
 
             <div className="grid gap-3">
-              {badges.map((label) => (
-                <div key={label} className="flex items-center gap-3">
-                  <span className="shrink-0 font-['IM_Fell_English_SC'] text-sm text-[#c89b3c]">
-                    ✦
+              {badges.map(([icon, label]) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-4 border border-[#6f5423]/65 bg-[#080504]/34 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)] backdrop-blur-[1px]"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/86 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a] shadow-[0_0_16px_rgba(0,0,0,0.42)]">
+                    {icon}
                   </span>
 
-                  <span className="font-['IM_Fell_English_SC'] text-[0.74rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
+                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.15em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
                     {label}
                   </span>
                 </div>
@@ -154,9 +156,8 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
               </div>
 
               <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-                {firstParagraphPrefix} {collectionName}{" "}
-                {firstParagraphSuffix}
-              </p>
+  {firstParagraphPrefix} {collectionName} {firstParagraphSuffix}
+</p>
 
               <p className="mt-4 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84">
                 {secondParagraph}
@@ -177,10 +178,13 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
             </div>
 
             <div className="flex flex-col justify-center gap-4">
-              {badges.map((label) => (
-                <div key={label} className="flex items-center gap-3">
-                  <span className="shrink-0 font-['IM_Fell_English_SC'] text-sm text-[#c89b3c]">
-                    ✦
+              {badges.map(([icon, label]) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-4 border border-[#6f5423]/70 bg-[#080504]/64 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.32)]"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/80 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a]">
+                    {icon}
                   </span>
 
                   <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b]">

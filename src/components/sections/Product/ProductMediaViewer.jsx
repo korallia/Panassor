@@ -1,5 +1,6 @@
 import CornerFrame from "../../ui/CornerFrame";
 import { useLanguage } from "../../../context/LanguageContext";
+import { getAssetUrl } from "../../../utils/assets";
 
 function ProductMediaViewer({ selectedMedia, productName }) {
   const { language } = useLanguage();
@@ -11,6 +12,11 @@ function ProductMediaViewer({ selectedMedia, productName }) {
   const isVideo = selectedMedia.type === "video";
   const mediaTitle = selectedMedia.title || selectedMedia.alt || productName;
 
+  const mediaSrc = getAssetUrl(selectedMedia.src);
+  const posterSrc = selectedMedia.poster
+    ? getAssetUrl(selectedMedia.poster)
+    : undefined;
+
   const unsupportedLabel =
     language === "en"
       ? "Your browser does not support video playback."
@@ -20,9 +26,9 @@ function ProductMediaViewer({ selectedMedia, productName }) {
     <div className="relative min-h-[420px] flex-1 overflow-hidden bg-[#080504] md:min-h-[560px] lg:min-h-[680px]">
       {isVideo ? (
         <video
-          key={selectedMedia.src}
-          src={selectedMedia.src}
-          poster={selectedMedia.poster || undefined}
+          key={mediaSrc}
+          src={mediaSrc}
+          poster={posterSrc}
           className="h-full w-full object-cover"
           controls
           autoPlay
@@ -35,7 +41,7 @@ function ProductMediaViewer({ selectedMedia, productName }) {
         </video>
       ) : (
         <img
-          src={selectedMedia.src}
+          src={mediaSrc}
           alt={selectedMedia.alt || productName}
           className="h-full w-full object-cover brightness-[0.9] contrast-[1.08] saturate-[0.96]"
         />

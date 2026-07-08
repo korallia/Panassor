@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
@@ -132,7 +133,7 @@ function ToolSelectionModal({
 
                   <div className="relative min-h-[9.5rem] overflow-hidden bg-[#0b0704]">
                     <img
-                      src={tool.image_url}
+                      src={getAssetUrl(tool.image_url)}
                       alt={toolName}
                       loading="lazy"
                       decoding="async"
@@ -220,7 +221,7 @@ function ToolSelectionModal({
 
                   <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
                     <img
-                      src={tool.image_url}
+                      src={getAssetUrl(tool.image_url)}
                       alt={toolName}
                       loading="lazy"
                       decoding="async"

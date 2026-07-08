@@ -1,3 +1,5 @@
+import { getAssetUrl } from "../../utils/assets";
+
 function formatPrice(priceCents, language = "fr", currency = "CAD") {
   if (priceCents == null) return "";
 
@@ -19,13 +21,7 @@ function getLocalizedValue(item, field, language = "fr") {
   return item[`${field}_fr`] || item[`${field}_en`] || item[field] || "";
 }
 
-function CartItemRow({
-  item,
-  copy,
-  language,
-  onUpdateQuantity,
-  onRemove,
-}) {
+function CartItemRow({ item, copy, language, onUpdateQuantity, onRemove }) {
   const snapshot = item.displaySnapshot || {};
 
   const itemName =
@@ -33,7 +29,7 @@ function CartItemRow({
     item.productSlug ||
     copy.fallbackProductName;
 
-  const itemImage = snapshot.imageUrl;
+  const itemImage = getAssetUrl(snapshot.imageUrl);
 
   const colorName =
     language === "en"

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
+import { getAssetUrl } from "../../../utils/assets";
 
 import CarouselArrow from "../../ui/CarouselArrow";
 
@@ -60,6 +61,7 @@ function ProductMediaRail({
      * parce que item.src est un .mp4, pas une image.
      */
     const thumbnailSrc = isVideo ? item.poster : item.src;
+    const thumbnailUrl = thumbnailSrc ? getAssetUrl(thumbnailSrc) : "";
 
     return (
       <button
@@ -72,9 +74,9 @@ function ProductMediaRail({
         className={className}
         aria-label={`${labels.media} ${index + 1}`}
       >
-        {thumbnailSrc ? (
+        {thumbnailUrl ? (
           <img
-            src={thumbnailSrc}
+            src={thumbnailUrl}
             alt=""
             className="h-full w-full object-cover brightness-[0.74] contrast-[1.08]"
           />

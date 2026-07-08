@@ -1,5 +1,6 @@
 import CornerFrame from "../ui/CornerFrame";
 import OrnamentDivider from "../ui/OrnamentDivider";
+import { getAssetUrl } from "../../utils/assets";
 
 function getHeightValue(height) {
   if (!height) return "430px";
@@ -21,6 +22,7 @@ function PageHeroBanner({
 }) {
   const desktopHeight = getHeightValue(height);
   const titleWords = String(title || "").split(" ");
+  const imageUrl = getAssetUrl(image);
 
   return (
     <>
@@ -28,7 +30,7 @@ function PageHeroBanner({
       <section className="relative overflow-hidden bg-[#120c07] xl:hidden">
         <div className="relative min-h-[34rem] overflow-hidden bg-[#120c07] md:min-h-[38rem]">
           <img
-            src={image}
+            src={imageUrl}
             alt={alt}
             className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.5] contrast-[1.08] saturate-[0.95]"
           />
@@ -62,7 +64,10 @@ function PageHeroBanner({
 
               <h1 className="mx-auto w-full max-w-[38rem] text-center font-['IM_Fell_English_SC'] text-[clamp(2.3rem,8vw,4.6rem)] uppercase leading-[0.9] tracking-[0.01em] text-[#fff1d2] drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]">
                 {titleWords.map((word, index) => (
-                  <span key={`${word}-${index}`} className="block w-full text-center">
+                  <span
+                    key={`${word}-${index}`}
+                    className="block w-full text-center"
+                  >
                     {word}
                   </span>
                 ))}
@@ -90,7 +95,7 @@ function PageHeroBanner({
         style={{ "--page-hero-height": desktopHeight }}
       >
         <img
-          src={image}
+          src={imageUrl}
           alt={alt}
           className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.62] contrast-[1.08] saturate-[0.95]"
         />
@@ -114,7 +119,6 @@ function PageHeroBanner({
         {/* AJUSTEMENT : On force des paddings horizontaux massifs (px-20 xl:px-28 2xl:px-32) 
             pour empêcher physiquement le texte de glisser vers les bords de l'écran. */}
         <div className="relative z-30 mx-auto grid h-full max-w-[88rem] items-center px-20 xl:grid-cols-[0.95fr_1.05fr] xl:px-28 2xl:px-32">
-          
           {/* On restreint proprement le bloc de gauche pour lui donner une largeur maximale stricte */}
           <div className="-translate-y-3 flex w-full max-w-[42rem] flex-col items-start text-left">
             <OrnamentDivider

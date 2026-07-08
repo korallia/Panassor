@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import { getCollectionUrl, t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import SectionTitle from "../../layout/SectionTitle";
 import CornerFrame from "../../ui/CornerFrame";
@@ -48,6 +49,7 @@ function CollectionsHeroCarousel({ collections, copy, description }) {
 
   const titleWords = activeTitle.split(" ").filter(Boolean);
   const collectionUrl = getCollectionUrl(activeCollection, language);
+  const activeHeroImageUrl = getAssetUrl(activeCollection.hero_image_url);
 
   const goToCollection = () => {
     navigate(collectionUrl);
@@ -141,7 +143,7 @@ function CollectionsHeroCarousel({ collections, copy, description }) {
             >
               <img
                 key={activeCollection.hero_image_url}
-                src={activeCollection.hero_image_url}
+                src={activeHeroImageUrl}
                 alt={activeName}
                 className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.52] contrast-[1.12] saturate-[0.9] transition duration-500 group-hover:scale-[1.02]"
               />
@@ -236,7 +238,7 @@ function CollectionsHeroCarousel({ collections, copy, description }) {
         <div className="relative hidden min-h-[780px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)] md:block">
           <img
             key={activeCollection.hero_image_url}
-            src={activeCollection.hero_image_url}
+            src={activeHeroImageUrl}
             alt={activeName}
             className="absolute inset-0 h-full w-full object-cover brightness-[0.65] contrast-[1.12] saturate-[0.9] transition-opacity duration-700"
           />

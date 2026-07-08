@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "../../../context/LanguageContext";
 import { useCart } from "../../../context/CartContext";
 import { getProductSlug, t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
@@ -83,6 +84,8 @@ function ProductPurchasePanel({
     selectedColor?.finalPriceCents ??
     basePriceCents + selectedColorPriceDeltaCents;
 
+  const cartImageUrl = getAssetUrl(productImageUrl || product.image_url);
+
   const addToCartLabel =
     copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
 
@@ -130,7 +133,7 @@ function ProductPurchasePanel({
       displaySnapshot: {
         name_fr: t(product, "name", "fr"),
         name_en: t(product, "name", "en"),
-        imageUrl: productImageUrl || product.image_url,
+        imageUrl: cartImageUrl,
         priceCents: finalPriceCents,
         basePriceCents,
         colorPriceDeltaCents: selectedColorPriceDeltaCents,

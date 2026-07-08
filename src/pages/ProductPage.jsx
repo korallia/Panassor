@@ -9,6 +9,7 @@ import {
 import { useLanguage } from "../context/LanguageContext";
 import { getCollectionSlug, getProductSlug, t } from "../utils/localization";
 import { getPageText } from "../utils/content";
+import { getAssetUrl } from "../utils/assets";
 import { productPageContent } from "../content/productPageContent";
 
 import KitProductContainer from "../components/sections/Product/KitProductContainer";
@@ -132,14 +133,14 @@ function buildIndividualProductMedia(product, language) {
   return [
     {
       type: "image",
-      src: defaultProductImage,
+      src: getAssetUrl(defaultProductImage),
       alt: productName,
     },
     ...(product.images ?? [])
       .filter((image) => image.url !== defaultProductImage)
       .map((image) => ({
         type: "image",
-        src: image.url,
+        src: getAssetUrl(image.url),
         alt: t(image, "alt", language) || productName,
       })),
   ].filter((item) => item.src);

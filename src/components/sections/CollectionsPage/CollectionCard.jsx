@@ -1,5 +1,6 @@
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
@@ -21,6 +22,9 @@ function CollectionCard({ collection, index = 0, onClick }) {
 
   const mobileTitleWords = getMobileTitleWords(title);
 
+  const collectionImageUrl =
+    collection.thumbnail_image_url || collection.hero_image_url;
+
   return (
     <button
       type="button"
@@ -40,7 +44,7 @@ function CollectionCard({ collection, index = 0, onClick }) {
         }`}
       >
         <img
-          src={collection.thumbnail_image_url || collection.hero_image_url}
+          src={getAssetUrl(collectionImageUrl)}
           alt={title}
           loading="lazy"
           decoding="async"

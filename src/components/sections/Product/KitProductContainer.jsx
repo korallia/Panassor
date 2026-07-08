@@ -7,6 +7,7 @@ import {
   getProductSlug,
   t,
 } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 import { productColorContent } from "../../../content/productColorContent";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
@@ -41,9 +42,7 @@ function getPriceDeltaForColor(product, colorKey) {
   );
 
   return Number(
-    matchingImage?.price_delta_cents ??
-      matchingImage?.priceDeltaCents ??
-      0
+    matchingImage?.price_delta_cents ?? matchingImage?.priceDeltaCents ?? 0
   );
 }
 
@@ -124,22 +123,22 @@ function KitProductContainer({
   const productMedia = [
     {
       type: "image",
-      src: defaultProductImage,
+      src: getAssetUrl(defaultProductImage),
       alt: productName,
     },
     ...visibleImages
       .filter((image) => image.url !== defaultProductImage)
       .map((image) => ({
         type: "image",
-        src: image.url,
+        src: getAssetUrl(image.url),
         alt: t(image, "alt", language) || productName,
       })),
     ...(collectionVideoUrl
       ? [
           {
             type: "video",
-            src: collectionVideoUrl,
-            poster: collectionVideoPoster,
+            src: getAssetUrl(collectionVideoUrl),
+            poster: getAssetUrl(collectionVideoPoster),
             alt:
               copy.media?.productVideo ||
               (language === "en" ? "Product video" : "Vidéo du produit"),
@@ -220,7 +219,7 @@ function KitProductContainer({
               <ProductPurchasePanel
                 product={product}
                 collection={collection}
-                productImageUrl={defaultProductImage}
+                productImageUrl={getAssetUrl(defaultProductImage)}
                 leatherColors={leatherColors}
                 customizableItems={customizableItems}
                 selectedColorIndex={selectedColorIndex}

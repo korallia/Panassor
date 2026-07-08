@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import { getCollectionUrl, t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import GreenButton from "../../ui/GreenButton";
 import GoldButton from "../../ui/GoldButton";
@@ -20,6 +21,7 @@ function PanassorHero({ collection, copy }) {
   const eyebrow = t(collection, "eyebrow", language);
   const description = t(collection, "description", language);
   const titleWords = title.split(" ").filter(Boolean);
+  const heroImageUrl = getAssetUrl(collection.hero_image_url);
 
   const goToCollection = () => {
     navigate(collectionUrl);
@@ -36,7 +38,7 @@ function PanassorHero({ collection, copy }) {
           aria-label={`${copy.discoverCollectionAria} ${title}`}
         >
           <img
-            src={collection.hero_image_url}
+            src={heroImageUrl}
             alt={title}
             className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.5] contrast-[1.12] saturate-[0.9] transition duration-500 group-hover:scale-[1.02]"
           />
@@ -122,7 +124,7 @@ function PanassorHero({ collection, copy }) {
       {/* DESKTOP HERO */}
       <section className="relative hidden min-h-[calc(100vh-6rem)] overflow-hidden bg-[#0b0704] md:block">
         <img
-          src={collection.hero_image_url}
+          src={heroImageUrl}
           alt={title}
           className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.78] contrast-[1.12] saturate-[0.92]"
         />
@@ -167,7 +169,10 @@ function PanassorHero({ collection, copy }) {
             </p>
 
             <div className="mt-10 flex max-w-[42rem] flex-col gap-4 min-[920px]:flex-row">
-              <GoldButton collection_url={collectionUrl} label={copy.discoverCollection} />
+              <GoldButton
+                collection_url={collectionUrl}
+                label={copy.discoverCollection}
+              />
               <GreenButton label={copy.viewWorkshop} />
             </div>
           </div>

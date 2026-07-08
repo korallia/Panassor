@@ -1,6 +1,8 @@
 import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
+import { getAssetUrl } from "../../../utils/assets";
+
 function AtelierVisionSection({ copy = {} }) {
   const visionPoints = copy.points ?? [];
 
@@ -31,7 +33,7 @@ function AtelierVisionSection({ copy = {} }) {
               <div className="pointer-events-none absolute h-72 w-72 rounded-full border border-[#c89b3c]/[0.06] sm:h-96 sm:w-96 md:h-[29rem] md:w-[29rem] lg:h-[31rem] lg:w-[31rem]" />
 
               <img
-                src="/images/logo_panassor.png"
+                src={getAssetUrl("/images/logo_panassor.png")}
                 alt={copy.logoAlt}
                 className="h-52 w-52 object-contain opacity-95 drop-shadow-[0_24px_55px_rgba(0,0,0,0.92)] sm:h-64 sm:w-64 md:h-[20rem] md:w-[20rem] lg:h-[22rem] lg:w-[22rem]"
               />
@@ -112,7 +114,7 @@ function AtelierVisionSection({ copy = {} }) {
 
           <div className="relative flex h-[38rem] w-[38rem] -translate-y-4 items-center justify-center">
             <img
-              src="/images/logo_panassor.png"
+              src={getAssetUrl("/images/logo_panassor.png")}
               alt={copy.logoAlt}
               className="h-[38rem] w-[38rem] object-contain opacity-95 drop-shadow-[0_30px_65px_rgba(0,0,0,0.92)]"
             />

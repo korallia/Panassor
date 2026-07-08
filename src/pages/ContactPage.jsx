@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../context/LanguageContext";
 import { getPageText } from "../utils/content";
+import { getAssetUrl } from "../utils/assets";
 import { contactContent } from "../content/contactContent";
 
 import PageHeroBanner from "../components/layout/PageHeroBanner";
@@ -29,7 +30,7 @@ function ContactPage() {
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <PageHeroBanner
-        image={copy.hero.image}
+        image={getAssetUrl(copy.hero.image)}
         alt={copy.hero.alt}
         eyebrow={copy.hero.eyebrow}
         title={copy.hero.title}
@@ -83,7 +84,7 @@ function ContactPage() {
           <div className="mx-auto mt-20 grid max-w-[82rem] gap-12 lg:grid-cols-2 lg:items-stretch">
             <div className="relative min-h-[28rem] overflow-hidden border border-[#6f5423]/70 bg-[#120c07] shadow-[0_22px_70px_rgba(0,0,0,0.62)] sm:min-h-[32rem] md:min-h-[35rem]">
               <img
-                src={copy.customOrder.image}
+                src={getAssetUrl(copy.customOrder.image)}
                 alt={copy.customOrder.imageAlt}
                 className="absolute inset-0 h-full w-full object-cover brightness-[0.55] contrast-[1.12] saturate-[0.88]"
               />

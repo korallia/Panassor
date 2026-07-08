@@ -5,6 +5,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
 import { getCollectionUrl, t } from "../../utils/localization";
 import { getPageText } from "../../utils/content";
+import { getAssetUrl } from "../../utils/assets";
 import { footerContent } from "../../content/footerContent";
 
 const contactEmail = "contact@panassor.ca";
@@ -61,7 +62,7 @@ function Footer() {
               aria-label={copy.brand.homeAriaLabel}
             >
               <img
-                src="/images/IconPanassor.png"
+                src={getAssetUrl("/images/IconPanassor.png")}
                 alt={copy.brand.logoAlt}
                 className="h-16 w-16 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)]"
               />
@@ -203,7 +204,9 @@ function Footer() {
                 type="button"
                 onClick={openCart}
                 className={iconButtonClass}
-                aria-label={language === "en" ? "Open cart" : "Ouvrir le panier"}
+                aria-label={
+                  language === "en" ? "Open cart" : "Ouvrir le panier"
+                }
                 title={language === "en" ? "Cart" : "Panier"}
               >
                 <CartIcon />

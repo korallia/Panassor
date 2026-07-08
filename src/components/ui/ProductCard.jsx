@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../../context/LanguageContext";
 import { getProductUrl, t } from "../../utils/localization";
+import { getAssetUrl } from "../../utils/assets";
 
 import CornerFrame from "../ui/CornerFrame";
 
@@ -18,6 +19,7 @@ function ProductCard({ product, variant = "carousel" }) {
   const productName = t(product, "name", language);
   const productDescription = t(product, "description", language);
   const productUrl = getProductUrl(product, language);
+  const productImageUrl = getAssetUrl(product.image_url);
 
   const productButtonLabel =
     language === "en" ? "View product" : "Voir le produit";
@@ -49,7 +51,7 @@ function ProductCard({ product, variant = "carousel" }) {
       <div className="relative flex h-full flex-col">
         <div className={`relative overflow-hidden bg-[#0b0704] ${imageAspect}`}>
           <img
-            src={product.image_url}
+            src={productImageUrl}
             alt={productName}
             loading="lazy"
             decoding="async"

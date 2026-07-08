@@ -8,6 +8,7 @@ import {
   getProductUrl,
   t,
 } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductPanelTitle from "./ProductPanelTitle";
@@ -54,6 +55,11 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
     product.images?.[0]?.url ||
     product.image_url;
 
+  const kitImageUrl =
+    kitProduct?.image_url ??
+    collection.thumbnail_image_url ??
+    collection.hero_image_url;
+
   const addToCartLabel =
     copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
 
@@ -83,7 +89,7 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
       selectedItems: [],
       displaySnapshot: {
         name: productName,
-        imageUrl: productImageUrl,
+        imageUrl: getAssetUrl(productImageUrl),
         priceCents: product.price_cents,
         meta: collectionName,
       },
@@ -135,11 +141,7 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
             <div className="grid min-h-[108px] grid-cols-[96px_1fr]">
               <div className="overflow-hidden border-r border-[#6f5423]/70 bg-[#080504]">
                 <img
-                  src={
-                    kitProduct?.image_url ??
-                    collection.thumbnail_image_url ??
-                    collection.hero_image_url
-                  }
+                  src={getAssetUrl(kitImageUrl)}
                   alt={kitProductName}
                   className="h-full w-full object-contain object-center p-1 brightness-[0.82] contrast-[1.12] saturate-[0.9]"
                 />

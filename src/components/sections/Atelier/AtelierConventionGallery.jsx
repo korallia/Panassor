@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { getAssetUrl } from "../../../utils/assets";
+
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import PanassorSectionHeader from "../../layout/PanassorSectionHeader";
@@ -69,7 +71,7 @@ function AtelierConventionGallery({ copy = {} }) {
             aria-label={copy.openFeaturedImageLabel}
           >
             <img
-              src={featuredImage.src}
+              src={getAssetUrl(featuredImage.src)}
               alt={featuredImage.alt}
               className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.9] contrast-[1.06] saturate-[0.96]"
             />
@@ -110,7 +112,7 @@ function AtelierConventionGallery({ copy = {} }) {
                 aria-label={`${copy.openImageLabelPrefix} ${image.alt}`}
               >
                 <img
-                  src={image.src}
+                  src={getAssetUrl(image.src)}
                   alt={image.alt}
                   className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.9] contrast-[1.06] saturate-[0.96]"
                 />
@@ -156,7 +158,7 @@ function AtelierConventionGallery({ copy = {} }) {
 
               <div className="relative h-full min-h-[690px] overflow-hidden">
                 <img
-                  src={featuredImage.src}
+                  src={getAssetUrl(featuredImage.src)}
                   alt={featuredImage.alt}
                   className="h-full min-h-[690px] w-full object-cover brightness-[0.82] contrast-[1.08] saturate-[0.92] transition duration-500 hover:scale-[1.015] hover:brightness-[0.9]"
                 />
@@ -198,7 +200,7 @@ function AtelierConventionGallery({ copy = {} }) {
 
                   <div className="relative h-full min-h-[323px] overflow-hidden">
                     <img
-                      src={image.src}
+                      src={getAssetUrl(image.src)}
                       alt={image.alt}
                       className="h-full min-h-[323px] w-full object-cover brightness-[0.84] contrast-[1.08] saturate-[0.92] transition duration-500 hover:scale-[1.02] hover:brightness-[0.92]"
                     />
@@ -237,7 +239,7 @@ function AtelierConventionGallery({ copy = {} }) {
             <CornerFrame inset="outside" size="lg" />
 
             <img
-              src={selectedImage.src}
+              src={getAssetUrl(selectedImage.src)}
               alt={selectedImage.alt}
               className="max-h-[78vh] max-w-full object-contain md:max-h-[82vh]"
             />

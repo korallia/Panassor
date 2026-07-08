@@ -1,5 +1,6 @@
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
@@ -22,7 +23,7 @@ function CollectionIntro({ collection }) {
     <section className="relative h-[430px] overflow-hidden bg-[#120c07] text-[#f3e7cf]">
       {introImage && (
         <img
-          src={introImage}
+          src={getAssetUrl(introImage)}
           alt={title}
           className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.72] contrast-[1.1] saturate-[0.95]"
         />

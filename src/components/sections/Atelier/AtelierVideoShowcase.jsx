@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import LazyVideoPlayer from "../../ui/LazyVideoPlayer";
 import CornerFrame from "../../ui/CornerFrame";
@@ -90,8 +91,8 @@ function AtelierVideoShowcase({ videos = [], copy = {} }) {
           <div className="relative aspect-video overflow-hidden">
             <LazyVideoPlayer
               key={selectedVideo.id}
-              src={selectedVideoUrl}
-              poster={selectedPoster || undefined}
+              src={getAssetUrl(selectedVideoUrl)}
+              poster={selectedPoster ? getAssetUrl(selectedPoster) : undefined}
               title={selectedTitle}
             />
 

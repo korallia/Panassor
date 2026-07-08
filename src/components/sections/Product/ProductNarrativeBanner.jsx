@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
@@ -34,7 +35,8 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
         ]);
 
   const eyebrow =
-    copy.eyebrow || (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
+    copy.eyebrow ||
+    (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
 
   const title =
     copy.title ||
@@ -66,6 +68,8 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
     collection.thumbnail_image_url ??
     collection.image_url;
 
+  const backgroundImageUrl = getAssetUrl(backgroundImage);
+
   return (
     <>
       {/* MOBILE */}
@@ -73,7 +77,7 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
         <div className="relative overflow-hidden border border-[#6f5423]/75 bg-[#120c07] px-5 py-8 shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
           {backgroundImage && (
             <img
-              src={backgroundImage}
+              src={backgroundImageUrl}
               alt=""
               className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.62] contrast-[1.12] saturate-[0.95]"
             />
@@ -125,7 +129,7 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
         <div className="relative mx-auto max-w-[88rem] overflow-hidden border border-[#6f5423]/75 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.58)]">
           {backgroundImage && (
             <img
-              src={backgroundImage}
+              src={backgroundImageUrl}
               alt=""
               className="absolute inset-0 h-full w-full object-cover brightness-[0.26] contrast-[1.18] saturate-[0.9]"
             />
@@ -156,8 +160,8 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
               </div>
 
               <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-  {firstParagraphPrefix} {collectionName} {firstParagraphSuffix}
-</p>
+                {firstParagraphPrefix} {collectionName} {firstParagraphSuffix}
+              </p>
 
               <p className="mt-4 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84">
                 {secondParagraph}

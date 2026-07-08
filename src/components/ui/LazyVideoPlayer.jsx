@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useLanguage } from "../../context/LanguageContext";
+import { getAssetUrl } from "../../utils/assets";
 
 function LazyVideoPlayer({ src, poster, title }) {
   const [isVideoActive, setIsVideoActive] = useState(false);
@@ -9,6 +10,9 @@ function LazyVideoPlayer({ src, poster, title }) {
   if (!src) {
     return null;
   }
+
+  const videoSrc = getAssetUrl(src);
+  const posterSrc = poster ? getAssetUrl(poster) : "";
 
   const labels = {
     unsupported:
@@ -29,7 +33,7 @@ function LazyVideoPlayer({ src, poster, title }) {
     return (
       <video
         className="h-full w-full object-cover"
-        src={src}
+        src={videoSrc}
         controls
         autoPlay
         playsInline
@@ -47,9 +51,9 @@ function LazyVideoPlayer({ src, poster, title }) {
       className="group relative h-full w-full bg-[#080504]"
       aria-label={labels.play}
     >
-      {poster ? (
+      {posterSrc ? (
         <img
-          src={poster}
+          src={posterSrc}
           alt={labels.preview}
           loading="lazy"
           decoding="async"

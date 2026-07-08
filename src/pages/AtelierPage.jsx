@@ -4,6 +4,7 @@ import { getAtelierVideos } from "../../backend/panassorApi";
 import PageHeroBanner from "../components/layout/PageHeroBanner";
 import { useLanguage } from "../context/LanguageContext";
 import { getPageText } from "../utils/content";
+import { getAssetUrl } from "../utils/assets";
 import { atelierContent } from "../content/atelierContent";
 
 import AtelierVideoShowcase from "../components/sections/Atelier/AtelierVideoShowcase";
@@ -63,7 +64,7 @@ function AtelierPage() {
   return (
     <main className="min-h-screen bg-[#080504] text-[#f3e7cf]">
       <PageHeroBanner
-        image={copy.hero.image}
+        image={getAssetUrl(copy.hero.image)}
         alt={copy.hero.alt}
         eyebrow={copy.hero.eyebrow}
         title={copy.hero.title}

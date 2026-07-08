@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 
@@ -17,6 +18,7 @@ function CollectionAvenirHero({ collection, primaryAction, secondaryAction }) {
   const title = t(collection, "title", language);
   const eyebrow = t(collection, "eyebrow", language);
   const description = t(collection, "description", language);
+  const heroImageUrl = getAssetUrl(collection.hero_image_url);
 
   return (
     <>
@@ -24,7 +26,7 @@ function CollectionAvenirHero({ collection, primaryAction, secondaryAction }) {
       <div className="relative overflow-hidden border border-[#6f5423]/80 bg-[#080504] shadow-[0_18px_60px_rgba(0,0,0,0.6)] md:hidden">
         <div className="relative min-h-[620px] overflow-hidden border-b border-[#6f5423]/70 bg-[#120c07]">
           <img
-            src={collection.hero_image_url}
+            src={heroImageUrl}
             alt={name}
             className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.42] contrast-[1.12] saturate-[0.9]"
           />
@@ -106,7 +108,7 @@ function CollectionAvenirHero({ collection, primaryAction, secondaryAction }) {
       {/* DESKTOP */}
       <div className="relative hidden min-h-[780px] overflow-hidden border border-[#6f5423]/80 bg-[#120c07] shadow-[0_18px_60px_rgba(0,0,0,0.6)] md:block">
         <img
-          src={collection.hero_image_url}
+          src={heroImageUrl}
           alt={name}
           className="absolute inset-0 h-full w-full object-cover brightness-[0.65] contrast-[1.12] saturate-[0.9]"
         />

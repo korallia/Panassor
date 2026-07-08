@@ -1,5 +1,6 @@
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/localization";
+import { getAssetUrl } from "../../../utils/assets";
 
 function CustomizableItemButton({ item, index, onClick, copy = {} }) {
   const { language } = useLanguage();
@@ -21,7 +22,7 @@ function CustomizableItemButton({ item, index, onClick, copy = {} }) {
     >
       <div className="h-full min-h-[68px] overflow-hidden border-r border-[#b8964a]/80 bg-[#080504]">
         <img
-          src={item.image_url}
+          src={getAssetUrl(item.image_url)}
           alt={itemName}
           className="h-full w-full object-cover brightness-[0.86] contrast-[1.1] saturate-[0.9]"
         />

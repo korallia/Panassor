@@ -5,6 +5,7 @@ import { useCollections } from "../../context/CollectionsContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
 import { getCollectionUrl, getProductSlug, t } from "../../utils/localization";
+import { getAssetUrl } from "../../utils/assets";
 
 const contactEmail = "contact@panassor.ca";
 const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
@@ -200,7 +201,7 @@ function Navbar() {
           }
         >
           <img
-            src="/images/IconPanassor.png"
+            src={getAssetUrl("/images/IconPanassor.png")}
             alt="Logo Panassor"
             className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] md:h-14 md:w-14"
           />
@@ -251,7 +252,7 @@ function Navbar() {
 
                     <span className="relative h-16 w-24 shrink-0 overflow-hidden border border-[#6f5423]/65 bg-[#080504]">
                       <img
-                        src={item.image}
+                        src={getAssetUrl(item.image)}
                         alt={item.title}
                         className="h-full w-full object-cover brightness-[0.72] contrast-[1.08] saturate-[0.95] transition duration-300 group-hover/item:scale-[1.04] group-hover/item:brightness-[0.9]"
                       />
@@ -356,7 +357,11 @@ function Navbar() {
               <a
                 href={`mailto:${contactEmail}`}
                 className={mobileIconButtonClass}
-                aria-label={language === "en" ? "Email Panassor" : "Envoyer un courriel à Panassor"}
+                aria-label={
+                  language === "en"
+                    ? "Email Panassor"
+                    : "Envoyer un courriel à Panassor"
+                }
                 title="Email"
               >
                 ✉

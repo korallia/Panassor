@@ -12,7 +12,7 @@ export const productsContent = {
       eyebrow: "Tous les produits",
       title: "Explorer le catalogue",
       description:
-        "Des instruments immersifs, durables et sécuritaires pensés pour enrichir vos scènes de jeu et donner du poids aux rôles non-combattants.",
+        "Des instruments immersifs, durables et sécuritaires, faits pour enrichir vos scènes de jeu en grandeur nature.",
     },
     purchasePanel: {
   addToCart: "Ajouter au panier",
@@ -25,15 +25,13 @@ export const productsContent = {
       alt: "Panassor products",
       eyebrow: "Panassor catalogue",
       title: "Products",
-      description:
-        "Immersive, durable, and safe instruments designed to enrich your play scenes and give weight to non-combat roles.",
     },
 
     index: {
       eyebrow: "All products",
       title: "Explore the catalogue",
       description:
-        "Each accessory is designed to support a mood, a gesture, and a presence in play.",
+        "Immersive, durable, and safe instruments made to enrich your LARP scenes.",
     },
     purchasePanel: {
     addToCart: "Add to cart",

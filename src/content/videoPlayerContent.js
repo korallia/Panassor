@@ -4,7 +4,7 @@ export const videoPlayerContent = {
       eyebrow: "Vidéo du produit",
       title: "Voir le kit en action",
       description:
-        "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Cette vidéo présente le contenu du kit, sa logique de rangement et son usage en scène.",
+        "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Découvrez le contenu du kit et la façon dont il prend vie pendant vos scènes.",
       buttonLabel: "Voir l’atelier",
     },
   },
@@ -14,7 +14,7 @@ export const videoPlayerContent = {
       eyebrow: "Product video",
       title: "See the kit in action",
       description:
-        "Every piece is designed to be handled, observed, and naturally integrated into play. This video presents the kit’s contents, storage logic, and use in a scene.",
+        "Each piece is designed to be handled, observed, and naturally integrated into play. Discover the kit’s contents and how it comes to life during your scenes.",
       buttonLabel: "Visit the workshop",
     },
   },

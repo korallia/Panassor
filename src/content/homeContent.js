@@ -36,9 +36,9 @@ export const homeContent = {
     },
 
     featuredProducts: {
-      eyebrow: "Featured pieces",
-      previousLabel: "Previous products",
-      nextLabel: "Next products",
+      eyebrow: "Collection Items",
+      previousLabel: "Previous product",
+      nextLabel: "Next product",
     },
 
     productCard: {

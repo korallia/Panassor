@@ -4,7 +4,7 @@ export const videoPlayerContent = {
       eyebrow: "Vidéo du produit",
       title: "Voir le kit en action",
       description:
-        "Chaque pièce est pensée pour être manipulée, observée et intégrée naturellement au jeu. Découvrez le contenu du kit et la façon dont il prend vie pendant vos scènes.",
+        "Regardez le kit en action pour mieux voir ses pièces, son format et son utilisation en scène. L’atelier vous permet aussi de découvrir la vision Panassor et nos autres vidéos.",
       buttonLabel: "Voir l’atelier",
     },
   },
@@ -14,7 +14,7 @@ export const videoPlayerContent = {
       eyebrow: "Product video",
       title: "See the kit in action",
       description:
-        "Each piece is designed to be handled, observed, and naturally integrated into play. Discover the kit’s contents and how it comes to life during your scenes.",
+        "Watch the video to see the kit in action: its pieces, format, and use in play. The workshop also brings together Panassor’s vision and our other videos.",
       buttonLabel: "Visit the workshop",
     },
   },

@@ -121,7 +121,7 @@ export const atelierContent = {
       featuredMobileDescription:
         "The first Panassor kits presented to the public.",
       featuredDesktopDescription:
-        "TThis year, Panassor presented its first kits to the public at the Salon de la Passion Médiévale. Our first official outing, and the very beginning of our journey with the community.",
+        "This year, Panassor presented its first kits to the public at the Salon de la Passion Médiévale. Our first official outing, and the very beginning of our journey with the community.",
 
       viewImage: "View image",
       close: "Close",

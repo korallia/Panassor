@@ -19,22 +19,23 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
     copy.badges ||
     (language === "en"
       ? [
-          ["⚜", "Made in Quebec"],
-          ["✦", "Decorum-focused"],
-          ["◌", "Designed for LARP"],
-          ["◆", "Safe for play"],
-          ["◇", "Inspired by history"],
+          "Made in Quebec",
+          "Decorum first",
+          "Designed for LARP",
+          "Safe for play",
+          "Inspired by history",
         ]
       : [
-          ["⚜", "Fabrication québécoise"],
-          ["✦", "Exigence décorum"],
-          ["◌", "Pensé pour le GN"],
-          ["◆", "Sécuritaire en jeu"],
-          ["◇", "Inspiré de l’histoire"],
+          "Fabrication québécoise",
+          "Décorum d’abord",
+          "Pensé pour le GN",
+          "Sécuritaire en jeu",
+          "Inspiré de l’histoire",
         ]);
 
   const eyebrow =
-    copy.eyebrow || (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
+    copy.eyebrow ||
+    (language === "en" ? "The Panassor mark" : "L’empreinte Panassor");
 
   const title =
     copy.title ||
@@ -91,7 +92,7 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
             <div className="mb-7 text-center">
               <div className="mx-auto mb-4 flex max-w-[16rem] items-center justify-center gap-3 text-[#c89b3c]">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c89b3c]/70" />
-                <span className="text-lg">✦</span>
+                <span className="h-1.5 w-1.5 rotate-45 border border-[#c89b3c] bg-[#c89b3c]/40" />
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c89b3c]/70" />
               </div>
 
@@ -101,16 +102,14 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
             </div>
 
             <div className="grid gap-3">
-              {badges.map(([icon, label]) => (
+              {badges.map((label) => (
                 <div
                   key={label}
-                  className="flex items-center gap-4 border border-[#6f5423]/65 bg-[#080504]/34 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)] backdrop-blur-[1px]"
+                  className="border border-[#6f5423]/65 bg-[#080504]/34 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)] backdrop-blur-[1px]"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/86 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a] shadow-[0_0_16px_rgba(0,0,0,0.42)]">
-                    {icon}
-                  </span>
+                  <div className="mb-3 h-px w-14 bg-[#c89b3c]/70" />
 
-                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.15em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
+                  <span className="block font-['IM_Fell_English_SC'] text-[0.74rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b] drop-shadow-[0_3px_8px_rgba(0,0,0,0.88)]">
                     {label}
                   </span>
                 </div>
@@ -137,7 +136,7 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
 
           <CornerFrame size="md" />
 
-          <div className="relative z-10 grid min-h-[300px] gap-9 px-12 py-10 md:grid-cols-[1fr_230px]">
+          <div className="relative z-10 grid min-h-[300px] gap-9 px-12 py-10 md:grid-cols-[1fr_250px]">
             <div className="flex max-w-3xl flex-col justify-center">
               <div className="mb-5">
                 <div className="mb-4 flex w-72 max-w-full items-center gap-4 text-[#c89b3c]">
@@ -156,8 +155,9 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
               </div>
 
               <p className="max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/90">
-  {firstParagraphPrefix} {collectionName} {firstParagraphSuffix}
-</p>
+                {firstParagraphPrefix} {collectionName}{" "}
+                {firstParagraphSuffix}
+              </p>
 
               <p className="mt-4 max-w-2xl font-['EB_Garamond'] text-xl leading-8 text-[#d7c8ad]/84">
                 {secondParagraph}
@@ -177,17 +177,15 @@ function ProductNarrativeBanner({ collection, copy = {} }) {
               </Link>
             </div>
 
-            <div className="flex flex-col justify-center gap-4">
-              {badges.map(([icon, label]) => (
+            <div className="flex flex-col justify-center gap-3">
+              {badges.map((label) => (
                 <div
                   key={label}
-                  className="flex items-center gap-4 border border-[#6f5423]/70 bg-[#080504]/64 px-4 py-4 shadow-[0_0_22px_rgba(0,0,0,0.32)]"
+                  className="border-l border-[#c89b3c]/70 bg-[#080504]/46 px-5 py-4 shadow-[0_0_22px_rgba(0,0,0,0.28)]"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#b8964a]/80 bg-[#1f3324]/80 font-['IM_Fell_English_SC'] text-lg text-[#e4c36a]">
-                    {icon}
-                  </span>
+                  <div className="mb-2 h-px w-12 bg-[#c89b3c]/70" />
 
-                  <span className="font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b]">
+                  <span className="block font-['IM_Fell_English_SC'] text-[0.72rem] uppercase leading-4 tracking-[0.16em] text-[#e7c97b]">
                     {label}
                   </span>
                 </div>

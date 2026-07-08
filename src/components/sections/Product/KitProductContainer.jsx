@@ -1,228 +1,264 @@
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
-import { useCart } from "../../../context/CartContext";
-import { getProductSlug, t } from "../../../utils/localization";
+import {
+  getCollectionUrl,
+  getProductSlug,
+  t,
+} from "../../../utils/localization";
+import { productColorContent } from "../../../content/productColorContent";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
+import ProductMediaGallery from "./ProductMediaGallery";
+import ProductPurchasePanel from "./ProductPurchasePanel";
+import ProductNarrativeBanner from "./ProductNarrativeBanner";
+import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
-import ProductPanelTitle from "./ProductPanelTitle";
-import ProductColorOptions from "./ProductColorOptions";
-import CustomizableItemsList from "./CustomizableItemsList";
-import ToolSelectionModal from "./ToolSelectionModal";
+function isUsableVideoUrl(value) {
+  if (!value) return false;
 
-function formatPrice(priceCents, language = "fr", currency = "CAD") {
-  if (priceCents == null) return "";
+  const url = String(value).trim();
 
-  const locale = language === "en" ? "en-CA" : "fr-CA";
+  if (!url) return false;
 
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-  }).format(priceCents / 100);
-}
+  const invalidValues = ["null", "undefined", "false", "none"];
 
-function ProductPurchasePanel({
-  product,
-  collection,
-  productImageUrl,
-  leatherColors = [],
-  customizableItems = [],
-  selectedColorIndex = 0,
-  onSelectColor,
-  copy = {},
-}) {
-  const { language } = useLanguage();
-  const { addItem } = useCart();
-
-  const [selectedItems, setSelectedItems] = useState(customizableItems);
-  const [toolOptions, setToolOptions] = useState([]);
-  const [activeItemIndex, setActiveItemIndex] = useState(null);
-
-  useEffect(() => {
-    setSelectedItems(customizableItems);
-  }, [customizableItems]);
-
-  useEffect(() => {
-    async function loadToolOptions() {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
-        );
-
-        const data = await response.json();
-        setToolOptions(data);
-      } catch (error) {
-        console.error("Failed to load customizable products:", error);
-        setToolOptions([]);
-      }
-    }
-
-    loadToolOptions();
-  }, []);
-
-  if (!product || !collection) {
-    return null;
+  if (invalidValues.includes(url.toLowerCase())) {
+    return false;
   }
 
-  const collectionName = t(collection, "name", language);
-  const productName = t(product, "name", language);
-  const productSlug = getProductSlug(product, language);
+  return url.startsWith("http") || url.startsWith("/videos/");
+}
 
-  const productDescription =
-    t(product, "long_description", language) ||
-    t(product, "description", language);
+function getPriceDeltaForColor(product, colorKey) {
+  if (!product || !colorKey) {
+    return 0;
+  }
 
-  const selectedColor = leatherColors[selectedColorIndex];
-
-  const basePriceCents = Number(product.price_cents || 0);
-  const selectedColorPriceDeltaCents = Number(
-    selectedColor?.priceDeltaCents ?? 0
+  const matchingImage = product.images?.find(
+    (image) => image.color_key === colorKey
   );
-  const finalPriceCents =
-    selectedColor?.finalPriceCents ??
-    basePriceCents + selectedColorPriceDeltaCents;
 
-  const addToCartLabel =
-    copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
+  return Number(
+    matchingImage?.price_delta_cents ??
+      matchingImage?.priceDeltaCents ??
+      0
+  );
+}
 
-  const activeItem =
-    activeItemIndex !== null ? selectedItems[activeItemIndex] : null;
+function KitProductContainer({
+  product,
+  collection,
+  relatedCollections = [],
+  copy,
+}) {
+  const { language } = useLanguage();
 
-  const openToolModal = (_, index) => {
-    setActiveItemIndex(index);
-  };
+  const productSlug = getProductSlug(product, language);
+  const productName = t(product, "name", language);
+  const collectionName = t(collection, "name", language);
+  const collectionTitle = t(collection, "title", language);
+  const collectionUrl = getCollectionUrl(collection, language);
 
-  const closeToolModal = () => {
-    setActiveItemIndex(null);
-  };
+  const colorConfig = productColorContent[product.slug_fr];
 
-  const selectTool = (tool) => {
-    setSelectedItems((currentItems) =>
-      currentItems.map((item, index) =>
-        index === activeItemIndex ? tool : item
-      )
-    );
+  const availableColors = useMemo(() => {
+    return colorConfig?.colors ?? [];
+  }, [colorConfig]);
 
-    closeToolModal();
-  };
+  const defaultColorKey =
+    colorConfig?.defaultColorKey ||
+    product.images?.find((image) => image.is_main)?.color_key ||
+    product.images?.[0]?.color_key ||
+    null;
 
-  const handleAddToCart = () => {
-    addItem({
-      type: product.is_kit ? "kit" : "product",
+  const [selectedColorKey, setSelectedColorKey] = useState(defaultColorKey);
 
-      productId: product.id,
-      productSlug,
-      quantity: 1,
+  useEffect(() => {
+    setSelectedColorKey(defaultColorKey);
+  }, [productSlug, defaultColorKey]);
 
-      colorKey: selectedColor?.key || null,
-      colorName_fr: selectedColor?.name_fr || selectedColor?.name || "",
-      colorName_en: selectedColor?.name_en || selectedColor?.name || "",
+  const activeColorKey = selectedColorKey || defaultColorKey;
 
-      selectedItems: selectedItems.map((item) => ({
-        productId: item.id,
-        productSlug_fr: getProductSlug(item, "fr"),
-        productSlug_en: getProductSlug(item, "en"),
-        name_fr: t(item, "name", "fr"),
-        name_en: t(item, "name", "en"),
+  const selectedColorIndex = Math.max(
+    availableColors.findIndex((color) => color.key === activeColorKey),
+    0
+  );
+
+  const leatherColors = availableColors.map((color) => {
+    const priceDeltaCents = getPriceDeltaForColor(product, color.key);
+    const basePriceCents = Number(product.price_cents || 0);
+    const finalPriceCents = basePriceCents + priceDeltaCents;
+
+    return {
+      name: color[language] || color.fr || color.key,
+      name_fr: color.fr || color.key,
+      name_en: color.en || color.fr || color.key,
+      value: color.value,
+      key: color.key,
+      priceDeltaCents,
+      finalPriceCents,
+    };
+  });
+
+  const colorImages =
+    activeColorKey && product.images?.length
+      ? product.images.filter((image) => image.color_key === activeColorKey)
+      : [];
+
+  const visibleImages =
+    colorImages.length > 0 ? colorImages : product.images ?? [];
+
+  const defaultProductImage =
+    visibleImages.find((image) => image.is_main)?.url ??
+    visibleImages[0]?.url ??
+    product.image_url;
+
+  const collectionVideoUrl = isUsableVideoUrl(collection.video_url)
+    ? collection.video_url.trim()
+    : "";
+
+  const collectionVideoPoster = collection.video_poster_url?.trim() || "";
+
+  const productMedia = [
+    {
+      type: "image",
+      src: defaultProductImage,
+      alt: productName,
+    },
+    ...visibleImages
+      .filter((image) => image.url !== defaultProductImage)
+      .map((image) => ({
+        type: "image",
+        src: image.url,
+        alt: t(image, "alt", language) || productName,
       })),
+    ...(collectionVideoUrl
+      ? [
+          {
+            type: "video",
+            src: collectionVideoUrl,
+            poster: collectionVideoPoster,
+            alt:
+              copy.media?.productVideo ||
+              (language === "en" ? "Product video" : "Vidéo du produit"),
+            title: collectionTitle || productName,
+          },
+        ]
+      : []),
+  ].filter((item) => item.src);
 
-      displaySnapshot: {
-        name_fr: t(product, "name", "fr"),
-        name_en: t(product, "name", "en"),
-        imageUrl: productImageUrl || product.image_url,
-        priceCents: finalPriceCents,
-        basePriceCents,
-        colorPriceDeltaCents: selectedColorPriceDeltaCents,
-      },
-    });
+  const kitItems =
+    product.kit_items?.length > 0
+      ? product.kit_items
+      : (collection.products ?? []).filter((item) => !item.is_kit);
+
+  const customizableItems = kitItems.filter((item) => item.customizable);
+
+  const handleSelectColor = (index) => {
+    const selectedColor = availableColors[index];
+
+    if (!selectedColor) {
+      return;
+    }
+
+    setSelectedColorKey(selectedColor.key);
   };
 
   return (
-    <aside className="h-full">
-      <div className="group relative overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] px-8 py-9 text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] hover:border-[#c89b3c]/90 md:px-10 md:py-10">
-        <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
+    <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">
+      <section className="relative px-4 pt-9 pb-8 md:px-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(200,155,60,0.13),transparent_30%),radial-gradient(circle_at_18%_72%,rgba(6,40,24,0.34),transparent_34%),radial-gradient(circle_at_86%_68%,rgba(88,43,18,0.24),transparent_32%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,12,7,0.84),rgba(8,5,4,0.96)_32%,#080504)]" />
 
-        <div className="relative z-10">
-          <ProductPanelTitle
-            collectionName={collectionName}
-            productName={productName}
-            description={productDescription}
-          />
-
-          <div className="mt-8 max-w-[300px]">
-            <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(finalPriceCents, language)}
-            </p>
-
-            {selectedColorPriceDeltaCents > 0 && (
-              <p className="mt-2 font-['EB_Garamond'] text-base text-[#d7c8ad]/70">
-                {language === "en"
-                  ? `Includes ${formatPrice(
-                      selectedColorPriceDeltaCents,
-                      language
-                    )} color supplement`
-                  : `Inclut un supplément couleur de ${formatPrice(
-                      selectedColorPriceDeltaCents,
-                      language
-                    )}`}
-              </p>
-            )}
-
-            <OrnamentDivider
-              className="mt-4 w-52 justify-start"
-              width={64}
-              opacity={0.5}
-            />
-
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
+        <div className="relative mx-auto max-w-[88rem]">
+          <nav
+            aria-label={copy.breadcrumbs.ariaLabel}
+            className="mb-7 flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap pb-1 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.18em] text-[#a47b36] [scrollbar-width:none] md:mb-6 md:flex-wrap md:overflow-visible md:pb-0 md:text-[0.78rem] md:tracking-[0.2em] [&::-webkit-scrollbar]:hidden"
+          >
+            <Link
+              to="/"
+              className="hidden shrink-0 transition hover:text-[#c89b3c] md:inline"
             >
-              {addToCartLabel}
-            </button>
+              {copy.breadcrumbs.home}
+            </Link>
+
+            <span className="hidden shrink-0 text-[#6f5423] md:inline">›</span>
+
+            <Link
+              to="/produits"
+              className="shrink-0 transition hover:text-[#c89b3c]"
+            >
+              {copy.breadcrumbs.products}
+            </Link>
+
+            <span className="shrink-0 text-[#6f5423]">›</span>
+
+            <Link
+              to={collectionUrl}
+              className="shrink-0 transition hover:text-[#c89b3c]"
+            >
+              {collectionName}
+            </Link>
+
+            <span className="shrink-0 text-[#6f5423]">›</span>
+
+            <span className="shrink-0 text-[#c89b3c]">{productName}</span>
+          </nav>
+
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
+            <div className="min-w-0">
+              <ProductMediaGallery
+                key={activeColorKey || productSlug}
+                media={productMedia}
+                productName={productName}
+              />
+            </div>
+
+            <div className="min-w-0">
+              <ProductPurchasePanel
+                product={product}
+                collection={collection}
+                productImageUrl={defaultProductImage}
+                leatherColors={leatherColors}
+                customizableItems={customizableItems}
+                selectedColorIndex={selectedColorIndex}
+                onSelectColor={handleSelectColor}
+                copy={copy.purchasePanel}
+              />
+            </div>
           </div>
-
-          <OrnamentDivider
-            className="mt-8 w-52 justify-start"
-            width={64}
-            opacity={0.5}
-          />
-
-          <ProductColorOptions
-            colors={leatherColors}
-            selectedIndex={selectedColorIndex}
-            onSelectColor={(_, index) => onSelectColor?.(index)}
-          />
-
-          {selectedItems.length > 0 && (
-            <>
-              <OrnamentDivider
-                className="mt-7 w-52 justify-start"
-                width={64}
-                opacity={0.5}
-              />
-
-              <CustomizableItemsList
-                items={selectedItems}
-                onSelectItem={openToolModal}
-                copy={copy}
-              />
-            </>
-          )}
         </div>
-      </div>
+      </section>
 
-      <ToolSelectionModal
-        isOpen={activeItemIndex !== null}
-        tools={toolOptions}
-        selectedItem={activeItem}
-        onSelectTool={selectTool}
-        onClose={closeToolModal}
+      <section className="relative px-4 pt-10 pb-8 md:px-6">
+        <OrnamentDivider
+          className="mx-auto max-w-[88rem]"
+          width={288}
+          opacity={0.65}
+        />
+      </section>
+
+      <ProductNarrativeBanner
+        collection={collection}
+        copy={copy.narrativeBanner}
       />
-    </aside>
+
+      <section className="relative px-4 pt-8 pb-8 md:px-6">
+        <OrnamentDivider
+          className="mx-auto max-w-[88rem]"
+          width={288}
+          opacity={0.65}
+        />
+      </section>
+
+      <CollectionsHeroCarousel
+        collections={relatedCollections}
+        copy={copy.relatedCollections}
+      />
+    </main>
   );
 }
 
-export default ProductPurchasePanel;
+export default KitProductContainer;

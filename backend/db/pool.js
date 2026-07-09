@@ -1,20 +1,15 @@
 import pg from "pg";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const { Pool } = pg;
 
-const pool = new Pool({
+const isProduction = process.env.NODE_ENV === "production";
+
+export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: isProduction
+    ? {
+        ca: process.env.AWS_RDS_CA_CERT,
+        rejectUnauthorized: true,
+      }
+    : false,
 });
-
-pool.on("connect", () => {
-  console.log("Connected to PostgreSQL");
-});
-
-pool.on("error", (error) => {
-  console.error("Unexpected PostgreSQL error:", error);
-});
-
-export default pool;

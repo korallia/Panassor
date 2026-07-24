@@ -30,6 +30,7 @@ function KitProductContainer({
   relatedCollections = [],
   copy,
 }) {
+  console.log("Objet product complet reçu du back :", product)
   const { language } = useLanguage();
 
   const productSlug = getProductSlug(product, language);

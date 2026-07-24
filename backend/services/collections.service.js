@@ -177,7 +177,7 @@ export async function fetchKitItemsByKitProductId(kitProductId) {
         ),
         '[]'
       ) AS colors
-    FROM kit_items ki
+    FROM kit_components  ki
     JOIN products included
       ON included.id = ki.included_product_id
     LEFT JOIN product_images pi
@@ -355,7 +355,7 @@ export async function fetchAllProducts() {
     FROM products p
     JOIN collections c
       ON c.id = p.collection_id
-    LEFT JOIN kit_items ki
+    LEFT JOIN kit_components  ki
       ON ki.included_product_id = p.id
     LEFT JOIN products kit
       ON kit.id = ki.kit_product_id
@@ -498,7 +498,7 @@ export async function fetchKitItemsForProduct(productId) {
         ),
         '[]'
       ) AS colors
-    FROM kit_items ki
+    FROM kit_components  ki
     JOIN products included
       ON included.id = ki.included_product_id
     LEFT JOIN product_images pi
@@ -535,6 +535,6 @@ export async function fetchProductWithDetailsBySlug(slug) {
     ...product,
     colors: typeof product.colors === "string" ? JSON.parse(product.colors) : (product.colors || []),
     images,
-    kit_items: kitItems,
+    kit_components: kitItems,
   };
 }

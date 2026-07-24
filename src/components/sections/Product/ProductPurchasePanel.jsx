@@ -51,8 +51,15 @@ function ProductPurchasePanel({
           `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
         );
 
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load customizable products: ${response.status}`
+          );
+        }
+
         const data = await response.json();
-        setToolOptions(data);
+
+        setToolOptions(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to load customizable products:", error);
         setToolOptions([]);
@@ -74,20 +81,25 @@ function ProductPurchasePanel({
     t(product, "long_description", language) ||
     t(product, "description", language);
 
-  const selectedColor = leatherColors[selectedColorIndex];
+  const selectedColor =
+    leatherColors[selectedColorIndex] ?? leatherColors[0] ?? null;
 
   const basePriceCents = Number(product.price_cents || 0);
+
   const selectedColorPriceDeltaCents = Number(
     selectedColor?.priceDeltaCents ?? 0
   );
-  const finalPriceCents =
+
+  const finalPriceCents = Number(
     selectedColor?.finalPriceCents ??
-    basePriceCents + selectedColorPriceDeltaCents;
+      basePriceCents + selectedColorPriceDeltaCents
+  );
 
   const cartImageUrl = getAssetUrl(productImageUrl || product.image_url);
 
   const addToCartLabel =
-    copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
+    copy.addToCart ||
+    (language === "en" ? "Add to cart" : "Ajouter au panier");
 
   const activeItem =
     activeItemIndex !== null ? selectedItems[activeItemIndex] : null;
@@ -110,6 +122,10 @@ function ProductPurchasePanel({
     closeToolModal();
   };
 
+  const handleColorSelection = (_, index) => {
+    onSelectColor?.(index);
+  };
+
   const handleAddToCart = () => {
     addItem({
       type: product.is_kit ? "kit" : "product",
@@ -118,9 +134,16 @@ function ProductPurchasePanel({
       productSlug,
       quantity: 1,
 
-      colorKey: selectedColor?.key || null,
-      colorName_fr: selectedColor?.name_fr || selectedColor?.name || "",
-      colorName_en: selectedColor?.name_en || selectedColor?.name || "",
+      // Le nom colorKey est gardé pour la compatibilité avec le panier,
+      // mais sa valeur vient maintenant de colors.id.
+      colorKey: selectedColor?.id ?? null,
+      colorId: selectedColor?.id ?? null,
+
+      colorName_fr:
+        selectedColor?.name_fr || selectedColor?.name || "",
+
+      colorName_en:
+        selectedColor?.name_en || selectedColor?.name || "",
 
       selectedItems: selectedItems.map((item) => ({
         productId: item.id,
@@ -196,7 +219,7 @@ function ProductPurchasePanel({
           <ProductColorOptions
             colors={leatherColors}
             selectedIndex={selectedColorIndex}
-            onSelectColor={(color, index) => onSelectColor?.(index)}
+            onSelectColor={handleColorSelection}
           />
 
           {selectedItems.length > 0 && (

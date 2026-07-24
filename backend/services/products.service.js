@@ -146,8 +146,8 @@ export async function fetchProductWithDetailsBySlug(slug) {
 
   return {
     ...product,
+    colors: typeof product.colors === "string" ? JSON.parse(product.colors) : (product.colors || []),
     images,
     kit_items: kitItems,
-    // product.colors est déjà inclus directement par la requête fetchProductBySlug !
   };
 }

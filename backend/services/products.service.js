@@ -1,7 +1,5 @@
 import pool from "../db/pool.js";
 
-// ... tes autres fonctions existantes (fetchCustomizableProducts, fetchAllProducts, etc.) restent propres avec les JOIN colors et pcv qu'on a mis en place ...
-
 export async function fetchProductBySlug(slug) {
   const result = await pool.query(
     `
@@ -25,7 +23,27 @@ export async function fetchProductBySlug(slug) {
       c.slug_fr AS collection_slug_fr,
       c.slug_en AS collection_slug_en,
       c.name_fr AS collection_name_fr,
-      c.name_en AS collection_name_en
+      c.name_en AS collection_name_en,
+      
+      -- Intégration directe des couleurs et des deltas de prix dans le payload du produit
+      COALESCE(
+        (
+          SELECT json_agg(
+            json_build_object(
+              'id', col.id,
+              'name_fr', col.name_fr,
+              'name_en', col.name_en,
+              'hex_code', col.hex_code,
+              'price_delta_cents', COALESCE(pcv.price_delta_cents, 0)
+            )
+          )
+          FROM product_color_variants pcv
+          JOIN colors col ON col.id = pcv.color_id
+          WHERE pcv.product_id = p.id
+        ),
+        '[]'
+      ) AS colors
+
     FROM products p
     JOIN collections c
       ON c.id = p.collection_id
@@ -61,27 +79,6 @@ export async function fetchProductImages(productId) {
       AND pcv.color_id = pi.color_id
     WHERE pi.product_id = $1
     ORDER BY pi.sort_order ASC, pi.id ASC;
-    `,
-    [productId]
-  );
-
-  return result.rows;
-}
-
-// Récupère toutes les variantes de couleurs valides pour ce produit avec leur prix delta
-export async function fetchProductColors(productId) {
-  const result = await pool.query(
-    `
-    SELECT
-      col.id,
-      col.name_fr,
-      col.name_en,
-      col.hex_code,
-      COALESCE(pcv.price_delta_cents, 0) AS price_delta_cents
-    FROM product_color_variants pcv
-    JOIN colors col
-      ON col.id = pcv.color_id
-    WHERE pcv.product_id = $1;
     `,
     [productId]
   );
@@ -141,7 +138,6 @@ export async function fetchProductWithDetailsBySlug(slug) {
   }
 
   const images = await fetchProductImages(product.id);
-  const colors = await fetchProductColors(product.id);
 
   let kitItems = [];
   if (product.is_kit) {
@@ -151,7 +147,7 @@ export async function fetchProductWithDetailsBySlug(slug) {
   return {
     ...product,
     images,
-    colors, // On injecte les couleurs propres issues de la BDD
     kit_items: kitItems,
+    // product.colors est déjà inclus directement par la requête fetchProductBySlug !
   };
 }

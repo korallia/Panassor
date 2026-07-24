@@ -5,6 +5,7 @@ function ProductColorOptions({
   selectedIndex = 0,
   onSelectColor,
 }) {
+  console.log("Couleurs reçues dans ProductColorOptions :", colors);
   if (!colors.length) {
     return null;
   }

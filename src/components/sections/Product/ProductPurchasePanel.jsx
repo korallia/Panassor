@@ -196,7 +196,7 @@ function ProductPurchasePanel({
           <ProductColorOptions
             colors={leatherColors}
             selectedIndex={selectedColorIndex}
-            onSelectColor={(_, index) => onSelectColor?.(index)}
+            onSelectColor={(color, index) => onSelectColor?.(index)}
           />
 
           {selectedItems.length > 0 && (

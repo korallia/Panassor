@@ -12,8 +12,8 @@ function ProductColorOptions({
   return (
     <div className="mt-5 flex gap-4">
       {colors.map((color, index) => (
-        <ProductColorSwatch
-          key={color.name}
+       <ProductColorSwatch
+          key={color.id || color.name}
           color={color}
           isSelected={index === selectedIndex}
           onClick={() => onSelectColor?.(color, index)}

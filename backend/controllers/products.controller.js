@@ -44,7 +44,10 @@ export async function getProductBySlug(req, res) {
       });
     }
 
-    res.json(product);
+    res.json({
+  ...product,
+  __api_version: "color-variants-v2",
+});
   } catch (error) {
     console.error("Failed to fetch product:", error);
 

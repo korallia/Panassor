@@ -8,7 +8,6 @@ import {
   t,
 } from "../../../utils/localization";
 import { getAssetUrl } from "../../../utils/assets";
-import { productColorContent } from "../../../content/productColorContent";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductMediaGallery from "./ProductMediaGallery";
@@ -18,32 +17,11 @@ import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
 function isUsableVideoUrl(value) {
   if (!value) return false;
-
   const url = String(value).trim();
-
   if (!url) return false;
-
   const invalidValues = ["null", "undefined", "false", "none"];
-
-  if (invalidValues.includes(url.toLowerCase())) {
-    return false;
-  }
-
+  if (invalidValues.includes(url.toLowerCase())) return false;
   return url.startsWith("http") || url.startsWith("/videos/");
-}
-
-function getPriceDeltaForColor(product, colorKey) {
-  if (!product || !colorKey) {
-    return 0;
-  }
-
-  const matchingImage = product.images?.find(
-    (image) => image.color_key === colorKey
-  );
-
-  return Number(
-    matchingImage?.price_delta_cents ?? matchingImage?.priceDeltaCents ?? 0
-  );
 }
 
 function KitProductContainer({
@@ -60,50 +38,51 @@ function KitProductContainer({
   const collectionTitle = t(collection, "title", language);
   const collectionUrl = getCollectionUrl(collection, language);
 
-  const colorConfig = productColorContent[product.slug_fr];
-
+  // Les couleurs viennent directement de la BDD via l'API
   const availableColors = useMemo(() => {
-    return colorConfig?.colors ?? [];
-  }, [colorConfig]);
+    return product.colors ?? [];
+  }, [product]);
 
-  const defaultColorKey =
-    colorConfig?.defaultColorKey ||
-    product.images?.find((image) => image.is_main)?.color_key ||
-    product.images?.[0]?.color_key ||
-    null;
+  const defaultColorId = useMemo(() => {
+    const mainImage = product.images?.find((image) => image.is_main) || product.images?.[0];
+    return mainImage?.color_id || availableColors[0]?.id || null;
+  }, [product.images, availableColors]);
 
-  const [selectedColorKey, setSelectedColorKey] = useState(defaultColorKey);
+  const [selectedColorId, setSelectedColorId] = useState(defaultColorId);
 
   useEffect(() => {
-    setSelectedColorKey(defaultColorKey);
-  }, [productSlug, defaultColorKey]);
+    if (defaultColorId) {
+      setSelectedColorId(defaultColorId);
+    }
+  }, [productSlug, defaultColorId]);
 
-  const activeColorKey = selectedColorKey || defaultColorKey;
+  const activeColorId = selectedColorId || defaultColorId;
 
   const selectedColorIndex = Math.max(
-    availableColors.findIndex((color) => color.key === activeColorKey),
+    availableColors.findIndex((color) => color.id === activeColorId),
     0
   );
 
   const leatherColors = availableColors.map((color) => {
-    const priceDeltaCents = getPriceDeltaForColor(product, color.key);
+    const priceDeltaCents = Number(color.price_delta_cents || 0);
     const basePriceCents = Number(product.price_cents || 0);
     const finalPriceCents = basePriceCents + priceDeltaCents;
 
     return {
-      name: color[language] || color.fr || color.key,
-      name_fr: color.fr || color.key,
-      name_en: color.en || color.fr || color.key,
-      value: color.value,
-      key: color.key,
+      id: color.id,
+      name: language === "en" ? color.name_en : color.name_fr,
+      name_fr: color.name_fr,
+      name_en: color.name_en,
+      value: color.hex_code,
       priceDeltaCents,
       finalPriceCents,
     };
   });
 
+  // Filtrage des images par le color_id de la BDD
   const colorImages =
-    activeColorKey && product.images?.length
-      ? product.images.filter((image) => image.color_key === activeColorKey)
+    activeColorId && product.images?.length
+      ? product.images.filter((image) => image.color_id === activeColorId)
       : [];
 
   const visibleImages =
@@ -139,9 +118,7 @@ function KitProductContainer({
             type: "video",
             src: getAssetUrl(collectionVideoUrl),
             poster: getAssetUrl(collectionVideoPoster),
-            alt:
-              copy.media?.productVideo ||
-              (language === "en" ? "Product video" : "Vidéo du produit"),
+            alt: copy.media?.productVideo || (language === "en" ? "Product video" : "Vidéo du produit"),
             title: collectionTitle || productName,
           },
         ]
@@ -157,12 +134,8 @@ function KitProductContainer({
 
   const handleSelectColor = (index) => {
     const selectedColor = availableColors[index];
-
-    if (!selectedColor) {
-      return;
-    }
-
-    setSelectedColorKey(selectedColor.key);
+    if (!selectedColor) return;
+    setSelectedColorId(selectedColor.id);
   };
 
   return (
@@ -176,40 +149,25 @@ function KitProductContainer({
             aria-label={copy.breadcrumbs.ariaLabel}
             className="mb-7 flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap pb-1 font-['IM_Fell_English_SC'] text-[0.72rem] uppercase tracking-[0.18em] text-[#a47b36] [scrollbar-width:none] md:mb-6 md:flex-wrap md:overflow-visible md:pb-0 md:text-[0.78rem] md:tracking-[0.2em] [&::-webkit-scrollbar]:hidden"
           >
-            <Link
-              to="/"
-              className="hidden shrink-0 transition hover:text-[#c89b3c] md:inline"
-            >
+            <Link to="/" className="hidden shrink-0 transition hover:text-[#c89b3c] md:inline">
               {copy.breadcrumbs.home}
             </Link>
-
             <span className="hidden shrink-0 text-[#6f5423] md:inline">›</span>
-
-            <Link
-              to="/produits"
-              className="shrink-0 transition hover:text-[#c89b3c]"
-            >
+            <Link to="/produits" className="shrink-0 transition hover:text-[#c89b3c]">
               {copy.breadcrumbs.products}
             </Link>
-
             <span className="shrink-0 text-[#6f5423]">›</span>
-
-            <Link
-              to={collectionUrl}
-              className="shrink-0 transition hover:text-[#c89b3c]"
-            >
+            <Link to={collectionUrl} className="shrink-0 transition hover:text-[#c89b3c]">
               {collectionName}
             </Link>
-
             <span className="shrink-0 text-[#6f5423]">›</span>
-
             <span className="shrink-0 text-[#c89b3c]">{productName}</span>
           </nav>
 
           <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <div className="min-w-0">
               <ProductMediaGallery
-                key={activeColorKey || productSlug}
+                key={activeColorId || productSlug}
                 media={productMedia}
                 productName={productName}
               />
@@ -232,30 +190,16 @@ function KitProductContainer({
       </section>
 
       <section className="relative px-4 pt-10 pb-8 md:px-6">
-        <OrnamentDivider
-          className="mx-auto max-w-[88rem]"
-          width={288}
-          opacity={0.65}
-        />
+        <OrnamentDivider className="mx-auto max-w-[88rem]" width={288} opacity={0.65} />
       </section>
 
-      <ProductNarrativeBanner
-        collection={collection}
-        copy={copy.narrativeBanner}
-      />
+      <ProductNarrativeBanner collection={collection} copy={copy.narrativeBanner} />
 
       <section className="relative px-4 pt-8 pb-8 md:px-6">
-        <OrnamentDivider
-          className="mx-auto max-w-[88rem]"
-          width={288}
-          opacity={0.65}
-        />
+        <OrnamentDivider className="mx-auto max-w-[88rem]" width={288} opacity={0.65} />
       </section>
 
-      <CollectionsHeroCarousel
-        collections={relatedCollections}
-        copy={copy.relatedCollections}
-      />
+      <CollectionsHeroCarousel collections={relatedCollections} copy={copy.relatedCollections} />
     </main>
   );
 }

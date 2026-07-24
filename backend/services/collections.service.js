@@ -39,13 +39,16 @@ const PRODUCT_COLUMNS_WITH_IMAGE = `
   p.long_description_fr,
   p.long_description_en,
   p.price_cents,
-  COALESCE(pcp.price_delta_cents, 0) AS price_delta_cents,
-  p.price_cents + COALESCE(pcp.price_delta_cents, 0) AS final_price_cents,
+  COALESCE(pcv.price_delta_cents, 0) AS price_delta_cents,
+  p.price_cents + COALESCE(pcv.price_delta_cents, 0) AS final_price_cents,
   p.customizable,
   p.is_kit,
   p.featured,
   pi.url AS image_url,
-  pi.color_key
+  pi.color_id,
+  col.name_en AS color_name_en,
+  col.name_fr AS color_name_fr,
+  col.hex_code AS color_hex_code
 `;
 
 export async function fetchPublishedCollections() {
@@ -96,9 +99,11 @@ export async function fetchMainKitProductByCollectionId(collectionId) {
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
-    LEFT JOIN product_color_prices pcp
-      ON pcp.product_id = p.id
-      AND pcp.color_key = pi.color_key
+    LEFT JOIN colors col
+      ON col.id = pi.color_id
+    LEFT JOIN product_color_variants pcv
+      ON pcv.product_id = p.id
+      AND pcv.color_id = pi.color_id
     WHERE p.collection_id = $1
       AND p.is_kit = TRUE
     ORDER BY p.featured DESC, p.name_fr ASC
@@ -127,23 +132,28 @@ export async function fetchKitItemsByKitProductId(kitProductId) {
       included.long_description_fr,
       included.long_description_en,
       included.price_cents,
-      COALESCE(pcp.price_delta_cents, 0) AS price_delta_cents,
-      included.price_cents + COALESCE(pcp.price_delta_cents, 0) AS final_price_cents,
+      COALESCE(pcv.price_delta_cents, 0) AS price_delta_cents,
+      included.price_cents + COALESCE(pcv.price_delta_cents, 0) AS final_price_cents,
       included.customizable,
       included.is_kit,
       included.featured,
       ki.sort_order,
       pi.url AS image_url,
-      pi.color_key
+      pi.color_id,
+      col.name_en AS color_name_en,
+      col.name_fr AS color_name_fr,
+      col.hex_code AS color_hex_code
     FROM kit_items ki
     JOIN products included
       ON included.id = ki.included_product_id
     LEFT JOIN product_images pi
       ON pi.product_id = included.id
       AND pi.is_main = TRUE
-    LEFT JOIN product_color_prices pcp
-      ON pcp.product_id = included.id
-      AND pcp.color_key = pi.color_key
+    LEFT JOIN colors col
+      ON col.id = pi.color_id
+    LEFT JOIN product_color_variants pcv
+      ON pcv.product_id = included.id
+      AND pcv.color_id = pi.color_id
     WHERE ki.kit_product_id = $1
     ORDER BY ki.sort_order ASC, included.name_fr ASC;
     `,
@@ -162,9 +172,11 @@ export async function fetchProductsByCollectionId(collectionId) {
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
-    LEFT JOIN product_color_prices pcp
-      ON pcp.product_id = p.id
-      AND pcp.color_key = pi.color_key
+    LEFT JOIN colors col
+      ON col.id = pi.color_id
+    LEFT JOIN product_color_variants pcv
+      ON pcv.product_id = p.id
+      AND pcv.color_id = pi.color_id
     WHERE p.collection_id = $1
     ORDER BY p.featured DESC, p.name_fr ASC;
     `,

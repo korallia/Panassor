@@ -81,13 +81,22 @@ function KitProductContainer({
   });
 
   // Filtrage des images par le color_id de la BDD
-  const colorImages =
-    activeColorId && product.images?.length
-      ? product.images.filter((image) => image.color_id === activeColorId)
-      : [];
+ const colorImages =
+  activeColorId && product.images?.length
+    ? product.images.filter(
+        (image) => Number(image.color_id) === Number(activeColorId)
+      )
+    : [];
 
-  const visibleImages =
-    colorImages.length > 0 ? colorImages : product.images ?? [];
+  const commonImages =
+  product.images?.filter(
+    (image) => image.color_id === null || image.color_id === undefined
+  ) ?? [];
+
+const visibleImages =
+  activeColorId
+    ? [...colorImages, ...commonImages]
+    : product.images ?? [];
 
   const defaultProductImage =
     visibleImages.find((image) => image.is_main)?.url ??
@@ -133,11 +142,11 @@ function KitProductContainer({
 
   const customizableItems = kitItems.filter((item) => item.customizable);
 
-  const handleSelectColor = (index) => {
-    const selectedColor = availableColors[index];
-    if (!selectedColor) return;
-    setSelectedColorId(selectedColor.id);
-  };
+  const handleSelectColor = (selectedColor) => {
+  if (!selectedColor) return;
+
+  setSelectedColorId(selectedColor.id);
+};
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">

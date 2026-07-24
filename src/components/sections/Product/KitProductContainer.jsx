@@ -55,30 +55,74 @@ function KitProductContainer({
   const productName = t(product, "name", language);
   const collectionName = t(collection, "name", language);
   const collectionTitle = t(collection, "title", language);
+
   const collectionUrl = getCollectionUrl(
     collection,
     language
   );
 
-  const availableColors = useMemo(() => {
-    return Array.isArray(product.colors)
-      ? product.colors
+  /*
+   * Trouve la couleur associée à l’image principale.
+   * Cette couleur servira de couleur par défaut.
+   */
+  const mainImageColorId = useMemo(() => {
+    const images = Array.isArray(product.images)
+      ? product.images
       : [];
-  }, [product.colors]);
-
-  const defaultColorId = useMemo(() => {
-    const images = product.images ?? [];
 
     const mainImage =
       images.find((image) => image.is_main) ??
       images[0];
 
-    return (
-      mainImage?.color_id ??
-      availableColors[0]?.id ??
-      null
+    return mainImage?.color_id ?? null;
+  }, [product.images]);
+
+  /*
+   * Réordonne les couleurs afin que la couleur de
+   * l’image principale apparaisse en premier.
+   *
+   * Exemple :
+   * [brun, noir] devient [noir, brun]
+   * si l’image principale est noire.
+   */
+  const availableColors = useMemo(() => {
+    const colors = Array.isArray(product.colors)
+      ? product.colors
+      : [];
+
+    if (mainImageColorId == null) {
+      return colors;
+    }
+
+    const mainColor = colors.find(
+      (color) =>
+        String(color.id) ===
+        String(mainImageColorId)
     );
-  }, [product.images, availableColors]);
+
+    if (!mainColor) {
+      return colors;
+    }
+
+    const remainingColors = colors.filter(
+      (color) =>
+        String(color.id) !==
+        String(mainImageColorId)
+    );
+
+    return [
+      mainColor,
+      ...remainingColors,
+    ];
+  }, [product.colors, mainImageColorId]);
+
+  /*
+   * Puisque la couleur principale vient maintenant
+   * en premier, elle devient naturellement la couleur
+   * sélectionnée au chargement.
+   */
+  const defaultColorId =
+    availableColors[0]?.id ?? null;
 
   const [selectedColorId, setSelectedColorId] =
     useState(defaultColorId);
@@ -92,7 +136,8 @@ function KitProductContainer({
 
   const matchingColorIndex = availableColors.findIndex(
     (color) =>
-      String(color.id) === String(activeColorId)
+      String(color.id) ===
+      String(activeColorId)
   );
 
   const selectedColorIndex =
@@ -100,6 +145,10 @@ function KitProductContainer({
       ? matchingColorIndex
       : 0;
 
+  /*
+   * Transforme les couleurs reçues de l’API dans
+   * le format attendu par les composants visuels.
+   */
   const leatherColors = availableColors.map((color) => {
     const priceDeltaCents = Number(
       color.price_delta_cents || 0
@@ -128,8 +177,14 @@ function KitProductContainer({
     };
   });
 
-  const productImages = product.images ?? [];
+  const productImages = Array.isArray(product.images)
+    ? product.images
+    : [];
 
+  /*
+   * Garde uniquement les images associées
+   * à la couleur actuellement sélectionnée.
+   */
   const colorImages =
     activeColorId != null
       ? productImages.filter(
@@ -139,6 +194,10 @@ function KitProductContainer({
         )
       : [];
 
+  /*
+   * Si aucune image spécifique n’existe pour cette
+   * couleur, on revient à toutes les images du produit.
+   */
   const visibleImages =
     colorImages.length > 0
       ? colorImages
@@ -199,6 +258,10 @@ function KitProductContainer({
       : []),
   ].filter((item) => item.src);
 
+  /*
+   * Supporte le nouveau nom kit_components tout en
+   * conservant temporairement kit_items en fallback.
+   */
   const kitItems =
     product.kit_components?.length > 0
       ? product.kit_components

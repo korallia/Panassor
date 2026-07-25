@@ -1,24 +1,33 @@
-// services/square.catalog.service.js
 import { randomUUID } from "crypto";
-import { squareFetch } from "./square.service.js";
-import { db } from "../config/db.js"; // adapte selon ton import de db
+import { squareFetch, assertSquareConfig, getSquareBaseUrl, upsertCatalogObject } from "./square.service.js";
+import { env } from "../config/env.js";
+import db from "../db/pool.js";
+import { syncKitComponentModifierLists, getModifierListIdsForKit } from "./square.kitModifiers.service.js";
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 export async function syncProductToSquare(productId) {
-     assertSquareConfig();
-  // 1. Charger le produit et ses variations de couleur
   const productResult = await db.query(
-    `SELECT p.*, 
+    `SELECT p.*,
             array_agg(
               json_build_object(
                 'id', pcv.id,
                 'color_id', pcv.color_id,
+                'color_name', c.name_fr,
                 'price_delta_cents', pcv.price_delta_cents,
                 'square_variation_id', pcv.square_variation_id,
-                'square_variation_version', pcv.square_variation_version
+                'square_variation_version', pcv.square_variation_version,
+                'square_image_id', pcv.square_image_id
               )
             ) FILTER (WHERE pcv.id IS NOT NULL) as variants
      FROM products p
      LEFT JOIN product_color_variants pcv ON pcv.product_id = p.id
+     LEFT JOIN colors c ON c.id = pcv.color_id
      WHERE p.id = $1
      GROUP BY p.id`,
     [productId]
@@ -27,26 +36,31 @@ export async function syncProductToSquare(productId) {
   const product = productResult.rows[0];
   if (!product) throw new Error(`Product ${productId} not found`);
 
-  // 2. Construire les variations Square (une par couleur)
+  const imagesResult = await db.query(
+    `SELECT url, color_id, is_main FROM product_images WHERE product_id = $1 ORDER BY sort_order ASC`,
+    [productId]
+  );
+  const images = imagesResult.rows;
+  const mainImage = images.find((i) => i.is_main) || images.find((i) => i.color_id === null) || null;
+
+  const modifierListIds = await getModifierListIdsForKit(product.id);
+
   const variations = (product.variants || []).map((variant) => ({
     type: "ITEM_VARIATION",
-    // Si déjà dans Square, on passe le vrai ID — sinon un ID temporaire
     id: variant.square_variation_id || `#variation_${variant.id}`,
-    ...(variant.square_variation_version && {
-      version: variant.square_variation_version,
-    }),
+    ...(variant.square_variation_version && { version: Number(variant.square_variation_version) }),
     item_variation_data: {
-      name: `Couleur ${variant.color_id}`, // tu voudras peut-être joindre la table colors pour le vrai nom
+      name: variant.color_name || `Couleur ${variant.color_id}`,
       pricing_type: "FIXED_PRICING",
       price_money: {
-        amount: product.price_cents + variant.price_delta_cents,
+        amount: Number(product.price_cents) + Number(variant.price_delta_cents || 0),
         currency: "CAD",
       },
       track_inventory: true,
+      ...(variant.square_image_id && { image_ids: [variant.square_image_id] }),
     },
   }));
 
-  // Fallback si aucune variante de couleur — variation par défaut
   if (variations.length === 0) {
     variations.push({
       type: "ITEM_VARIATION",
@@ -54,79 +68,162 @@ export async function syncProductToSquare(productId) {
       item_variation_data: {
         name: "Par défaut",
         pricing_type: "FIXED_PRICING",
-        price_money: {
-          amount: product.price_cents,
-          currency: "CAD",
-        },
+        price_money: { amount: Number(product.price_cents), currency: "CAD" },
         track_inventory: true,
       },
     });
   }
 
-  // 3. Construire l'objet Square
   const squareObject = {
     type: "ITEM",
     id: product.square_item_id || `#item_${product.id}`,
-    ...(product.square_item_version && {
-      version: product.square_item_version,
-    }),
+    ...(product.square_item_version && { version: Number(product.square_item_version) }),
     item_data: {
       name: product.name_fr,
-      description: product.description_fr || undefined,
+      description_html: product.description_fr ? `<p>${escapeHtml(product.description_fr)}</p>` : undefined,
       variations,
+      ...(product.square_image_id && { image_ids: [product.square_image_id] }),
+      ...(modifierListIds.length > 0 && {
+        modifier_list_info: modifierListIds.map((id) => ({
+          modifier_list_id: id,
+          min_selected_modifiers: 1,
+          max_selected_modifiers: 1,
+          enabled: true,
+        })),
+      }),
     },
   };
 
-  // 4. Appel Square
-  const data = await squareFetch("/v2/catalog/object", {
-    method: "POST",
-    body: JSON.stringify({
-      idempotency_key: randomUUID(),
-      object: squareObject,
-    }),
-  });
+  const data = await upsertCatalogObject(squareObject);
 
   const saved = data.catalog_object;
-  const idMappings = data.id_mappings || []; // Square retourne les vrais IDs pour les #temp_ids
+  const idMappings = data.id_mappings || [];
 
-  // 5. Sauvegarder l'ID de l'item Square sur le produit
   await db.query(
-    `UPDATE products 
-     SET square_item_id = $1, square_item_version = $2 
-     WHERE id = $3`,
+    `UPDATE products SET square_item_id = $1, square_item_version = $2 WHERE id = $3`,
     [saved.id, saved.version, product.id]
   );
 
-  // 6. Sauvegarder les IDs de variations
-  // Square retourne id_mappings: [{ client_object_id: "#variation_5", object_id: "REAL_ID" }]
+  const variantRealIds = new Map();
+
   for (const mapping of idMappings) {
-    // Extraire l'ID local du temp ID (#variation_5 → 5)
     const match = mapping.client_object_id?.match(/^#variation_(\d+)$/);
     if (!match) continue;
-
     const localVariantId = parseInt(match[1]);
-
-    // Trouver le vrai ID de variation dans l'objet retourné
-    const savedVariation = saved.item_data?.variations?.find(
-      (v) => v.id === mapping.object_id
-    );
-
+    const savedVariation = saved.item_data?.variations?.find((v) => v.id === mapping.object_id);
+    variantRealIds.set(localVariantId, mapping.object_id);
     await db.query(
-      `UPDATE product_color_variants 
-       SET square_variation_id = $1, square_variation_version = $2 
-       WHERE id = $3`,
+      `UPDATE product_color_variants SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
       [mapping.object_id, savedVariation?.version || null, localVariantId]
     );
+  }
+  for (const variant of product.variants || []) {
+    if (variant.square_variation_id && !variantRealIds.has(variant.id)) {
+      variantRealIds.set(variant.id, variant.square_variation_id);
+    }
+  }
+
+  if (mainImage && !product.square_image_id) {
+    console.log(`>>> Upload image principale: produit ${product.id}, url=${mainImage.url}`);
+    try {
+      const imageId = await uploadImageToSquare(saved.id, mainImage.url, product.name_fr);
+      console.log(`>>> OK image principale produit ${product.id}: ${imageId}`);
+      await db.query(`UPDATE products SET square_image_id = $1 WHERE id = $2`, [imageId, product.id]);
+    } catch (err) {
+      console.error(`>>> ÉCHEC image principale produit ${product.id}:`, err.message);
+    }
+  } else {
+    console.log(
+      `>>> SKIP image principale produit ${product.id} (mainImage=${!!mainImage}, square_image_id=${product.square_image_id})`
+    );
+  }
+
+  for (const variant of product.variants || []) {
+    if (variant.square_image_id) {
+      console.log(`>>> SKIP image variante ${variant.id} (déjà square_image_id=${variant.square_image_id})`);
+      continue;
+    }
+    const variantImage = images.find((i) => i.color_id === variant.color_id);
+    if (!variantImage) {
+      console.log(`>>> SKIP image variante ${variant.id} (aucune image pour color_id=${variant.color_id})`);
+      continue;
+    }
+    const realSquareVariationId = variantRealIds.get(variant.id);
+    if (!realSquareVariationId) {
+      console.log(`>>> SKIP image variante ${variant.id} (pas de square_variation_id résolu)`);
+      continue;
+    }
+    console.log(`>>> Upload image variante ${variant.id}, url=${variantImage.url}`);
+    try {
+      const imageId = await uploadImageToSquare(
+        realSquareVariationId,
+        variantImage.url,
+        variant.color_name || `${product.name_fr} - couleur ${variant.color_id}`
+      );
+      console.log(`>>> OK image variante ${variant.id}: ${imageId}`);
+      await db.query(`UPDATE product_color_variants SET square_image_id = $1 WHERE id = $2`, [
+        imageId,
+        variant.id,
+      ]);
+    } catch (err) {
+      console.error(`>>> ÉCHEC image variante ${variant.id}:`, err.message);
+    }
   }
 
   return saved;
 }
 
+function resolveImageUrl(path) {
+  if (/^https?:\/\//i.test(path)) return path;
+  const base = (process.env.ASSETS_BASE_URL || "").replace(/\/$/, "");
+  return `${base}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
+async function uploadImageToSquare(objectId, imageUrl, name) {
+  const fullUrl = resolveImageUrl(imageUrl);
+  const imageResponse = await fetch(fullUrl);
+  if (!imageResponse.ok) {
+    throw new Error(`Téléchargement image échoué (${fullUrl}): ${imageResponse.status}`);
+  }
+  const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+  const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+
+  const form = new FormData();
+  form.append(
+    "request",
+    JSON.stringify({
+      idempotency_key: randomUUID(),
+      object_id: objectId,
+      image: { type: "IMAGE", id: "#image", image_data: { name } },
+    })
+  );
+  form.append("image_file", new Blob([imageBuffer], { type: contentType }), "image.jpg");
+
+  const response = await fetch(`${getSquareBaseUrl()}/v2/catalog/images`, {
+    method: "POST",
+    headers: {
+      "Square-Version": "2026-06-18",
+      Authorization: `Bearer ${env.square.accessToken}`,
+    },
+    body: form,
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.errors?.[0]?.detail || `Upload image Square échoué: ${response.status}`);
+  }
+
+  return data.image.id;
+}
+
 export async function syncAllProductsToSquare() {
+  assertSquareConfig();
+  await syncKitComponentModifierLists();
   const result = await db.query(`SELECT id FROM products ORDER BY id`);
   const results = [];
 
   for (const row of result.rows) {
+    console.log(`\n=== Sync produit ${row.id} ===`);
     try {
       const saved = await syncProductToSquare(row.id);
       results.push({ productId: row.id, squareItemId: saved.id, ok: true });

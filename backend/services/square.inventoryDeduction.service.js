@@ -98,7 +98,7 @@ export async function deductKitComponentInventory(squareOrder) {
 
   if (changes.length === 0) return { adjusted: 0 };
 
-  await squareFetch("/v2/inventory/changes", {
+    await squareFetch("/v2/inventory/changes/batch-create", {
     method: "POST",
     body: JSON.stringify({
       idempotency_key: `kit-inventory-${squareOrder.id}`,

@@ -70,6 +70,7 @@ export async function deductKitComponentInventory(squareOrder) {
       );
       const toolProductId = modifierMatch.rows[0]?.tool_product_id;
       if (!toolProductId) continue;
+        console.log(`>>> Modifier résolu: catalog_object_id=${modifier.catalog_object_id} -> tool_product_id=${toolProductId}`);
       deductions.set(toolProductId, (deductions.get(toolProductId) || 0) + lineQuantity);
     }
   }

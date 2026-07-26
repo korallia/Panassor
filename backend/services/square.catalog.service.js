@@ -66,7 +66,6 @@ export async function syncProductToSquare(productId) {
       type: "ITEM_VARIATION",
       id: `#variation_default_${product.id}`,
       item_variation_data: {
-        name: "Par défaut",
         pricing_type: "FIXED_PRICING",
         price_money: { amount: Number(product.price_cents), currency: "CAD" },
         track_inventory: true,

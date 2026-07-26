@@ -1,6 +1,6 @@
-import { randomUUID } from "crypto";
 import { squareFetch, assertSquareConfig, getSquareBaseUrl, upsertCatalogObject } from "./square.service.js";
 import { env } from "../config/env.js";
+import { randomUUID } from "crypto";
 import db from "../db/pool.js";
 import { syncKitComponentModifierLists, getModifierListIdsForKit } from "./square.kitModifiers.service.js";
 
@@ -103,6 +103,14 @@ export async function syncProductToSquare(productId) {
     `UPDATE products SET square_item_id = $1, square_item_version = $2 WHERE id = $3`,
     [saved.id, saved.version, product.id]
   );
+
+  // Produits sans variante de couleur : sauvegarder l'id de la variation "Par défaut"
+  if ((product.variants || []).length === 0 && saved.item_data?.variations?.[0]?.id) {
+    await db.query(`UPDATE products SET square_default_variation_id = $1 WHERE id = $2`, [
+      saved.item_data.variations[0].id,
+      product.id,
+    ]);
+  }
 
   const variantRealIds = new Map();
 

@@ -464,6 +464,7 @@ export async function fetchKitItemsForProduct(productId) {
   const result = await pool.query(
     `
     SELECT
+     ki.id AS kit_component_id,
       included.id,
       included.slug_fr,
       included.slug_en,

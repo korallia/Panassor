@@ -64,7 +64,7 @@ export async function createCheckout(req, res) {
       thankYouToken,
     });
 
-    const lineItems = buildSquareLineItems(normalizedItems);
+    const lineItems = await buildSquareLineItems(normalizedItems);
 
     const { squareBody, paymentLink } = await createSquarePaymentLink({
       normalizedLanguage,

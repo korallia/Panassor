@@ -8,6 +8,7 @@ import {
 } from "../services/orders.service.js";
 import { extractSquareShipmentRecipient } from "../services/shipping.service.js";
 import { ensureShipmentForOrderId } from "../services/shipments.service.js";
+import { deductKitComponentInventory } from "../services/square.inventoryDeduction.service.js";
 
 export async function handleSquareWebhook(req, res) {
   try {
@@ -48,6 +49,13 @@ export async function handleSquareWebhook(req, res) {
 
     try {
       const squareOrder = await getSquareOrder(payment.order_id);
+       if (payment.status === "COMPLETED") {
+        try {
+          await deductKitComponentInventory(squareOrder);
+        } catch (inventoryError) {
+          console.warn("Failed to deduct kit component inventory:", inventoryError);
+        }
+      }
 
       snapshotOrder = await updateLocalOrderSquareOrderSnapshot(squareOrder);
 

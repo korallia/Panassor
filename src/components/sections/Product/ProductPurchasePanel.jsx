@@ -126,10 +126,12 @@ function ProductPurchasePanel({
     setActiveItemIndex(null);
   };
 
-  const selectTool = (tool) => {
+ const selectTool = (tool) => {
     setSelectedItems((currentItems) =>
       currentItems.map((item, index) =>
-        index === activeItemIndex ? tool : item
+        index === activeItemIndex
+          ? { ...tool, kit_component_id: item.kit_component_id }
+          : item
       )
     );
 
@@ -144,8 +146,6 @@ function ProductPurchasePanel({
       productSlug,
       quantity: 1,
 
-      // On garde colorKey pour la compatibilité avec le panier,
-      // mais sa valeur correspond maintenant à colors.id.
       colorKey:
         selectedColor?.id != null
           ? String(selectedColor.id)
@@ -164,6 +164,7 @@ function ProductPurchasePanel({
         "",
 
       selectedItems: selectedItems.map((item) => ({
+        kitComponentId: item.kit_component_id,
         productId: item.id,
         productSlug_fr: getProductSlug(item, "fr"),
         productSlug_en: getProductSlug(item, "en"),

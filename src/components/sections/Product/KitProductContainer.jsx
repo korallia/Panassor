@@ -8,7 +8,6 @@ import {
   t,
 } from "../../../utils/localization";
 import { getAssetUrl } from "../../../utils/assets";
-import { productColorContent } from "../../../content/productColorContent";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductMediaGallery from "./ProductMediaGallery";
@@ -17,32 +16,30 @@ import ProductNarrativeBanner from "./ProductNarrativeBanner";
 import CollectionsHeroCarousel from "../HomePage/CollectionsHeroCarousel";
 
 function isUsableVideoUrl(value) {
-  if (!value) return false;
+  if (!value) {
+    return false;
+  }
 
   const url = String(value).trim();
 
-  if (!url) return false;
+  if (!url) {
+    return false;
+  }
 
-  const invalidValues = ["null", "undefined", "false", "none"];
+  const invalidValues = [
+    "null",
+    "undefined",
+    "false",
+    "none",
+  ];
 
   if (invalidValues.includes(url.toLowerCase())) {
     return false;
   }
 
-  return url.startsWith("http") || url.startsWith("/videos/");
-}
-
-function getPriceDeltaForColor(product, colorKey) {
-  if (!product || !colorKey) {
-    return 0;
-  }
-
-  const matchingImage = product.images?.find(
-    (image) => image.color_key === colorKey
-  );
-
-  return Number(
-    matchingImage?.price_delta_cents ?? matchingImage?.priceDeltaCents ?? 0
+  return (
+    url.startsWith("http") ||
+    url.startsWith("/videos/")
   );
 }
 
@@ -58,67 +55,168 @@ function KitProductContainer({
   const productName = t(product, "name", language);
   const collectionName = t(collection, "name", language);
   const collectionTitle = t(collection, "title", language);
-  const collectionUrl = getCollectionUrl(collection, language);
 
-  const colorConfig = productColorContent[product.slug_fr];
-
-  const availableColors = useMemo(() => {
-    return colorConfig?.colors ?? [];
-  }, [colorConfig]);
-
-  const defaultColorKey =
-    colorConfig?.defaultColorKey ||
-    product.images?.find((image) => image.is_main)?.color_key ||
-    product.images?.[0]?.color_key ||
-    null;
-
-  const [selectedColorKey, setSelectedColorKey] = useState(defaultColorKey);
-
-  useEffect(() => {
-    setSelectedColorKey(defaultColorKey);
-  }, [productSlug, defaultColorKey]);
-
-  const activeColorKey = selectedColorKey || defaultColorKey;
-
-  const selectedColorIndex = Math.max(
-    availableColors.findIndex((color) => color.key === activeColorKey),
-    0
+  const collectionUrl = getCollectionUrl(
+    collection,
+    language
   );
 
+  /*
+   * Trouve la couleur associée à l’image principale.
+   * Cette couleur servira de couleur par défaut.
+   */
+  const mainImageColorId = useMemo(() => {
+    const images = Array.isArray(product.images)
+      ? product.images
+      : [];
+
+    const mainImage =
+      images.find((image) => image.is_main) ??
+      images[0];
+
+    return mainImage?.color_id ?? null;
+  }, [product.images]);
+
+  /*
+   * Réordonne les couleurs afin que la couleur de
+   * l’image principale apparaisse en premier.
+   *
+   * Exemple :
+   * [brun, noir] devient [noir, brun]
+   * si l’image principale est noire.
+   */
+  const availableColors = useMemo(() => {
+    const colors = Array.isArray(product.colors)
+      ? product.colors
+      : [];
+
+    if (mainImageColorId == null) {
+      return colors;
+    }
+
+    const mainColor = colors.find(
+      (color) =>
+        String(color.id) ===
+        String(mainImageColorId)
+    );
+
+    if (!mainColor) {
+      return colors;
+    }
+
+    const remainingColors = colors.filter(
+      (color) =>
+        String(color.id) !==
+        String(mainImageColorId)
+    );
+
+    return [
+      mainColor,
+      ...remainingColors,
+    ];
+  }, [product.colors, mainImageColorId]);
+
+  /*
+   * Puisque la couleur principale vient maintenant
+   * en premier, elle devient naturellement la couleur
+   * sélectionnée au chargement.
+   */
+  const defaultColorId =
+    availableColors[0]?.id ?? null;
+
+  const [selectedColorId, setSelectedColorId] =
+    useState(defaultColorId);
+
+  useEffect(() => {
+    setSelectedColorId(defaultColorId);
+  }, [productSlug, defaultColorId]);
+
+  const activeColorId =
+    selectedColorId ?? defaultColorId;
+
+  const matchingColorIndex = availableColors.findIndex(
+    (color) =>
+      String(color.id) ===
+      String(activeColorId)
+  );
+
+  const selectedColorIndex =
+    matchingColorIndex >= 0
+      ? matchingColorIndex
+      : 0;
+
+  /*
+   * Transforme les couleurs reçues de l’API dans
+   * le format attendu par les composants visuels.
+   */
   const leatherColors = availableColors.map((color) => {
-    const priceDeltaCents = getPriceDeltaForColor(product, color.key);
-    const basePriceCents = Number(product.price_cents || 0);
-    const finalPriceCents = basePriceCents + priceDeltaCents;
+    const priceDeltaCents = Number(
+      color.price_delta_cents || 0
+    );
+
+    const basePriceCents = Number(
+      product.price_cents || 0
+    );
 
     return {
-      name: color[language] || color.fr || color.key,
-      name_fr: color.fr || color.key,
-      name_en: color.en || color.fr || color.key,
-      value: color.value,
-      key: color.key,
+      id: color.id,
+
+      name:
+        language === "en"
+          ? color.name_en
+          : color.name_fr,
+
+      name_fr: color.name_fr,
+      name_en: color.name_en,
+      value: color.hex_code,
+
       priceDeltaCents,
-      finalPriceCents,
+
+      finalPriceCents:
+        basePriceCents + priceDeltaCents,
     };
   });
 
+  const productImages = Array.isArray(product.images)
+    ? product.images
+    : [];
+
+  /*
+   * Garde uniquement les images associées
+   * à la couleur actuellement sélectionnée.
+   */
   const colorImages =
-    activeColorKey && product.images?.length
-      ? product.images.filter((image) => image.color_key === activeColorKey)
+    activeColorId != null
+      ? productImages.filter(
+          (image) =>
+            String(image.color_id) ===
+            String(activeColorId)
+        )
       : [];
 
+  /*
+   * Si aucune image spécifique n’existe pour cette
+   * couleur, on revient à toutes les images du produit.
+   */
   const visibleImages =
-    colorImages.length > 0 ? colorImages : product.images ?? [];
+    colorImages.length > 0
+      ? colorImages
+      : productImages;
 
   const defaultProductImage =
-    visibleImages.find((image) => image.is_main)?.url ??
+    visibleImages.find((image) => image.is_main)
+      ?.url ??
     visibleImages[0]?.url ??
     product.image_url;
 
-  const collectionVideoUrl = isUsableVideoUrl(collection.video_url)
+  const collectionVideoUrl = isUsableVideoUrl(
+    collection.video_url
+  )
     ? collection.video_url.trim()
     : "";
 
-  const collectionVideoPoster = collection.video_poster_url?.trim() || "";
+  const collectionVideoPoster =
+    collection.video_poster_url?.trim() || "";
 
   const productMedia = [
     {
@@ -126,34 +224,56 @@ function KitProductContainer({
       src: getAssetUrl(defaultProductImage),
       alt: productName,
     },
+
     ...visibleImages
-      .filter((image) => image.url !== defaultProductImage)
+      .filter(
+        (image) =>
+          image.url !== defaultProductImage
+      )
       .map((image) => ({
         type: "image",
         src: getAssetUrl(image.url),
-        alt: t(image, "alt", language) || productName,
+        alt:
+          t(image, "alt", language) ||
+          productName,
       })),
+
     ...(collectionVideoUrl
       ? [
           {
             type: "video",
             src: getAssetUrl(collectionVideoUrl),
-            poster: getAssetUrl(collectionVideoPoster),
+            poster: getAssetUrl(
+              collectionVideoPoster
+            ),
             alt:
               copy.media?.productVideo ||
-              (language === "en" ? "Product video" : "Vidéo du produit"),
-            title: collectionTitle || productName,
+              (language === "en"
+                ? "Product video"
+                : "Vidéo du produit"),
+            title:
+              collectionTitle || productName,
           },
         ]
       : []),
   ].filter((item) => item.src);
 
+  /*
+   * Supporte le nouveau nom kit_components tout en
+   * conservant temporairement kit_items en fallback.
+   */
   const kitItems =
-    product.kit_items?.length > 0
-      ? product.kit_items
-      : (collection.products ?? []).filter((item) => !item.is_kit);
+    product.kit_components?.length > 0
+      ? product.kit_components
+      : product.kit_items?.length > 0
+        ? product.kit_items
+        : (collection.products ?? []).filter(
+            (item) => !item.is_kit
+          );
 
-  const customizableItems = kitItems.filter((item) => item.customizable);
+  const customizableItems = kitItems.filter(
+    (item) => item.customizable
+  );
 
   const handleSelectColor = (index) => {
     const selectedColor = availableColors[index];
@@ -162,13 +282,14 @@ function KitProductContainer({
       return;
     }
 
-    setSelectedColorKey(selectedColor.key);
+    setSelectedColorId(selectedColor.id);
   };
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#080504] text-[#f3e7cf]">
       <section className="relative px-4 pt-9 pb-8 md:px-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(200,155,60,0.13),transparent_30%),radial-gradient(circle_at_18%_72%,rgba(6,40,24,0.34),transparent_34%),radial-gradient(circle_at_86%_68%,rgba(88,43,18,0.24),transparent_32%)]" />
+
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(18,12,7,0.84),rgba(8,5,4,0.96)_32%,#080504)]" />
 
         <div className="relative mx-auto max-w-[88rem]">
@@ -183,7 +304,9 @@ function KitProductContainer({
               {copy.breadcrumbs.home}
             </Link>
 
-            <span className="hidden shrink-0 text-[#6f5423] md:inline">›</span>
+            <span className="hidden shrink-0 text-[#6f5423] md:inline">
+              ›
+            </span>
 
             <Link
               to="/produits"
@@ -192,7 +315,9 @@ function KitProductContainer({
               {copy.breadcrumbs.products}
             </Link>
 
-            <span className="shrink-0 text-[#6f5423]">›</span>
+            <span className="shrink-0 text-[#6f5423]">
+              ›
+            </span>
 
             <Link
               to={collectionUrl}
@@ -201,15 +326,22 @@ function KitProductContainer({
               {collectionName}
             </Link>
 
-            <span className="shrink-0 text-[#6f5423]">›</span>
+            <span className="shrink-0 text-[#6f5423]">
+              ›
+            </span>
 
-            <span className="shrink-0 text-[#c89b3c]">{productName}</span>
+            <span className="shrink-0 text-[#c89b3c]">
+              {productName}
+            </span>
           </nav>
 
           <div className="grid min-w-0 gap-8 lg:grid-cols-[1.42fr_0.72fr] lg:items-stretch">
             <div className="min-w-0">
               <ProductMediaGallery
-                key={activeColorKey || productSlug}
+                key={
+                  activeColorId ??
+                  productSlug
+                }
                 media={productMedia}
                 productName={productName}
               />
@@ -219,11 +351,19 @@ function KitProductContainer({
               <ProductPurchasePanel
                 product={product}
                 collection={collection}
-                productImageUrl={getAssetUrl(defaultProductImage)}
+                productImageUrl={getAssetUrl(
+                  defaultProductImage
+                )}
                 leatherColors={leatherColors}
-                customizableItems={customizableItems}
-                selectedColorIndex={selectedColorIndex}
-                onSelectColor={handleSelectColor}
+                customizableItems={
+                  customizableItems
+                }
+                selectedColorIndex={
+                  selectedColorIndex
+                }
+                onSelectColor={
+                  handleSelectColor
+                }
                 copy={copy.purchasePanel}
               />
             </div>

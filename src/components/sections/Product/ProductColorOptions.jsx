@@ -10,13 +10,13 @@ function ProductColorOptions({
   }
 
   return (
-    <div className="mt-5 flex gap-4">
+    <div className="mt-5 flex flex-wrap gap-4">
       {colors.map((color, index) => (
         <ProductColorSwatch
-          key={color.name}
+          key={color.id ?? color.name ?? index}
           color={color}
           isSelected={index === selectedIndex}
-          onClick={() => onSelectColor?.(color, index)}
+          onClick={() => onSelectColor?.(index)}
         />
       ))}
     </div>

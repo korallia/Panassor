@@ -1,4 +1,5 @@
 import { getLocalizedValue, normalizeLanguage } from "../utils/language.js";
+import db from "../db/pool.js";
 
 export function getCartItemName(item, language = "fr") {
   return (
@@ -74,6 +75,7 @@ export function normalizeSelectedItems(selectedItems = [], language = "fr") {
 
       return {
         productId: selectedItem?.productId || null,
+        kitComponentId: selectedItem?.kitComponentId || null,
         productSlug:
           selectedItem?.productSlug ||
           selectedItem?.[`productSlug_${normalizedLanguage}`] ||
@@ -161,7 +163,7 @@ export function validateCheckoutItems(items) {
 
   for (const item of items) {
     if (!item.name) {
-      throw new Error("Un produit du panier n’a pas de nom.");
+      throw new Error("Un produit du panier n'a pas de nom.");
     }
 
     if (!Number.isFinite(item.quantity) || item.quantity < 1) {
@@ -174,46 +176,111 @@ export function validateCheckoutItems(items) {
   }
 }
 
-export function buildSquareModifiers(item) {
+async function resolveVariationCatalogId(item) {
+  if (!item.productId) return null;
+
+  const colorId = item.colorKey != null ? Number(item.colorKey) : null;
+
+  if (colorId != null && Number.isFinite(colorId)) {
+    const result = await db.query(
+      `SELECT square_variation_id FROM product_color_variants WHERE product_id = $1 AND color_id = $2`,
+      [item.productId, colorId]
+    );
+    if (result.rows[0]?.square_variation_id) {
+      return result.rows[0].square_variation_id;
+    }
+  }
+
+  const productResult = await db.query(
+    `SELECT square_default_variation_id FROM products WHERE id = $1`,
+    [item.productId]
+  );
+  return productResult.rows[0]?.square_default_variation_id || null;
+}
+
+async function resolveModifierCatalogId(selectedItem) {
+  if (!selectedItem.kitComponentId || !selectedItem.productId) return null;
+
+  const result = await db.query(
+    `SELECT square_modifier_id FROM kit_component_modifiers WHERE kit_component_id = $1 AND tool_product_id = $2`,
+    [selectedItem.kitComponentId, selectedItem.productId]
+  );
+  return result.rows[0]?.square_modifier_id || null;
+}
+
+export async function buildSquareModifiers(item) {
   if (!Array.isArray(item.selectedItems) || item.selectedItems.length === 0) {
     return [];
   }
 
-  return item.selectedItems.map((selectedItem) => ({
-    name: selectedItem.name,
-    quantity: "1",
-    base_price_money: {
-      amount: 0,
-      currency: "CAD",
-    },
-  }));
+  const modifiers = [];
+
+  for (const selectedItem of item.selectedItems) {
+    const catalogId = await resolveModifierCatalogId(selectedItem);
+
+    if (catalogId) {
+      modifiers.push({ catalog_object_id: catalogId, quantity: "1" });
+    } else {
+      console.warn(
+        `>>> Pas de mapping trouvé pour selectedItem (kitComponentId=${selectedItem.kitComponentId}, productId=${selectedItem.productId}), fallback ad hoc`
+      );
+      modifiers.push({
+        name: selectedItem.name,
+        quantity: "1",
+        base_price_money: { amount: 0, currency: "CAD" },
+      });
+    }
+  }
+
+  return modifiers;
 }
 
-export function buildSquareLineItems(items) {
-  return items.map((item) => {
-    const lineItem = {
-      name: item.name,
-      quantity: String(item.quantity),
-      base_price_money: {
-        amount: item.unitPriceCents,
-        currency: "CAD",
-      },
-    };
+export async function buildSquareLineItems(items) {
+  const lineItems = [];
 
-    if (item.colorName) {
-      lineItem.variation_name = item.colorName;
+  for (const item of items) {
+    const catalogObjectId = await resolveVariationCatalogId(item);
+    const modifiers = await buildSquareModifiers(item);
+
+    if (catalogObjectId) {
+      const lineItem = {
+        quantity: String(item.quantity),
+        catalog_object_id: catalogObjectId,
+      };
+
+      if (modifiers.length > 0) {
+        lineItem.modifiers = modifiers;
+      }
+
+      if (item.note) {
+        lineItem.note = item.note;
+      }
+
+      lineItems.push(lineItem);
+    } else {
+      console.warn(`>>> Pas de catalog_object_id trouvé pour productId=${item.productId}, fallback ad hoc`);
+
+      const lineItem = {
+        name: item.name,
+        quantity: String(item.quantity),
+        base_price_money: { amount: item.unitPriceCents, currency: "CAD" },
+      };
+
+      if (item.colorName) {
+        lineItem.variation_name = item.colorName;
+      }
+
+      if (modifiers.length > 0) {
+        lineItem.modifiers = modifiers;
+      }
+
+      if (item.note) {
+        lineItem.note = item.note;
+      }
+
+      lineItems.push(lineItem);
     }
+  }
 
-    const modifiers = buildSquareModifiers(item);
-
-    if (modifiers.length > 0) {
-      lineItem.modifiers = modifiers;
-    }
-
-    if (item.note) {
-      lineItem.note = item.note;
-    }
-
-    return lineItem;
-  });
+  return lineItems;
 }

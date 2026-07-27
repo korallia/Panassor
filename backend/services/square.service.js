@@ -66,6 +66,57 @@ export async function squareFetch(path, options = {}) {
   return data;
 }
 
+export async function upsertCatalogObject(object) {
+  try {
+    return await squareFetch("/v2/catalog/object", {
+      method: "POST",
+      body: JSON.stringify({ idempotency_key: randomUUID(), object }),
+    });
+  } catch (err) {
+    const errorText = err.message || "";
+    console.log(">>> CATCH upsertCatalogObject:", errorText);
+
+    const isVersionMismatch = errorText.includes("VERSION_MISMATCH");
+    const match = errorText.match(/object_id=(\w+)/);
+    const conflictingId = match?.[1];
+
+    console.log(`>>> isVersionMismatch=${isVersionMismatch}, conflictingId=${conflictingId}`);
+
+    if (!isVersionMismatch || !conflictingId) {
+      throw err;
+    }
+
+    console.warn(`>>> RETRY: refetch version actuelle pour ${conflictingId}`);
+    const current = await squareFetch(`/v2/catalog/object/${conflictingId}`, { method: "GET" });
+    const newVersion = current.object.version;
+    console.log(">>> Nouvelle version obtenue:", newVersion);
+
+    if (object.id === conflictingId) {
+      object.version = newVersion;
+    }
+
+    if (object.item_data?.variations) {
+      for (const variation of object.item_data.variations) {
+        if (variation.id === conflictingId) {
+          variation.version = newVersion;
+        }
+      }
+    }
+
+    if (object.modifier_list_data?.modifiers) {
+      for (const modifier of object.modifier_list_data.modifiers) {
+        if (modifier.id === conflictingId) {
+          modifier.version = newVersion;
+        }
+      }
+    }
+
+    return await squareFetch("/v2/catalog/object", {
+      method: "POST",
+      body: JSON.stringify({ idempotency_key: randomUUID(), object }),
+    });
+  }
+}
 export async function getSquareOrder(squareOrderId) {
   const data = await squareFetch(`/v2/orders/${squareOrderId}`);
 
@@ -142,7 +193,7 @@ export function verifySquareWebhookSignature(req, rawBody) {
   const expectedBuffer = Buffer.from(expectedSignature);
   const receivedBuffer = Buffer.from(squareSignature);
 
-  if (expectedBuffer.length !== receivedBuffer.length) {non 
+  if (expectedBuffer.length !== receivedBuffer.length) {
     return false;
   }
 

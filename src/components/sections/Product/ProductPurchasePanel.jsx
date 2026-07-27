@@ -13,14 +13,16 @@ import CustomizableItemsList from "./CustomizableItemsList";
 import ToolSelectionModal from "./ToolSelectionModal";
 
 function formatPrice(priceCents, language = "fr", currency = "CAD") {
-  if (priceCents == null) return "";
+  if (priceCents == null) {
+    return "";
+  }
 
   const locale = language === "en" ? "en-CA" : "fr-CA";
 
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
-  }).format(priceCents / 100);
+  }).format(Number(priceCents) / 100);
 }
 
 function ProductPurchasePanel({
@@ -51,10 +53,21 @@ function ProductPurchasePanel({
           `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
         );
 
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load customizable products: ${response.status}`
+          );
+        }
+
         const data = await response.json();
-        setToolOptions(data);
+
+        setToolOptions(Array.isArray(data) ? data : []);
       } catch (error) {
-        console.error("Failed to load customizable products:", error);
+        console.error(
+          "Failed to load customizable products:",
+          error
+        );
+
         setToolOptions([]);
       }
     }
@@ -74,23 +87,36 @@ function ProductPurchasePanel({
     t(product, "long_description", language) ||
     t(product, "description", language);
 
-  const selectedColor = leatherColors[selectedColorIndex];
+  const selectedColor =
+    leatherColors[selectedColorIndex] ??
+    leatherColors[0] ??
+    null;
 
   const basePriceCents = Number(product.price_cents || 0);
+
   const selectedColorPriceDeltaCents = Number(
     selectedColor?.priceDeltaCents ?? 0
   );
-  const finalPriceCents =
-    selectedColor?.finalPriceCents ??
-    basePriceCents + selectedColorPriceDeltaCents;
 
-  const cartImageUrl = getAssetUrl(productImageUrl || product.image_url);
+  const finalPriceCents = Number(
+    selectedColor?.finalPriceCents ??
+      basePriceCents + selectedColorPriceDeltaCents
+  );
+
+  const cartImageUrl = getAssetUrl(
+    productImageUrl || product.image_url
+  );
 
   const addToCartLabel =
-    copy.addToCart || (language === "en" ? "Add to cart" : "Ajouter au panier");
+    copy.addToCart ||
+    (language === "en"
+      ? "Add to cart"
+      : "Ajouter au panier");
 
   const activeItem =
-    activeItemIndex !== null ? selectedItems[activeItemIndex] : null;
+    activeItemIndex !== null
+      ? selectedItems[activeItemIndex]
+      : null;
 
   const openToolModal = (_, index) => {
     setActiveItemIndex(index);
@@ -100,10 +126,12 @@ function ProductPurchasePanel({
     setActiveItemIndex(null);
   };
 
-  const selectTool = (tool) => {
+ const selectTool = (tool) => {
     setSelectedItems((currentItems) =>
       currentItems.map((item, index) =>
-        index === activeItemIndex ? tool : item
+        index === activeItemIndex
+          ? { ...tool, kit_component_id: item.kit_component_id }
+          : item
       )
     );
 
@@ -118,11 +146,25 @@ function ProductPurchasePanel({
       productSlug,
       quantity: 1,
 
-      colorKey: selectedColor?.key || null,
-      colorName_fr: selectedColor?.name_fr || selectedColor?.name || "",
-      colorName_en: selectedColor?.name_en || selectedColor?.name || "",
+      colorKey:
+        selectedColor?.id != null
+          ? String(selectedColor.id)
+          : null,
+
+      colorId: selectedColor?.id ?? null,
+
+      colorName_fr:
+        selectedColor?.name_fr ||
+        selectedColor?.name ||
+        "",
+
+      colorName_en:
+        selectedColor?.name_en ||
+        selectedColor?.name ||
+        "",
 
       selectedItems: selectedItems.map((item) => ({
+        kitComponentId: item.kit_component_id,
         productId: item.id,
         productSlug_fr: getProductSlug(item, "fr"),
         productSlug_en: getProductSlug(item, "en"),
@@ -136,7 +178,8 @@ function ProductPurchasePanel({
         imageUrl: cartImageUrl,
         priceCents: finalPriceCents,
         basePriceCents,
-        colorPriceDeltaCents: selectedColorPriceDeltaCents,
+        colorPriceDeltaCents:
+          selectedColorPriceDeltaCents,
       },
     });
   };
@@ -181,7 +224,7 @@ function ProductPurchasePanel({
             <button
               type="button"
               onClick={handleAddToCart}
-              className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] hover:bg-[#c89b3c] hover:text-[#100805]"
+              className="mt-4 inline-flex w-full items-center justify-center border border-[#c89b3c] bg-[#24170d] px-5 py-3 font-['IM_Fell_English_SC'] text-sm uppercase tracking-[0.16em] text-[#e7c97b] transition hover:bg-[#c89b3c] hover:text-[#100805]"
             >
               {addToCartLabel}
             </button>
@@ -196,7 +239,7 @@ function ProductPurchasePanel({
           <ProductColorOptions
             colors={leatherColors}
             selectedIndex={selectedColorIndex}
-            onSelectColor={(_, index) => onSelectColor?.(index)}
+            onSelectColor={onSelectColor}
           />
 
           {selectedItems.length > 0 && (

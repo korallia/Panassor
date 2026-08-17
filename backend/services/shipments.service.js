@@ -1,6 +1,7 @@
 import pool from "../db/pool.js";
 
 import { hasRequiredShippingRecipient } from "./shipping.service.js";
+import { notifyNewOrderShipment } from "./discord.service.js";
 
 function normalizeCartSnapshot(cartSnapshot) {
   if (Array.isArray(cartSnapshot)) {
@@ -35,7 +36,9 @@ export async function getOrderForShipment(orderId) {
     SELECT
       id,
       status,
-      cart_snapshot
+      cart_snapshot,
+      total_cents,
+      currency
     FROM orders
     WHERE id = $1;
     `,
@@ -639,6 +642,13 @@ export async function ensureShipmentForOrderId(orderId, shippingRecipient) {
     shipmentId: shipment.id,
     order,
   });
+
+  // This is a brand-new shipment (i.e. a brand-new paid order with
+  // known shipping details) — notify Discord. Not awaited/blocking:
+  // notifyNewOrderShipment already swallows its own errors so a
+  // Discord hiccup never breaks order/shipment creation.
+  const shipmentItems = await getShipmentItems(shipment.id);
+  notifyNewOrderShipment({ order, shipment, shipmentItems });
 
   return shipment;
 }

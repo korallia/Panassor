@@ -8,8 +8,15 @@ function formatPrice(cents, language) {
 }
 
 function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect }) {
-  const { postalCode, setPostalCode, status, quote, error, requestQuote } =
-    useShippingQuote();
+  const {
+    postalCode,
+    setPostalCode,
+    status,
+    quote,
+    destination,
+    error,
+    requestQuote,
+  } = useShippingQuote();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -78,7 +85,16 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect }) 
               <button
                 key={option.id}
                 type="button"
-                onClick={() => onSelect(option)}
+                onClick={() =>
+                  onSelect({
+                    ...option,
+                    // Carried through to checkout so the backend can
+                    // re-run the same quote and verify this price before
+                    // charging it (see useCheckout.js + checkout.controller.js).
+                    postalCode: destination?.postalCode || "",
+                    city: destination?.city || "",
+                  })
+                }
                 className={`flex w-full items-center justify-between gap-4 border px-4 py-3.5 text-left transition sm:py-4 ${
                   isSelected
                     ? "border-[#c89b3c] bg-[#c89b3c]/12"

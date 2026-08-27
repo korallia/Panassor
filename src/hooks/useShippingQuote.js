@@ -26,6 +26,10 @@ export function useShippingQuote() {
   const [status, setStatus] = useState("idle"); // idle | loading | error | success
   const [quote, setQuote] = useState(null);
   const [error, setError] = useState("");
+  // The parsed {city, postalCode} that produced the current `quote` --
+  // needed so a chosen option can carry its destination through to
+  // checkout for server-side re-validation (see useCheckout.js).
+  const [destination, setDestination] = useState(null);
 
   async function requestQuote() {
     const { city, postalCode: parsedPostalCode } = parseShippingInput(postalCode);
@@ -42,16 +46,19 @@ export function useShippingQuote() {
     try {
       const result = await getShippingQuote({ postalCode: parsedPostalCode, city });
       setQuote(result);
+      setDestination({ city, postalCode: parsedPostalCode });
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setError(err.message || "QUOTE_FAILED");
       setQuote(null);
+      setDestination(null);
     }
   }
 
   function resetQuote() {
     setQuote(null);
+    setDestination(null);
     setStatus("idle");
     setError("");
   }
@@ -61,6 +68,7 @@ export function useShippingQuote() {
     setPostalCode,
     status,
     quote,
+    destination,
     error,
     requestQuote,
     resetQuote,

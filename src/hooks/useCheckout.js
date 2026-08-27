@@ -36,10 +36,10 @@ export function useCheckout() {
     setCheckoutError("");
 
     try {
-      // `shipping` is forwarded as-is for now (the backend does not read
-      // it yet). Once /api/checkout builds the Square shipping line item
-      // server-side, it should re-validate this quote rather than trust
-      // it outright — see the shipping plan (Phase IV).
+      // `shipping` is forwarded with its destination (postalCode/city,
+      // attached in ShippingEstimator.jsx) so the backend can re-run the
+      // same quote and verify the price before charging it -- see
+      // checkout.controller.js's validateSelectedShippingOption call.
       const checkout = await createCheckout({
         language,
         orderNote,

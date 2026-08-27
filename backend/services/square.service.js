@@ -132,6 +132,7 @@ export async function getSquarePayment(paymentId) {
 export async function createSquarePaymentLink({
   normalizedLanguage,
   lineItems,
+  serviceCharges,
   redirectUrl,
   buyerLanguageKey,
   orderNote,
@@ -144,6 +145,7 @@ export async function createSquarePaymentLink({
       location_id: env.square.locationId,
       line_items: lineItems,
       taxes: buildSquareTaxes(normalizedLanguage),
+      ...(serviceCharges?.length ? { service_charges: serviceCharges } : {}),
     },
     checkout_options: {
       buyer_language_key: buyerLanguageKey,

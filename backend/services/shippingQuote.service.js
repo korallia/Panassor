@@ -185,3 +185,31 @@ export async function getShippingQuote({ postalCode, city }) {
 
   return { country: "CA", options };
 }
+
+// Re-validates a shopper-selected shipping option server-side before it's
+// trusted for checkout. Never bill the client-submitted priceCents
+// directly -- re-run the same quote from the destination they gave us,
+// confirm the chosen option still exists in it, and return THAT freshly
+// computed option (its price is what gets charged).
+export async function validateSelectedShippingOption(shipping) {
+  if (!shipping || !shipping.id) {
+    return null;
+  }
+
+  const freshQuote = await getShippingQuote({
+    postalCode: shipping.postalCode,
+    city: shipping.city,
+  });
+
+  const matchedOption = freshQuote.options.find(
+    (option) => option.id === shipping.id
+  );
+
+  if (!matchedOption) {
+    const error = new Error("SHIPPING_OPTION_UNAVAILABLE");
+    error.status = 409;
+    throw error;
+  }
+
+  return matchedOption;
+}

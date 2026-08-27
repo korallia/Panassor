@@ -1,4 +1,5 @@
 import { env } from "../config/env.js";
+import { fetchWithRetry } from "../utils/fetchWithRetry.js";
 
 // Purolator's new (2026) REST API Portal: OAuth2 client_credentials over
 // HTTP Basic Auth, plus a separate x-api-key header on every call after
@@ -66,7 +67,7 @@ async function fetchAccessToken() {
     `${env.purolator.clientId}:${env.purolator.clientSecret}`
   ).toString("base64");
 
-  const response = await fetch(TOKEN_URL, {
+  const response = await fetchWithRetry(TOKEN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -219,7 +220,7 @@ export async function getPurolatorEstimate({
 
   const estimateUrl = `${getBusinessApiBaseUrl()}/rate/v1/shipment`;
 
-  const response = await fetch(estimateUrl, {
+  const response = await fetchWithRetry(estimateUrl, {
     method: "POST",
     headers: {
       "x-api-key": env.purolator.apiKey,

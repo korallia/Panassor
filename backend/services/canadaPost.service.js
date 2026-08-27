@@ -1,4 +1,5 @@
 import { env } from "../config/env.js";
+import { fetchWithRetry } from "../utils/fetchWithRetry.js";
 
 // Canada Post's new (2026) Developer Portal API: REST/JSON only, OAuth2
 // client_credentials. Docs: developer-developpeur.canadapost-postescanada.ca
@@ -42,7 +43,7 @@ function roundToOneDecimal(value) {
 async function fetchAccessToken() {
   assertCanadaPostConfig();
 
-  const response = await fetch(TOKEN_URL, {
+  const response = await fetchWithRetry(TOKEN_URL, {
     method: "POST",
     headers: {
       "X-IBM-Client-Id": env.canadaPost.apiKey,
@@ -145,7 +146,7 @@ export async function getCanadaPostDomesticRates({
     body.contractId = env.canadaPost.contractNumber;
   }
 
-  const response = await fetch(RATES_URL, {
+  const response = await fetchWithRetry(RATES_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,

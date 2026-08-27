@@ -8,6 +8,7 @@ import CartDrawerItems from "./CartDrawerItems";
 import CartDrawerFooter from "./CartDrawerFooter";
 import CartOrderNote from "./CartOrderNote";
 import CartEmptyState from "./CartEmptyState";
+import ShippingEstimator from "./ShippingEstimator";
 
 function CartDrawer() {
   const { language } = useLanguage();
@@ -19,6 +20,10 @@ function CartDrawer() {
     subtotalCents,
     orderNote,
     setOrderNote,
+    selectedShipping,
+    setSelectedShipping,
+    shippingCents,
+    estimatedTotalCents,
     isCartOpen,
     closeCart,
     updateQuantity,
@@ -60,6 +65,13 @@ function CartDrawer() {
                   onRemove={removeItem}
                 />
 
+                <ShippingEstimator
+                  copy={copy.shipping}
+                  language={language}
+                  selectedShipping={selectedShipping}
+                  onSelect={setSelectedShipping}
+                />
+
                 <CartOrderNote
                   value={orderNote}
                   onChange={setOrderNote}
@@ -71,6 +83,9 @@ function CartDrawer() {
 
           <CartDrawerFooter
             subtotalCents={subtotalCents}
+            shippingCents={shippingCents}
+            estimatedTotalCents={estimatedTotalCents}
+            hasSelectedShipping={Boolean(selectedShipping)}
             itemCount={itemCount}
             copy={copy.footer}
             language={language}

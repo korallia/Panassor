@@ -7,12 +7,31 @@ function formatPrice(cents, language) {
   }).format((cents || 0) / 100);
 }
 
-function CartDrawerFooter({ subtotalCents = 0, itemCount = 0, copy = {}, language }) {
+function CartDrawerFooter({
+  subtotalCents = 0,
+  shippingCents = 0,
+  estimatedTotalCents = 0,
+  hasSelectedShipping = false,
+  itemCount = 0,
+  copy = {},
+  language,
+}) {
   const { startCheckout, isCheckingOut, checkoutError, canCheckout } =
     useCheckout();
 
   const subtotalLabel =
     copy.subtotalLabel || (language === "en" ? "Subtotal" : "Sous-total");
+
+  const shippingLabel =
+    copy.shippingLabel || (language === "en" ? "Shipping" : "Livraison");
+
+  const shippingPendingLabel =
+    copy.shippingPending ||
+    (language === "en" ? "To be determined" : "À déterminer");
+
+  const estimatedTotalLabel =
+    copy.estimatedTotal ||
+    (language === "en" ? "Estimated total" : "Total estimé");
 
   const checkoutLabel =
     copy.checkoutLabel || (language === "en" ? "Checkout" : "Passer à la caisse");
@@ -32,7 +51,7 @@ function CartDrawerFooter({ subtotalCents = 0, itemCount = 0, copy = {}, languag
 
   return (
     <div className="relative z-10 border-t border-[#c89b3c]/25 bg-[#080504] p-5">
-      <div className="mb-4 flex items-end justify-between gap-4">
+      <div className="mb-3 flex items-end justify-between gap-4">
         <div>
           <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.2em] text-[#c89b3c]/80">
             {subtotalLabel}
@@ -43,10 +62,34 @@ function CartDrawerFooter({ subtotalCents = 0, itemCount = 0, copy = {}, languag
           </p>
         </div>
 
-        <p className="font-['IM_Fell_English_SC'] text-2xl text-[#fff1d2]">
+        <p className="font-['IM_Fell_English_SC'] text-xl text-[#fff1d2]">
           {formatPrice(subtotalCents, language)}
         </p>
       </div>
+
+      <div className="mb-4 flex items-center justify-between gap-4 border-t border-[#c89b3c]/15 pt-3">
+        <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.2em] text-[#c89b3c]/80">
+          {shippingLabel}
+        </p>
+
+        <p className="font-['EB_Garamond'] text-sm text-[#d7c8ad]">
+          {hasSelectedShipping
+            ? formatPrice(shippingCents, language)
+            : shippingPendingLabel}
+        </p>
+      </div>
+
+      {hasSelectedShipping && (
+        <div className="mb-4 flex items-end justify-between gap-4 border-t border-[#c89b3c]/25 pt-3">
+          <p className="font-['IM_Fell_English_SC'] text-xs uppercase tracking-[0.2em] text-[#c89b3c]/80">
+            {estimatedTotalLabel}
+          </p>
+
+          <p className="font-['IM_Fell_English_SC'] text-2xl text-[#fff1d2]">
+            {formatPrice(estimatedTotalCents, language)}
+          </p>
+        </div>
+      )}
 
       {checkoutError && (
         <p className="mb-3 font-['EB_Garamond'] text-sm text-red-300">

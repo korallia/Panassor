@@ -60,6 +60,13 @@ export function createCheckout(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function getShippingQuote(payload) {
+  return request("/api/shipping/quote", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 export function getOrderSummary(orderId, key) {
   const params = new URLSearchParams();
 

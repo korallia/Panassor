@@ -7,7 +7,7 @@ import { useLanguage } from "../context/LanguageContext";
 const LAST_CHECKOUT_STORAGE_KEY = "panassor_last_checkout";
 
 export function useCheckout() {
-  const { items, orderNote } = useCart();
+  const { items, orderNote, selectedShipping } = useCart();
   const { language } = useLanguage();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -23,14 +23,28 @@ export function useCheckout() {
       return;
     }
 
+    if (!selectedShipping) {
+      setCheckoutError(
+        language === "en"
+          ? "Choose a shipping option before checking out."
+          : "Choisis une option de livraison avant de passer à la caisse."
+      );
+      return;
+    }
+
     setIsCheckingOut(true);
     setCheckoutError("");
 
     try {
+      // `shipping` is forwarded as-is for now (the backend does not read
+      // it yet). Once /api/checkout builds the Square shipping line item
+      // server-side, it should re-validate this quote rather than trust
+      // it outright — see the shipping plan (Phase IV).
       const checkout = await createCheckout({
         language,
         orderNote,
         items,
+        shipping: selectedShipping,
       });
 
       if (!checkout?.checkoutUrl) {
@@ -64,6 +78,6 @@ export function useCheckout() {
     startCheckout,
     isCheckingOut,
     checkoutError,
-    canCheckout: items.length > 0 && !isCheckingOut,
+    canCheckout: items.length > 0 && Boolean(selectedShipping) && !isCheckingOut,
   };
 }

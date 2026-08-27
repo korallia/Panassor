@@ -26,6 +26,63 @@ export const env = {
     skipWebhookSignature: readEnv("SQUARE_SKIP_WEBHOOK_SIGNATURE") === "true",
   },
 
+  canadaPost: {
+    // OAuth2 client_credentials app credentials from the Canada Post
+    // Developer Portal (an "app" of type Test or Production). The API
+    // Secret is only ever shown once at creation time in the portal.
+    apiKey: readEnv("CANADA_POST_API_KEY"),
+    apiSecret: readEnv("CANADA_POST_API_SECRET"),
+
+    // Business/Solutions-for-Small-Business customer number — needed to
+    // get commercial rates instead of consumer "counter" rates.
+    customerNumber: readEnv("CANADA_POST_CUSTOMER_NUMBER"),
+
+    // Only needed for a negotiated commercial contract. Leave unset to
+    // rate as a Solutions for Small Business member instead.
+    contractNumber: readEnv("CANADA_POST_CONTRACT_NUMBER"),
+
+    // "test" uses the Test app's credentials — same gateway URL as
+    // production, but Canada Post returns static/stubbed rates and never
+    // bills. Switch to "production" (with a Production app's keys) once
+    // real numbers are needed, e.g. before going live.
+    environment: readEnv("CANADA_POST_ENVIRONMENT", "test"),
+  },
+
+  // Adresse d'origine des envois — le centre/comptoir de dépôt (pas de
+  // ramassage à domicile). Utilisée comme origine pour les appels de
+  // tarification Postes Canada + Purolator, et plus tard comme adresse
+  // "expéditeur" sur les étiquettes.
+  shippingOrigin: {
+    name: readEnv("SHIPPING_ORIGIN_NAME", "Panassor"),
+    street: readEnv("SHIPPING_ORIGIN_STREET", "337 59e Avenue"),
+    city: readEnv("SHIPPING_ORIGIN_CITY", "Pointe-Calumet"),
+    province: readEnv("SHIPPING_ORIGIN_PROVINCE", "QC"),
+    postalCode: readEnv("SHIPPING_ORIGIN_POSTAL_CODE", "J0N1G0"),
+    country: readEnv("SHIPPING_ORIGIN_COUNTRY", "CA"),
+    phone: readEnv("SHIPPING_ORIGIN_PHONE"),
+  },
+
+  // Purolator REST API (E-Ship / API Portal) - "Business Integration" app.
+  // Auth is HTTP Basic (clientId:clientSecret) -> Bearer token; the apiKey
+  // below is a separate "x-api-key" header required on every call.
+  purolator: {
+    clientId: readEnv("PUROLATOR_CLIENT_ID"),
+    clientSecret: readEnv("PUROLATOR_CLIENT_SECRET"),
+    apiKey: readEnv("PUROLATOR_API_KEY"),
+
+    // Test-mode-only account numbers from the Purolator dev app. In test
+    // mode, billingAccountNumber must be the test sender account, not a
+    // real Purolator account number.
+    testSenderAccount: readEnv("PUROLATOR_TEST_SENDER_ACCOUNT"),
+    testReceiverAccount: readEnv("PUROLATOR_TEST_RECEIVER_ACCOUNT"),
+
+    // Real Purolator courier account number, once Panassor has one and
+    // moves to production credentials.
+    accountNumber: readEnv("PUROLATOR_ACCOUNT_NUMBER"),
+
+    environment: readEnv("PUROLATOR_ENVIRONMENT", "test"),
+  },
+
   discord: {
     // Incoming webhook URL for the Discord channel that should receive
     // new-order notifications. Optional: if unset, notifications are

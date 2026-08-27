@@ -34,10 +34,23 @@ export const cartContent = {
         "Ajoutez une précision pour votre commande, une demande spéciale ou une note utile à l’atelier.",
     },
 
+    shipping: {
+      label: "Livraison",
+      postalCodePlaceholder: "Ville, Code postal",
+      calculateLabel: "Calculer",
+      calculatingLabel: "Calcul en cours...",
+      emptyPostalCodeError: "Entrez votre ville et votre code postal pour voir les options de livraison.",
+      genericError: "Impossible de calculer la livraison pour cette adresse.",
+      internationalNote:
+        "Livraison internationale : un seul transporteur est disponible pour cette destination.",
+    },
+
     footer: {
       subtotal: "Sous-total",
-      checkoutNote:
-        "Livraison, taxes et codes promo seront calculés à l’étape suivante.",
+      shippingLabel: "Livraison",
+      shippingPending: "À déterminer",
+      estimatedTotal: "Total estimé",
+      checkoutNote: "Taxes et codes promo seront calculés à l’étape suivante.",
       checkout: "Passer à la caisse",
     },
 
@@ -79,10 +92,23 @@ export const cartContent = {
         "Add a note for your order, a special request, or anything useful for the workshop.",
     },
 
+    shipping: {
+      label: "Shipping",
+      postalCodePlaceholder: "City, Postal code",
+      calculateLabel: "Calculate",
+      calculatingLabel: "Calculating...",
+      emptyPostalCodeError: "Enter your city and postal code to see shipping options.",
+      genericError: "Unable to calculate shipping for this address.",
+      internationalNote:
+        "International shipping: only one carrier is available for this destination.",
+    },
+
     footer: {
       subtotal: "Subtotal",
-      checkoutNote:
-        "Shipping, taxes, and discount codes will be calculated at the next step.",
+      shippingLabel: "Shipping",
+      shippingPending: "To be determined",
+      estimatedTotal: "Estimated total",
+      checkoutNote: "Taxes and discount codes will be calculated at the next step.",
       checkout: "Checkout",
     },
 

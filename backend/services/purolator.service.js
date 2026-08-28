@@ -99,30 +99,11 @@ async function getAccessToken() {
   const now = Date.now();
 
   if (cachedToken && cachedToken.expiresAt > now) {
-    console.log(
-      `[Purolator] using cached token (expires in ${Math.round((cachedToken.expiresAt - now) / 1000)}s)`
-    );
     return cachedToken.accessToken;
   }
 
-  console.log(
-    "[Purolator] no valid cached token -- fetching a new one (this doubles the network round trip for this request)"
-  );
-
   const tokenResponse = await fetchAccessToken();
   const expiresInMs = Number(tokenResponse.expires_in || 0) * 1000;
-
-  if (!tokenResponse.expires_in) {
-    // If the OAuth response doesn't carry "expires_in" under that exact
-    // field name, expiresInMs computes to 0 below and the cache expires
-    // immediately -- meaning EVERY request re-fetches a token instead of
-    // reusing it. Logging the raw keys here so we can tell at a glance
-    // if that's what's happening instead of guessing.
-    console.log(
-      "[Purolator] token response has no 'expires_in' field -- raw keys:",
-      Object.keys(tokenResponse || {})
-    );
-  }
 
   cachedToken = {
     accessToken: tokenResponse.access_token,
@@ -281,16 +262,27 @@ export async function getPurolatorEstimate({
     .filter(Boolean);
 
   // Normalized into the same shape shippingPlaceholder.js's mock uses.
-  return estimates.map((estimate) => ({
-    id: `purolator-${estimate.serviceId}`.toLowerCase(),
-    carrier: "purolator",
-    carrierLabel: "Purolator",
-    serviceCode: estimate.serviceId,
-    serviceLabel: estimate.serviceId,
-    priceCents: Math.round(Number(estimate.totalPrice || 0) * 100),
-    expectedDeliveryDate: estimate.expectedDeliveryDate || null,
-    expectedTransitDays: estimate.estimatedTransitDays ?? null,
-  }));
+  return estimates
+    .map((estimate) => ({
+      id: `purolator-${estimate.serviceId}`.toLowerCase(),
+      carrier: "purolator",
+      carrierLabel: "Purolator",
+      serviceCode: estimate.serviceId,
+      serviceLabel: estimate.serviceId,
+      priceCents: Math.round(Number(estimate.totalPrice || 0) * 100),
+      expectedDeliveryDate: estimate.expectedDeliveryDate || null,
+      expectedTransitDays: estimate.estimatedTransitDays ?? null,
+    }))
+    // Defensive: a missing/zero price field would otherwise silently show
+    // up as "free shipping" in the cart. Drop it and log instead --
+    // better to show one fewer option than to undercharge for real.
+    .filter((rate) => {
+      if (rate.priceCents > 0) return true;
+      console.error(
+        `Purolator returned a non-positive price (${rate.priceCents} cents) for service ${rate.serviceCode} -- dropping this option instead of showing free shipping.`
+      );
+      return false;
+    });
 }
 
 export const PUROLATOR_DOMESTIC_SERVICE_ID = DOMESTIC_SERVICE_ID;

@@ -77,30 +77,11 @@ async function getAccessToken() {
   const now = Date.now();
 
   if (cachedToken && cachedToken.expiresAt > now) {
-    console.log(
-      `[Canada Post] using cached token (expires in ${Math.round((cachedToken.expiresAt - now) / 1000)}s)`
-    );
     return cachedToken.accessToken;
   }
 
-  console.log(
-    "[Canada Post] no valid cached token -- fetching a new one (this doubles the network round trip for this request)"
-  );
-
   const tokenResponse = await fetchAccessToken();
   const expiresInMs = Number(tokenResponse.expires_in || 0) * 1000;
-
-  if (!tokenResponse.expires_in) {
-    // If the OAuth response doesn't carry "expires_in" under that exact
-    // field name, expiresInMs computes to 0 below and the cache expires
-    // immediately -- meaning EVERY request re-fetches a token instead of
-    // reusing it. Logging the raw keys here so we can tell at a glance
-    // if that's what's happening instead of guessing.
-    console.log(
-      "[Canada Post] token response has no 'expires_in' field -- raw keys:",
-      Object.keys(tokenResponse || {})
-    );
-  }
 
   cachedToken = {
     accessToken: tokenResponse.access_token,
@@ -197,16 +178,27 @@ export async function getCanadaPostDomesticRates({
   // serviceStandard's own children are camelCase -- confirmed via a raw
   // debug call. Reading the camelCase names we originally guessed
   // silently returned undefined (blank service name, $0.00 price).
-  return (Array.isArray(data) ? data : []).map((service) => ({
-    id: `cp-${service.serviceCode}`.toLowerCase(),
-    carrier: "postes_canada",
-    carrierLabel: "Postes Canada",
-    serviceCode: service.serviceCode,
-    serviceLabel: service["service-name"],
-    priceCents: Math.round(Number(service["price-details"]?.due || 0) * 100),
-    expectedDeliveryDate:
-      service.serviceStandard?.expectedDeliveryDate || null,
-    expectedTransitDays:
-      service.serviceStandard?.expectedTransitTime ?? null,
-  }));
+  return (Array.isArray(data) ? data : [])
+    .map((service) => ({
+      id: `cp-${service.serviceCode}`.toLowerCase(),
+      carrier: "postes_canada",
+      carrierLabel: "Postes Canada",
+      serviceCode: service.serviceCode,
+      serviceLabel: service["service-name"],
+      priceCents: Math.round(Number(service["price-details"]?.due || 0) * 100),
+      expectedDeliveryDate:
+        service.serviceStandard?.expectedDeliveryDate || null,
+      expectedTransitDays:
+        service.serviceStandard?.expectedTransitTime ?? null,
+    }))
+    // Defensive: a missing/zero price field would otherwise silently show
+    // up as "free shipping" in the cart. Drop it and log instead --
+    // better to show one fewer option than to undercharge for real.
+    .filter((rate) => {
+      if (rate.priceCents > 0) return true;
+      console.error(
+        `Canada Post returned a non-positive price (${rate.priceCents} cents) for service ${rate.serviceCode} -- dropping this option instead of showing free shipping.`
+      );
+      return false;
+    });
 }

@@ -22,6 +22,22 @@ import {
   createPendingLocalOrder,
 } from "../services/orders.service.js";
 
+// One retry before failing checkout outright -- the shipping
+// re-validation calls both carriers live again, and a single transient
+// blip there (same kind of thing fetchWithRetry already smooths over
+// inside each carrier call) shouldn't block a customer from paying.
+async function validateSelectedShippingOptionWithRetry(shipping) {
+  try {
+    return await validateSelectedShippingOption(shipping);
+  } catch (error) {
+    console.error(
+      "Shipping re-validation failed, retrying once before failing checkout:",
+      error.message
+    );
+    return await validateSelectedShippingOption(shipping);
+  }
+}
+
 function buildThankYouRedirectUrl({ language, localOrderId, thankYouToken }) {
   const thankYouPath = getThankYouPath(language);
   const params = new URLSearchParams();
@@ -47,7 +63,7 @@ export async function createCheckout(req, res) {
     // same quote from the destination they gave us and use whatever
     // price THAT returns. Throws (409) if the chosen option no longer
     // exists (e.g. rates changed, or the client tampered with the id).
-    const validatedShipping = await validateSelectedShippingOption(shipping);
+    const validatedShipping = await validateSelectedShippingOptionWithRetry(shipping);
     const shippingCents = validatedShipping?.priceCents || 0;
 
     const subtotalCents = calculateSubtotalCents(normalizedItems);

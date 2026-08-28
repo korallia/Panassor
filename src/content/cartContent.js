@@ -42,7 +42,7 @@ export const cartContent = {
       emptyPostalCodeError: "Entrez votre ville et votre code postal pour voir les options de livraison.",
       genericError: "Impossible de calculer la livraison pour cette adresse.",
       internationalNote:
-        "Livraison internationale (1 transporteur) -- vérifiez votre code postal s'il devrait être québécois (ex: A1A 1A1).",
+        "Livraison internationale (1 transporteur) -- vérifiez votre code postal s'il devrait être Québécois (ex: A1A 1A1).",
     },
 
     footer: {

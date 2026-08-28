@@ -2,23 +2,43 @@ import { useState } from "react";
 
 import { getShippingQuote } from "../../backend/panassorApi";
 
-// The single shipping input is filled in as "Ville, Code postal" (see the
-// postalCodePlaceholder copy) so we can send a real city to Purolator
-// instead of guessing one from the postal code alone -- more accurate.
-// Falls back to treating the whole value as a bare postal code if there's
-// no comma, so it still works if someone ignores the placeholder format.
+// The placeholder suggests "Ville, Code postal", but the comma is a
+// suggestion, not a hard requirement -- if someone just types
+// "Rougemont J0L 1M0" we still want that to work. So: split on the
+// comma if there is one; otherwise look for a Canadian-postal-code-
+// shaped chunk at the end of the string and treat everything before it
+// as the city; otherwise fall back to treating the whole value as a
+// (possibly international) postal/zip code, same as before comma
+// support existed. This is all pure string/regex work -- no lookup, no
+// extra network round trip, so it stays instant.
+//
+// NOTE: this only recognizes a *well-formed* Canadian postal code
+// (see canadaPost.service.js's regex) at the end of the input -- it does
+// NOT try to correct typos (e.g. a letter "O" for the digit "0"), since
+// guessing those would risk misreading a genuine international code as
+// a domestic one (see getShippingQuote()'s INTL fallback + warning).
+const CA_POSTAL_CODE_TAIL_REGEX =
+  /([ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\s*\d[ABCEGHJ-NPRSTV-Z]\d)\s*$/i;
+
 function parseShippingInput(rawValue) {
   const trimmedValue = String(rawValue || "").trim();
   const commaIndex = trimmedValue.indexOf(",");
 
-  if (commaIndex === -1) {
-    return { city: "", postalCode: trimmedValue };
+  if (commaIndex !== -1) {
+    const city = trimmedValue.slice(0, commaIndex).trim();
+    const postalCode = trimmedValue.slice(commaIndex + 1).trim();
+    return postalCode ? { city, postalCode } : null;
   }
 
-  return {
-    city: trimmedValue.slice(0, commaIndex).trim(),
-    postalCode: trimmedValue.slice(commaIndex + 1).trim(),
-  };
+  const tailMatch = trimmedValue.match(CA_POSTAL_CODE_TAIL_REGEX);
+  if (tailMatch) {
+    return {
+      city: trimmedValue.slice(0, tailMatch.index).trim(),
+      postalCode: tailMatch[1].trim(),
+    };
+  }
+
+  return trimmedValue ? { city: "", postalCode: trimmedValue } : null;
 }
 
 export function useShippingQuote() {
@@ -32,13 +52,15 @@ export function useShippingQuote() {
   const [destination, setDestination] = useState(null);
 
   async function requestQuote() {
-    const { city, postalCode: parsedPostalCode } = parseShippingInput(postalCode);
+    const parsed = parseShippingInput(postalCode);
 
-    if (!parsedPostalCode) {
+    if (!parsed) {
       setStatus("error");
       setError("EMPTY_POSTAL_CODE");
       return;
     }
+
+    const { city, postalCode: parsedPostalCode } = parsed;
 
     setStatus("loading");
     setError("");

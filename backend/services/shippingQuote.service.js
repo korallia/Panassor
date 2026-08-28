@@ -11,11 +11,21 @@ import {
 // (section 02/03). Both carriers are queried in parallel for a domestic
 // quote so the cart can show the 2-option picker Korallia asked for.
 
+// Matches the 6 significant characters only -- formatting (spaces,
+// hyphens, case) is normalized away first below, so "j0l 1m0",
+// "J0L1M0", "j0l-1m0" and "J0L  1M0" (double space) are all accepted the
+// same way. This is about tolerating how a real Canadian postal code can
+// be typed, NOT about correcting actual character typos (e.g. a letter
+// "O" for the digit "0") -- guessing those would risk misreading a
+// genuine international code as a domestic one.
 const CA_POSTAL_CODE_REGEX =
-  /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z] ?\d[ABCEGHJ-NPRSTV-Z]\d$/i;
+  /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\d[ABCEGHJ-NPRSTV-Z]\d$/i;
 
 export function isDomesticPostalCode(postalCode) {
-  return CA_POSTAL_CODE_REGEX.test(String(postalCode || "").trim());
+  const normalized = String(postalCode || "")
+    .replace(/[\s-]+/g, "")
+    .toUpperCase();
+  return CA_POSTAL_CODE_REGEX.test(normalized);
 }
 
 // Purolator's Estimate API requires the receiver's city (confirmed via a
@@ -134,11 +144,22 @@ export async function getShippingQuote({ postalCode, city }) {
     };
   }
 
+  // Timed separately (rather than guessing) so we can actually see, per
+  // carrier, where time goes in the deployed logs -- Korallia noticed
+  // Canada Post feeling slower than Purolator in QA, and since the cart
+  // waits on Promise.allSettled (i.e. the SLOWER of the two), Canada
+  // Post being slow drags the whole "Calculer" click even though the
+  // calls run in parallel.
+  const canadaPostStartedAt = Date.now();
+  const purolatorStartedAt = Date.now();
+
   const [canadaPostResult, purolatorResult] = await Promise.allSettled([
     getCanadaPostDomesticRates({
       originPostalCode: env.shippingOrigin.postalCode,
       destinationPostalCode: trimmedPostalCode,
       ...PLACEHOLDER_PARCEL,
+    }).finally(() => {
+      console.log(`[shipping-quote] Canada Post took ${Date.now() - canadaPostStartedAt}ms`);
     }),
     getPurolatorEstimate({
       destinationPostalCode: trimmedPostalCode,
@@ -153,6 +174,8 @@ export async function getShippingQuote({ postalCode, city }) {
       serviceId: PUROLATOR_DOMESTIC_SERVICE_ID,
       showAlternativeServicesIndicator: false,
       ...PLACEHOLDER_PARCEL,
+    }).finally(() => {
+      console.log(`[shipping-quote] Purolator took ${Date.now() - purolatorStartedAt}ms`);
     }),
   ]);
 

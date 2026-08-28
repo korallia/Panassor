@@ -42,7 +42,7 @@ export const cartContent = {
       emptyPostalCodeError: "Entrez votre ville et votre code postal pour voir les options de livraison.",
       genericError: "Impossible de calculer la livraison pour cette adresse.",
       internationalNote:
-        "Livraison internationale : un seul transporteur est disponible pour cette destination.",
+        "Livraison internationale (1 transporteur) -- vérifiez votre code postal s'il devrait être québécois (ex: A1A 1A1).",
     },
 
     footer: {
@@ -100,7 +100,7 @@ export const cartContent = {
       emptyPostalCodeError: "Enter your city and postal code to see shipping options.",
       genericError: "Unable to calculate shipping for this address.",
       internationalNote:
-        "International shipping: only one carrier is available for this destination.",
+        "International shipping (1 carrier) -- double-check your postal code if it should be Canadian (e.g. A1A 1A1).",
     },
 
     footer: {

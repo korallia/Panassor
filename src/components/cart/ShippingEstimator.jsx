@@ -7,7 +7,7 @@ function formatPrice(cents, language) {
   }).format((cents || 0) / 100);
 }
 
-function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect }) {
+function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, items = [] }) {
   const {
     postalCode,
     setPostalCode,
@@ -16,7 +16,7 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect }) 
     destination,
     error,
     requestQuote,
-  } = useShippingQuote();
+  } = useShippingQuote(items);
 
   function handleSubmit(event) {
     event.preventDefault();

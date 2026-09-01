@@ -4,6 +4,7 @@ import {
   getPurolatorEstimate,
   PUROLATOR_DOMESTIC_SERVICE_ID,
 } from "./purolator.service.js";
+import { computeParcelForCartItems } from "./packing.service.js";
 
 // Unified shipping-quote service: chooses between Postes Canada
 // (domestic standard tiers) and Purolator (domestic Express + all
@@ -112,7 +113,7 @@ function invalidRequestError(message) {
   return error;
 }
 
-export async function getShippingQuote({ postalCode, city }) {
+export async function getShippingQuote({ postalCode, city, items = [] }) {
   const trimmedPostalCode = String(postalCode || "").trim();
   const trimmedCity = String(city || "").trim();
 
@@ -144,6 +145,19 @@ export async function getShippingQuote({ postalCode, city }) {
     };
   }
 
+  // Real per-product weight/dimensions once they're measured (see
+  // packing.service.js); falls back to the flat placeholder while any
+  // cart item is missing real data, or when this isn't called with cart
+  // items at all (e.g. an older caller).
+  const computedParcel = await computeParcelForCartItems(items);
+  const parcel = computedParcel || PLACEHOLDER_PARCEL;
+
+  if (computedParcel) {
+    console.log(
+      `[shipping-quote] using real packed parcel: ${computedParcel.weightKg}kg, box "${computedParcel.boxSlug}"`
+    );
+  }
+
   // Timed separately (rather than guessing) so we can actually see, per
   // carrier, where time goes in the deployed logs -- Korallia noticed
   // Canada Post feeling slower than Purolator in QA, and since the cart
@@ -157,7 +171,7 @@ export async function getShippingQuote({ postalCode, city }) {
     getCanadaPostDomesticRates({
       originPostalCode: env.shippingOrigin.postalCode,
       destinationPostalCode: trimmedPostalCode,
-      ...PLACEHOLDER_PARCEL,
+      ...parcel,
     }).finally(() => {
       console.log(`[shipping-quote] Canada Post took ${Date.now() - canadaPostStartedAt}ms`);
     }),
@@ -173,7 +187,7 @@ export async function getShippingQuote({ postalCode, city }) {
       destinationCountry: "CA",
       serviceId: PUROLATOR_DOMESTIC_SERVICE_ID,
       showAlternativeServicesIndicator: false,
-      ...PLACEHOLDER_PARCEL,
+      ...parcel,
     }).finally(() => {
       console.log(`[shipping-quote] Purolator took ${Date.now() - purolatorStartedAt}ms`);
     }),
@@ -214,7 +228,7 @@ export async function getShippingQuote({ postalCode, city }) {
 // directly -- re-run the same quote from the destination they gave us,
 // confirm the chosen option still exists in it, and return THAT freshly
 // computed option (its price is what gets charged).
-export async function validateSelectedShippingOption(shipping) {
+export async function validateSelectedShippingOption(shipping, items = []) {
   if (!shipping || !shipping.id) {
     return null;
   }
@@ -222,6 +236,7 @@ export async function validateSelectedShippingOption(shipping) {
   const freshQuote = await getShippingQuote({
     postalCode: shipping.postalCode,
     city: shipping.city,
+    items,
   });
 
   const matchedOption = freshQuote.options.find(

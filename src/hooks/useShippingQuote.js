@@ -41,7 +41,11 @@ function parseShippingInput(rawValue) {
   return trimmedValue ? { city: "", postalCode: trimmedValue } : null;
 }
 
-export function useShippingQuote() {
+// items: the cart's line items ({productId, quantity}), so the backend
+// can look up each product's real weight/dimensions and pick the right
+// box (see backend/services/packing.service.js) instead of always using
+// the flat placeholder parcel.
+export function useShippingQuote(items = []) {
   const [postalCode, setPostalCode] = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | error | success
   const [quote, setQuote] = useState(null);
@@ -66,7 +70,14 @@ export function useShippingQuote() {
     setError("");
 
     try {
-      const result = await getShippingQuote({ postalCode: parsedPostalCode, city });
+      const result = await getShippingQuote({
+        postalCode: parsedPostalCode,
+        city,
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      });
       setQuote(result);
       setDestination({ city, postalCode: parsedPostalCode });
       setStatus("success");

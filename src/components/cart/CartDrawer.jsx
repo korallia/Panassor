@@ -70,6 +70,7 @@ function CartDrawer() {
                   language={language}
                   selectedShipping={selectedShipping}
                   onSelect={setSelectedShipping}
+                  items={items}
                 />
 
                 <CartOrderNote

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { getShippingQuote } from "../../backend/panassorApi";
 
@@ -55,6 +55,20 @@ export function useShippingQuote(items = []) {
   // checkout for server-side re-validation (see useCheckout.js).
   const [destination, setDestination] = useState(null);
 
+  // Set once a quote has successfully come back, cleared on error/reset.
+  // Used (not React state, so changing it never re-renders on its own)
+  // to know whether the cart-change effect below should bother
+  // auto-refreshing -- never fire before the shopper has asked for a
+  // first quote.
+  const hasQuoteRef = useRef(false);
+
+  // A cart with the same items in a different order is the same cart --
+  // sort so re-ordering the cart doesn't trigger a pointless re-quote.
+  const itemsSignature = items
+    .map((item) => `${item.productId}:${item.quantity}`)
+    .sort()
+    .join("|");
+
   async function requestQuote() {
     const parsed = parseShippingInput(postalCode);
 
@@ -81,19 +95,43 @@ export function useShippingQuote(items = []) {
       setQuote(result);
       setDestination({ city, postalCode: parsedPostalCode });
       setStatus("success");
+      hasQuoteRef.current = true;
     } catch (err) {
       setStatus("error");
       setError(err.message || "QUOTE_FAILED");
       setQuote(null);
       setDestination(null);
+      hasQuoteRef.current = false;
     }
   }
+
+  // Re-run the quote automatically when the cart's contents change --
+  // otherwise a shopper who adds a second kit *after* calculating
+  // shipping would keep the price for the first kit all the way to
+  // checkout (the number on screen, not what's billed -- the backend
+  // always re-validates against the live cart -- but showing the wrong
+  // number is confusing regardless). Debounced so a couple of quick
+  // quantity clicks in a row only trigger one API call. Never fires
+  // before a first successful quote exists for this destination.
+  useEffect(() => {
+    if (!hasQuoteRef.current) {
+      return undefined;
+    }
+
+    const timeoutId = setTimeout(() => {
+      requestQuote();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemsSignature]);
 
   function resetQuote() {
     setQuote(null);
     setDestination(null);
     setStatus("idle");
     setError("");
+    hasQuoteRef.current = false;
   }
 
   return {

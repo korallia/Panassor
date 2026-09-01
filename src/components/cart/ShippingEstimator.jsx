@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useShippingQuote } from "../../hooks/useShippingQuote";
 
 function formatPrice(cents, language) {
@@ -27,6 +29,37 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
 
     requestQuote();
   }
+
+  // When the cart changes after a shipping option was already picked,
+  // useShippingQuote silently re-fetches the quote (see its cart-change
+  // effect) -- this keeps the picked option's stored price/eta in sync
+  // with that refreshed quote instead of showing a stale number all the
+  // way to checkout. If the same service isn't offered anymore at the
+  // new parcel size (rare), clear the selection so checkout can't go
+  // through with an option that no longer exists.
+  useEffect(() => {
+    if (!selectedShipping || !quote) {
+      return;
+    }
+
+    const stillOffered = quote.options.find(
+      (option) => option.id === selectedShipping.id
+    );
+
+    if (!stillOffered) {
+      onSelect(null);
+      return;
+    }
+
+    if (stillOffered.priceCents !== selectedShipping.priceCents) {
+      onSelect({
+        ...stillOffered,
+        postalCode: destination?.postalCode || "",
+        city: destination?.city || "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quote]);
 
   return (
     <section className="border-t border-[#6f5423]/35 pt-3 sm:pt-4">

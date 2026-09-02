@@ -101,6 +101,10 @@ export async function notifyNewOrderShipment({ order, shipment, shipmentItems })
     const itemsText =
       buildItemSummaries(shipmentItems).map(formatItemLine).join("\n") || "—";
 
+    const trackingEntryUrl = shipment.admin_access_token
+      ? `${env.siteUrl}/expedition?shipmentId=${shipment.id}&key=${shipment.admin_access_token}`
+      : null;
+
     const embed = {
       title: `🆕 Nouvelle commande payée — #${order.id}`,
       color: 0x2ecc71,
@@ -122,6 +126,18 @@ export async function notifyNewOrderShipment({ order, shipment, shipmentItems })
           value: formatTotal(order),
           inline: true,
         },
+        // Opens the tracking-entry page for THIS shipment (see
+        // ShipmentTrackingEntryPage.jsx) -- enter the carrier + tracking
+        // number there once it's shipped, and the customer's tracking
+        // email goes out automatically.
+        ...(trackingEntryUrl
+          ? [
+              {
+                name: "Rentrer le tracking",
+                value: `[Cliquer ici](${trackingEntryUrl})`,
+              },
+            ]
+          : []),
       ],
       timestamp: new Date().toISOString(),
     };

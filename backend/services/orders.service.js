@@ -14,6 +14,7 @@ export async function createPendingLocalOrder({
   taxCents,
   totalCents,
   orderNote,
+  carrier = null,
 }) {
   const result = await pool.query(
     `
@@ -27,7 +28,8 @@ export async function createPendingLocalOrder({
       currency,
 
       order_note,
-      cart_snapshot
+      cart_snapshot,
+      selected_carrier
     )
     VALUES (
       'pending',
@@ -39,7 +41,8 @@ export async function createPendingLocalOrder({
       'CAD',
 
       $5,
-      $6::jsonb
+      $6::jsonb,
+      $7
     )
     RETURNING
       id,
@@ -54,6 +57,7 @@ export async function createPendingLocalOrder({
 
       orderNote?.trim() || null,
       JSON.stringify(normalizedItems),
+      carrier,
     ]
   );
 

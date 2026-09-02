@@ -79,6 +79,11 @@ export async function createCheckout(req, res) {
       taxCents,
       totalCents,
       orderNote,
+      // Carried through to the shipment once the order is paid (see
+      // ensureShipmentForOrderId) so the "create shipping label" link in
+      // the Discord notification can point at the right carrier's portal
+      // without Korallia having to remember which one the shopper picked.
+      carrier: validatedShipping?.carrier || null,
     });
 
     const redirectUrl = buildThankYouRedirectUrl({

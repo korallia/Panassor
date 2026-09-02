@@ -1,7 +1,10 @@
+import { randomUUID } from "crypto";
+
 import pool from "../db/pool.js";
 
 import { hasRequiredShippingRecipient } from "./shipping.service.js";
 import { notifyNewOrderShipment } from "./discord.service.js";
+import { buildTrackingUrl, sendTrackingEmail } from "./trackingEmail.service.js";
 
 function normalizeCartSnapshot(cartSnapshot) {
   if (Array.isArray(cartSnapshot)) {
@@ -38,7 +41,8 @@ export async function getOrderForShipment(orderId) {
       status,
       cart_snapshot,
       total_cents,
-      currency
+      currency,
+      selected_carrier
     FROM orders
     WHERE id = $1;
     `,
@@ -70,6 +74,9 @@ export async function findShipmentByOrderId(orderId) {
       carrier,
       tracking_number,
       tracking_url,
+
+      admin_access_token,
+      tracking_email_sent_at,
 
       notes,
       created_at,
@@ -105,6 +112,9 @@ export async function findShipmentById(shipmentId) {
       carrier,
       tracking_number,
       tracking_url,
+
+      admin_access_token,
+      tracking_email_sent_at,
 
       notes,
       created_at,
@@ -284,6 +294,12 @@ export async function createShipmentEvent({
 }
 
 async function createShipmentFromOrder({ order, shippingRecipient }) {
+  // Generated here (not a DB default) to match the existing
+  // orders.thank_you_token pattern -- a secret token in a link, not a
+  // real login, giving access to just this one shipment's tracking-entry
+  // page (see shipments.controller.js's getShipmentTrackingEntry).
+  const adminAccessToken = randomUUID();
+
   const result = await pool.query(
     `
     INSERT INTO shipments (
@@ -299,7 +315,10 @@ async function createShipmentFromOrder({ order, shippingRecipient }) {
       locality,
       province,
       postal_code,
-      country
+      country,
+
+      carrier,
+      admin_access_token
     )
     VALUES (
       $1,
@@ -314,7 +333,10 @@ async function createShipmentFromOrder({ order, shippingRecipient }) {
       $7,
       $8,
       $9,
-      $10
+      $10,
+
+      $11,
+      $12
     )
     RETURNING
       id,
@@ -336,6 +358,9 @@ async function createShipmentFromOrder({ order, shippingRecipient }) {
       tracking_number,
       tracking_url,
 
+      admin_access_token,
+      tracking_email_sent_at,
+
       notes,
       created_at,
       updated_at;
@@ -353,6 +378,14 @@ async function createShipmentFromOrder({ order, shippingRecipient }) {
       shippingRecipient.address.province,
       shippingRecipient.address.postalCode,
       shippingRecipient.address.country,
+
+      // Set once at checkout time from the shopper's chosen shipping
+      // option (orders.selected_carrier) -- NULL for any order placed
+      // before this existed, or if shipping validation somehow didn't
+      // run. Korallia can still fill it in manually on the tracking-entry
+      // page either way.
+      order.selected_carrier || null,
+      adminAccessToken,
     ]
   );
 
@@ -866,4 +899,113 @@ export async function updateShipmentTracking({
   });
 
   return updatedShipment;
+}
+const TRACKING_ENTRY_CARRIERS = new Set(["postes_canada", "purolator"]);
+
+function trackingEntryError(status, message) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+}
+
+// Powers the tracking-entry page (see shipments.controller.js's
+// getShipmentTrackingEntry/postShipmentTrackingEntry) -- the key is
+// shipments.admin_access_token, a per-shipment secret link (same idea as
+// orders.thank_you_token), not a real login.
+export async function getShipmentForTrackingEntry({ shipmentId, key }) {
+  const shipment = await findShipmentById(shipmentId);
+
+  if (!shipment || !key || shipment.admin_access_token !== key) {
+    return null;
+  }
+
+  const shipmentItems = await getShipmentItems(shipment.id);
+
+  return { shipment, shipmentItems };
+}
+
+// Saves the carrier/tracking number Korallia enters on that page, marks
+// the shipment "shipped", and sends the customer their tracking email --
+// all in one step since there's no separate "confirm" action in the UI.
+// Re-submitting (e.g. to fix a typo) just re-sends the email with the
+// corrected info rather than tracking a stricter "already sent" guard --
+// simplest option, and a rare enough case that a duplicate corrected
+// email is a fine trade-off.
+export async function submitShipmentTracking({
+  shipmentId,
+  key,
+  carrier,
+  trackingNumber,
+  trackingUrl,
+}) {
+  const shipment = await findShipmentById(shipmentId);
+
+  if (!shipment || !key || shipment.admin_access_token !== key) {
+    throw trackingEntryError(404, "SHIPMENT_NOT_FOUND");
+  }
+
+  const normalizedCarrier = String(carrier || "").trim();
+  const normalizedTrackingNumber = String(trackingNumber || "").trim();
+
+  if (!TRACKING_ENTRY_CARRIERS.has(normalizedCarrier)) {
+    throw trackingEntryError(400, "INVALID_CARRIER");
+  }
+
+  if (!normalizedTrackingNumber) {
+    throw trackingEntryError(400, "MISSING_TRACKING_NUMBER");
+  }
+
+  const resolvedTrackingUrl =
+    String(trackingUrl || "").trim() ||
+    buildTrackingUrl(normalizedCarrier, normalizedTrackingNumber);
+
+  const updatedShipment = await updateShipmentTracking({
+    shipmentId,
+    carrier: normalizedCarrier,
+    trackingNumber: normalizedTrackingNumber,
+    trackingUrl: resolvedTrackingUrl,
+    source: "admin-tracking-form",
+  });
+
+  await updateShipmentStatus({
+    shipmentId,
+    status: "shipped",
+    source: "admin-tracking-form",
+    message: `Tracking entered via the admin form (${normalizedCarrier} ${normalizedTrackingNumber}).`,
+  });
+
+  const order = await getOrderForShipment(updatedShipment.order_id);
+  const shipmentItems = await getShipmentItems(shipmentId);
+
+  try {
+    await sendTrackingEmail({
+      recipientEmail: updatedShipment.recipient_email,
+      recipientName: updatedShipment.recipient_display_name,
+      orderId: order?.id ?? updatedShipment.order_id,
+      shipmentItems,
+      carrier: normalizedCarrier,
+      trackingNumber: normalizedTrackingNumber,
+      trackingUrl: resolvedTrackingUrl,
+    });
+
+    await pool.query(
+      `UPDATE shipments SET tracking_email_sent_at = NOW() WHERE id = $1;`,
+      [shipmentId]
+    );
+  } catch (error) {
+    // The tracking is saved either way -- don't lose that just because
+    // the email send hiccuped. Surface it so the admin page can tell
+    // Korallia to retry the send instead of assuming it went out.
+    console.error(
+      `Tracking email failed to send for shipment #${shipmentId}:`,
+      error
+    );
+    throw trackingEntryError(502, "TRACKING_SAVED_EMAIL_FAILED");
+  }
+
+  return {
+    ...updatedShipment,
+    status: "shipped",
+    tracking_email_sent_at: new Date().toISOString(),
+  };
 }

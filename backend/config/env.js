@@ -83,6 +83,18 @@ export const env = {
     environment: readEnv("PUROLATOR_ENVIRONMENT", "test"),
   },
 
+  resend: {
+    // Transactional email (order tracking notifications) via Resend
+    // (https://resend.com). Create an API key in their dashboard and
+    // verify the panassor.ca domain there first (a few DNS records) so
+    // emails can be sent AS support@panassor.ca instead of Resend's
+    // shared onboarding domain.
+    apiKey: readEnv("RESEND_API_KEY"),
+
+    // Full "Display Name <email>" form, e.g. "Panassor <support@panassor.ca>".
+    fromEmail: readEnv("RESEND_FROM_EMAIL", "Panassor <support@panassor.ca>"),
+  },
+
   discord: {
     // Incoming webhook URL for the Discord channel that should receive
     // new-order notifications. Optional: if unset, notifications are

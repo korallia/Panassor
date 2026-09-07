@@ -1,4 +1,5 @@
 import { env } from "../config/env.js";
+import pool from "../db/pool.js";
 
 // =========================================
 // DISCORD ORDER NOTIFICATIONS
@@ -156,7 +157,11 @@ export async function notifyNewOrderShipment({ order, shipment, shipmentItems })
         }
       : { embeds: [embed] };
 
-    const response = await fetch(webhookUrl, {
+    // ?wait=true makes Discord return the created message (including its
+    // id) instead of a bare 204 -- we need that id to edit this same
+    // message in place later (see editShipmentDiscordStatus below), as
+    // the shipment moves from "reçue" -> "en chemin" -> "livrée".
+    const response = await fetch(`${webhookUrl}?wait=true`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -169,8 +174,124 @@ export async function notifyNewOrderShipment({ order, shipment, shipmentItems })
         response.status,
         body
       );
+      return;
+    }
+
+    const sentMessage = await response.json().catch(() => null);
+
+    if (sentMessage?.id) {
+      await pool.query(
+        `UPDATE shipments SET discord_message_id = $1 WHERE id = $2;`,
+        [sentMessage.id, shipment.id]
+      );
     }
   } catch (error) {
     console.warn("Discord order notification threw an error:", error);
+  }
+}
+
+// =========================================
+// EDITING THE ORDER MESSAGE AS THE SHIPMENT PROGRESSES
+//
+// The "new order" message posted above stays as the single message for
+// this order -- instead of posting new messages, we PATCH it in place
+// as the shipment moves through 3 stages:
+//   1. reçue      (posted by notifyNewOrderShipment above)
+//   2. in_transit (tracking number entered -- see shipments.service.js)
+//   3. delivered  (detected automatically -- see jobs/trackingPoller.js)
+//
+// Requires shipment.discord_message_id, captured via ?wait=true when
+// the original message was sent. If it's missing (message send failed,
+// or DISCORD_ORDER_WEBHOOK_URL wasn't set at the time), this silently
+// no-ops -- never blocks the caller on a Discord hiccup.
+// =========================================
+
+const SHIPMENT_STAGE_CONFIG = {
+  in_transit: { titlePrefix: "🚚 En chemin", color: 0x3498db },
+  delivered: { titlePrefix: "✅ Livré", color: 0x9b59b6 },
+};
+
+const CARRIER_LABELS_FR = {
+  postes_canada: "Postes Canada",
+  purolator: "Purolator",
+};
+
+export async function editShipmentDiscordStatus({
+  order,
+  shipment,
+  shipmentItems,
+  stage,
+  trackingUrl = null,
+}) {
+  const webhookUrl = env.discord.orderWebhookUrl;
+  const stageConfig = SHIPMENT_STAGE_CONFIG[stage];
+
+  if (!webhookUrl || !shipment?.discord_message_id || !stageConfig) {
+    return;
+  }
+
+  try {
+    const addressLines = formatAddressLines({
+      line1: shipment.address_line_1,
+      line2: shipment.address_line_2,
+      locality: shipment.locality,
+      province: shipment.province,
+      postalCode: shipment.postal_code,
+      country: shipment.country,
+    });
+
+    const itemsText =
+      buildItemSummaries(shipmentItems).map(formatItemLine).join("\n") || "—";
+
+    const fields = [
+      { name: "Client", value: shipment.recipient_display_name || "—" },
+      { name: "Adresse", value: addressLines.join("\n") || "—" },
+      { name: "Articles", value: itemsText },
+      { name: "Total", value: formatTotal(order), inline: true },
+    ];
+
+    if (shipment.carrier && shipment.tracking_number) {
+      fields.push({
+        name: "Transporteur",
+        value: CARRIER_LABELS_FR[shipment.carrier] || shipment.carrier,
+        inline: true,
+      });
+      fields.push({
+        name: "Numéro de suivi",
+        value: trackingUrl
+          ? `[${shipment.tracking_number}](${trackingUrl})`
+          : shipment.tracking_number,
+      });
+    }
+
+    const embed = {
+      title: `${stageConfig.titlePrefix} — commande #${order.id}`,
+      color: stageConfig.color,
+      fields,
+      timestamp: new Date().toISOString(),
+    };
+
+    const response = await fetch(
+      `${webhookUrl}/messages/${shipment.discord_message_id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ embeds: [embed] }),
+      }
+    );
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      console.warn(
+        `Discord shipment status edit (${stage}) failed:`,
+        response.status,
+        body
+      );
+    }
+  } catch (error) {
+    console.warn(
+      `Discord shipment status edit (${stage}) threw an error:`,
+      error
+    );
   }
 }

@@ -202,3 +202,61 @@ export async function getCanadaPostDomesticRates({
       return false;
     });
 }
+
+// =========================================
+// TRACKING (Get Tracking Summary, PIN-based)
+//
+// Confirmed against Canada Post's Tracking 1.0.0 OpenAPI spec (Korallia
+// downloaded it from the dev portal): GET /tracking/v1/pins/{pin}/summaries,
+// same OAuth2 bearer token as Rating. Response is an array with one
+// object; `actualDeliveryDate` is blank/absent until delivered, then
+// holds the delivery date -- that's the field the poller checks.
+// =========================================
+
+const TRACKING_BASE_URL = `${API_BASE_URL}/tracking/v1`;
+
+/**
+ * @param {string} pin - the Canada Post tracking number (PIN)
+ * @returns {Promise<{delivered: boolean, deliveredAt: string|null, rawEventDescription: string|null}>}
+ */
+export async function getCanadaPostTrackingStatus(pin) {
+  assertCanadaPostConfig();
+
+  const accessToken = await getAccessToken();
+
+  const response = await fetchWithRetry(
+    `${TRACKING_BASE_URL}/pins/${encodeURIComponent(pin)}/summaries`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "Accept-Language": "fr-CA",
+      },
+    }
+  );
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const error = new Error(
+      data?.detail || data?.title || `Canada Post tracking failed: ${response.status}`
+    );
+    error.status = response.status;
+    error.body = data;
+    throw error;
+  }
+
+  // Response is an array (usually 1 item) of tracking-summary objects.
+  const summary = Array.isArray(data) ? data[0] : null;
+
+  if (!summary) {
+    return { delivered: false, deliveredAt: null, rawEventDescription: null };
+  }
+
+  return {
+    delivered: Boolean(summary.actualDeliveryDate),
+    deliveredAt: summary.actualDeliveryDate || null,
+    rawEventDescription: summary.eventDescription || null,
+  };
+}

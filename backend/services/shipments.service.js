@@ -5,6 +5,7 @@ import pool from "../db/pool.js";
 import { hasRequiredShippingRecipient } from "./shipping.service.js";
 import { notifyNewOrderShipment } from "./discord.service.js";
 import { buildTrackingUrl, sendTrackingEmail } from "./trackingEmail.service.js";
+import { editShipmentDiscordStatus } from "./discord.service.js";
 
 function normalizeCartSnapshot(cartSnapshot) {
   if (Array.isArray(cartSnapshot)) {
@@ -77,6 +78,7 @@ export async function findShipmentByOrderId(orderId) {
 
       admin_access_token,
       tracking_email_sent_at,
+      discord_message_id,
 
       notes,
       created_at,
@@ -115,6 +117,7 @@ export async function findShipmentById(shipmentId) {
 
       admin_access_token,
       tracking_email_sent_at,
+      discord_message_id,
 
       notes,
       created_at,
@@ -360,6 +363,7 @@ async function createShipmentFromOrder({ order, shippingRecipient }) {
 
       admin_access_token,
       tracking_email_sent_at,
+      discord_message_id,
 
       notes,
       created_at,
@@ -875,6 +879,7 @@ export async function updateShipmentTracking({
       carrier,
       tracking_number,
       tracking_url,
+      discord_message_id,
 
       notes,
       created_at,
@@ -1003,9 +1008,125 @@ export async function submitShipmentTracking({
     throw trackingEntryError(502, "TRACKING_SAVED_EMAIL_FAILED");
   }
 
+  // Move the Discord order message from "reçue" to "en chemin" now that
+  // a real tracking number exists. Never throws (see discord.service.js)
+  // -- a Discord hiccup here must never undo the tracking/email work
+  // above, which already succeeded.
+  await editShipmentDiscordStatus({
+    order,
+    shipment: updatedShipment,
+    shipmentItems,
+    stage: "in_transit",
+    trackingUrl: resolvedTrackingUrl,
+  });
+
   return {
     ...updatedShipment,
     status: "shipped",
     tracking_email_sent_at: new Date().toISOString(),
   };
+}
+
+// =========================================
+// AUTOMATIC DELIVERY DETECTION (carrier tracking poller)
+//
+// Used by jobs/trackingPoller.js -- see that file for the actual polling
+// loop and the carrier-specific tracking calls.
+// =========================================
+
+export async function getShipmentsAwaitingDelivery() {
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      order_id,
+      carrier,
+      tracking_number,
+      discord_message_id,
+
+      recipient_display_name,
+      recipient_email,
+      recipient_phone,
+
+      address_line_1,
+      address_line_2,
+      locality,
+      province,
+      postal_code,
+      country,
+
+      tracking_url
+    FROM shipments
+    WHERE status = 'shipped'
+      AND carrier IS NOT NULL
+      AND tracking_number IS NOT NULL
+    ORDER BY updated_at ASC;
+    `
+  );
+
+  return result.rows;
+}
+
+export async function touchShipmentTrackingCheckedAt(shipmentId) {
+  await pool.query(
+    `UPDATE shipments SET carrier_tracking_checked_at = NOW() WHERE id = $1;`,
+    [shipmentId]
+  );
+}
+
+export async function markShipmentDelivered({ shipmentId, deliveredAt }) {
+  const currentShipment = await findShipmentById(shipmentId);
+
+  if (!currentShipment || currentShipment.status === "delivered") {
+    return currentShipment;
+  }
+
+  const result = await pool.query(
+    `
+    UPDATE shipments
+    SET
+      status = 'delivered'::shipment_status,
+      delivered_at = COALESCE($1::timestamp, NOW()),
+      carrier_tracking_checked_at = NOW()
+    WHERE id = $2
+    RETURNING
+      id,
+      order_id,
+      status,
+
+      recipient_display_name,
+      recipient_email,
+      recipient_phone,
+
+      address_line_1,
+      address_line_2,
+      locality,
+      province,
+      postal_code,
+      country,
+
+      carrier,
+      tracking_number,
+      tracking_url,
+      discord_message_id,
+
+      notes,
+      created_at,
+      updated_at;
+    `,
+    [deliveredAt || null, shipmentId]
+  );
+
+  const updatedShipment = result.rows[0];
+
+  await createShipmentEvent({
+    shipmentId,
+    eventType: "shipment_status_updated",
+    previousStatus: currentShipment.status,
+    newStatus: "delivered",
+    source: "carrier-tracking-poller",
+    message: `Delivery detected automatically via carrier tracking (${currentShipment.carrier}).`,
+  });
+
+  return updatedShipment;
 }

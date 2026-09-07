@@ -287,3 +287,64 @@ export async function getPurolatorEstimate({
 
 export const PUROLATOR_DOMESTIC_SERVICE_ID = DOMESTIC_SERVICE_ID;
 export const PUROLATOR_INTERNATIONAL_SERVICE_ID = INTERNATIONAL_SERVICE_ID;
+
+// =========================================
+// TRACKING (search by tracking id)
+//
+// Confirmed against Purolator's Tracking OpenAPI spec (Korallia
+// downloaded it from the API Portal): POST /track/v1/shipment, same
+// bearer token + x-api-key as the Estimate call above. The delivered
+// signal is package.details.deliveryDetails.deliveryDateTime -- only
+// present once the package has actually been delivered (it also carries
+// who signed for it, per the spec), so that's what the poller checks.
+// =========================================
+
+/**
+ * @param {string} pin - the Purolator tracking number
+ * @returns {Promise<{delivered: boolean, deliveredAt: string|null, rawStatusDescription: string|null}>}
+ */
+export async function getPurolatorTrackingStatus(pin) {
+  assertPurolatorConfig();
+
+  const accessToken = await getAccessToken();
+
+  const body = {
+    language: "en",
+    search: [{ trackingId: pin }],
+  };
+
+  const response = await fetchWithRetry(
+    `${getBusinessApiBaseUrl()}/track/v1/shipment`,
+    {
+      method: "POST",
+      headers: {
+        "x-api-key": env.purolator.apiKey,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const error = new Error(
+      data?.errors?.[0]?.description ||
+        `Purolator tracking failed: ${response.status}`
+    );
+    error.status = response.status;
+    error.body = data;
+    throw error;
+  }
+
+  const searchResultPin = data?.searchResult?.[0]?.pin;
+  const purolatorPackage = searchResultPin?.shipment?.package?.[0];
+  const deliveryDetails = purolatorPackage?.details?.deliveryDetails;
+
+  return {
+    delivered: Boolean(deliveryDetails?.deliveryDateTime),
+    deliveredAt: deliveryDetails?.deliveryDateTime || null,
+    rawStatusDescription: purolatorPackage?.status?.description || null,
+  };
+}

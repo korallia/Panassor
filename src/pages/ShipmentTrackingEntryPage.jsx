@@ -88,9 +88,11 @@ function ShipmentTrackingEntryPage() {
   const containerStyle = {
     maxWidth: 480,
     margin: "48px auto",
-    padding: "0 20px",
+    padding: "24px 20px",
     fontFamily: "system-ui, sans-serif",
     color: "#1a1a1a",
+    background: "#ffffff",
+    borderRadius: 8,
   };
 
   if (status === "loading") {

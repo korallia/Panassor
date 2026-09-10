@@ -170,6 +170,13 @@ export async function getCanadaPostDomesticRates({
     throw error;
   }
 
+  // TEMP DEBUG (a retirer une fois le probleme des prix a 0 regle) --
+  // reponse brute au complet, avant tout parsing/filtrage, pour voir
+  // exactement ce que Postes Canada renvoie en production (le corps
+  // envoye est loggue aussi pour confirmer customerNumber/quoteType).
+  console.log("[canada-post DEBUG] request body:", JSON.stringify(body));
+  console.log("[canada-post DEBUG] raw rates response:", JSON.stringify(data));
+
   // Normalize into the shape the frontend's shipping-quote contract
   // expects (see src/utils/shippingPlaceholder.js) — cents, not dollars.
   //

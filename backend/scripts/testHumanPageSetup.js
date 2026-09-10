@@ -22,6 +22,10 @@ if (!email) {
   process.exit(1);
 }
 
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function main() {
   console.log("Creating test order...");
 
@@ -58,6 +62,13 @@ async function main() {
   if (!shipment) {
     throw new Error("ensureShipmentForOrderId returned null -- check the logs above.");
   }
+
+  // ensureShipmentForOrderId fires the Discord "Nouvelle commande" webhook
+  // (and saves its discord_message_id) without awaiting it -- fine in the
+  // real server (the DB pool never closes), but this short-lived script's
+  // pool.end() would otherwise race it and throw "Cannot use a pool after
+  // calling end on the pool". Give it a moment to finish first.
+  await wait(3000);
 
   const url = `${env.siteUrl}/expedition?shipmentId=${shipment.id}&key=${shipment.admin_access_token}`;
 

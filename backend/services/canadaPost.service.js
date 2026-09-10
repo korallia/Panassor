@@ -170,34 +170,33 @@ export async function getCanadaPostDomesticRates({
     throw error;
   }
 
-  // TEMP DEBUG (a retirer une fois le probleme des prix a 0 regle) --
-  // reponse brute au complet, avant tout parsing/filtrage, pour voir
-  // exactement ce que Postes Canada renvoie en production (le corps
-  // envoye est loggue aussi pour confirmer customerNumber/quoteType).
-  console.log("[canada-post DEBUG] request body:", JSON.stringify(body));
-  console.log("[canada-post DEBUG] raw rates response:", JSON.stringify(data));
-
   // Normalize into the shape the frontend's shipping-quote contract
   // expects (see src/utils/shippingPlaceholder.js) — cents, not dollars.
   //
-  // NOTE: the live response uses kebab-case keys for these two fields
-  // ("service-name", "price-details") even though serviceCode and
-  // serviceStandard's own children are camelCase -- confirmed via a raw
-  // debug call. Reading the camelCase names we originally guessed
-  // silently returned undefined (blank service name, $0.00 price).
+  // NOTE: Postes Canada n'est pas cohérent sur la casse de ces deux champs
+  // -- confirmé le 2026-09-10 via un vrai appel de PRODUCTION que ces
+  // champs arrivent en camelCase ("serviceName", "priceDetails"), alors
+  // qu'un appel de debug antérieur (probablement contre Test/sandbox)
+  // avait montré du kebab-case ("service-name", "price-details"). On
+  // accepte les deux pour ne pas se refaire prendre si l'un des deux
+  // environnements change de comportement encore une fois.
   return (Array.isArray(data) ? data : [])
-    .map((service) => ({
-      id: `cp-${service.serviceCode}`.toLowerCase(),
-      carrier: "postes_canada",
-      carrierLabel: "Postes Canada",
-      serviceCode: service.serviceCode,
-      serviceLabel: service["service-name"],
-      priceCents: Math.round(Number(service["price-details"]?.due || 0) * 100),
-      expectedDeliveryDate:
-        service.serviceStandard?.expectedDeliveryDate || null,
-      expectedTransitDays:
-        service.serviceStandard?.expectedTransitTime ?? null,
-    }))
+    .map((service) => {
+      const priceDetails = service.priceDetails || service["price-details"];
+
+      return {
+        id: `cp-${service.serviceCode}`.toLowerCase(),
+        carrier: "postes_canada",
+        carrierLabel: "Postes Canada",
+        serviceCode: service.serviceCode,
+        serviceLabel: service.serviceName || service["service-name"],
+        priceCents: Math.round(Number(priceDetails?.due || 0) * 100),
+        expectedDeliveryDate:
+          service.serviceStandard?.expectedDeliveryDate || null,
+        expectedTransitDays:
+          service.serviceStandard?.expectedTransitTime ?? null,
+      };
+    })
     // Defensive: a missing/zero price field would otherwise silently show
     // up as "free shipping" in the cart. Drop it and log instead --
     // better to show one fewer option than to undercharge for real.

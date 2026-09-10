@@ -11,10 +11,16 @@ const API_BASE_URL =
 const TOKEN_URL = `${API_BASE_URL}/cpc-api-native-oauth-provider/oauth2/token`;
 const RATES_URL = `${API_BASE_URL}/rating/v1/prices`;
 
-// The two domestic service codes we surface to shoppers (see the
-// shipping plan, section 02): Postes Canada standard tiers. Purolator
-// Express covers the "fast" domestic option separately.
-export const CANADA_POST_DOMESTIC_SERVICE_CODES = ["DOM.EP", "DOM.XP"];
+// Un seul service Postes Canada exposé aux clients : Colis standard.
+// Purolator Express couvre l'option "rapide" separement -- Korallia a
+// choisi de ne pas montrer Colis accelere / Xpresspost pour garder le
+// cart simple (2026-09-10).
+//
+// Code a confirmer au premier vrai appel en prod (pas trouve dans une
+// spec OpenAPI ici) -- suit la meme convention que DOM.EP/DOM.XP deja
+// confirmes ("DOM." + 2 lettres), donc "DOM.RP" (Regular Parcel) est le
+// candidat le plus probable pour Colis standard.
+export const CANADA_POST_DOMESTIC_SERVICE_CODES = ["DOM.RP"];
 
 let cachedToken = null; // { accessToken, expiresAt: epochMs }
 

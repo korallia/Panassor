@@ -26,6 +26,15 @@ const CARRIER_OPTIONS = [
   { value: "purolator", label: "Purolator" },
 ];
 
+function formatMoney(cents) {
+  if (typeof cents !== "number") return "";
+
+  return new Intl.NumberFormat("fr-CA", {
+    style: "currency",
+    currency: "CAD",
+  }).format(cents / 100);
+}
+
 function ShipmentTrackingEntryPage() {
   const { shipmentId, key } = getTrackingEntryAccessFromUrl();
 
@@ -115,6 +124,28 @@ function ShipmentTrackingEntryPage() {
       <p style={{ color: "#555", marginTop: 0 }}>
         {entry.recipientDisplayName}
       </p>
+
+      {(entry.paidShipping?.carrierLabel || entry.paidShipping?.serviceLabel) && (
+        <p
+          style={{
+            fontSize: 15,
+            fontWeight: 600,
+            color: "#7a4b00",
+            background: "#fff3d6",
+            border: "1px solid #e6c46b",
+            padding: "10px 12px",
+            borderRadius: 4,
+            marginTop: 12,
+          }}
+        >
+          Service payé par le client :{" "}
+          {[entry.paidShipping.carrierLabel, entry.paidShipping.serviceLabel]
+            .filter(Boolean)
+            .join(" — ")}
+          {entry.paidShipping.cents != null &&
+            ` (${formatMoney(entry.paidShipping.cents)})`}
+        </p>
+      )}
 
       {entry.items?.length > 0 && (
         <ul style={{ fontSize: 14, color: "#333", paddingLeft: 18 }}>

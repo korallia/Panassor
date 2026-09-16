@@ -224,7 +224,7 @@ export async function getShipmentTrackingEntry(req, res) {
       return res.status(404).json({ message: "Shipment not found" });
     }
 
-    const { shipment, shipmentItems } = result;
+    const { shipment, shipmentItems, order } = result;
 
     res.json({
       orderId: shipment.order_id,
@@ -235,6 +235,18 @@ export async function getShipmentTrackingEntry(req, res) {
       trackingUrl: shipment.tracking_url,
       trackingEmailSentAt: shipment.tracking_email_sent_at,
       items: buildItemSummaries(shipmentItems),
+
+      // What the shopper actually paid for -- shows up as a callout on
+      // the page so Korallia knows which service to buy, independent of
+      // whatever the carrier dropdown below currently says.
+      paidShipping: {
+        carrierLabel: order?.shipping_carrier_label || null,
+        serviceLabel: order?.shipping_service_label || null,
+        cents:
+          typeof order?.shipping_cents === "number"
+            ? order.shipping_cents
+            : null,
+      },
     });
   } catch (error) {
     console.error("Failed to fetch shipment tracking-entry info:", error);

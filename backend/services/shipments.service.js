@@ -43,7 +43,10 @@ export async function getOrderForShipment(orderId) {
       cart_snapshot,
       total_cents,
       currency,
-      selected_carrier
+      selected_carrier,
+      shipping_carrier_label,
+      shipping_service_label,
+      shipping_cents
     FROM orders
     WHERE id = $1;
     `,
@@ -926,7 +929,14 @@ export async function getShipmentForTrackingEntry({ shipmentId, key }) {
 
   const shipmentItems = await getShipmentItems(shipment.id);
 
-  return { shipment, shipmentItems };
+  // The shipping option the shopper actually picked and paid for at
+  // checkout -- shown on the tracking-entry page so Korallia knows which
+  // service to buy at the counter, since shipment.carrier (the dropdown
+  // she fills in below) is entered manually and defaults to "postes_canada"
+  // regardless of what was paid for.
+  const order = await getOrderForShipment(shipment.order_id);
+
+  return { shipment, shipmentItems, order };
 }
 
 // Saves the carrier/tracking number Korallia enters on that page, marks

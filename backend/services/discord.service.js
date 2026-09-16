@@ -256,6 +256,20 @@ export async function editShipmentDiscordStatus({
         value: CARRIER_LABELS_FR[shipment.carrier] || shipment.carrier,
         inline: true,
       });
+
+      // The exact service the shopper paid for at checkout (e.g. "Colis
+      // standard") -- stored on `orders.shipping_service_label`, separate
+      // from shipment.carrier which is whatever Korallia enters manually
+      // on the tracking-entry page and can, in theory, differ. Only shown
+      // when we actually have it (older orders predate this column).
+      if (order?.shipping_service_label) {
+        fields.push({
+          name: "Service",
+          value: order.shipping_service_label,
+          inline: true,
+        });
+      }
+
       fields.push({
         name: "Numéro de suivi",
         value: trackingUrl

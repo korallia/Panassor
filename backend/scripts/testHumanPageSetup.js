@@ -28,6 +28,19 @@ const carrierLabel = carrierLabelArg || "Postes Canada";
 const serviceLabel = serviceLabelArg || "Colis standard";
 const shippingCents = centsArg ? Number(centsArg) : 2314;
 
+// orders.selected_carrier stores the raw carrier CODE ("postes_canada" /
+// "purolator" -- see CARRIER_OPTIONS in ShipmentTrackingEntryPage.jsx),
+// separate from shipping_carrier_label above which is just the display
+// text. Derived from carrierLabel here instead of a 5th argv so the
+// script stays a 4-arg call -- previously this was hardcoded to
+// "postes_canada" regardless of carrierLabel, which is why the
+// /expedition page's "Transporteur" dropdown kept defaulting to Postes
+// Canada even when testing a Purolator label (Korallia caught this
+// 2026-09-16 testing order #62).
+const carrierCode = carrierLabel.toLowerCase().includes("purolator")
+  ? "purolator"
+  : "postes_canada";
+
 if (!email) {
   console.error(
     "Usage: node backend/scripts/testHumanPageSetup.js <email> [carrierLabel] [serviceLabel] [cents]"
@@ -51,7 +64,7 @@ async function main() {
     taxCents: 0,
     totalCents: 29500 + shippingCents,
     orderNote: "TEST SCRIPT -- testHumanPageSetup.js -- safe to delete",
-    carrier: "postes_canada",
+    carrier: carrierCode,
     shippingCarrierLabel: carrierLabel,
     shippingServiceCode: "test_service",
     shippingServiceLabel: serviceLabel,

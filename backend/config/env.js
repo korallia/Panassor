@@ -1,4 +1,20 @@
-const requiredEnvVariables = ["SQUARE_ACCESS_TOKEN", "SQUARE_LOCATION_ID"];
+// Verifiees au demarrage (voir validateEnv() plus bas) -- une valeur
+// manquante fait planter le serveur tout de suite avec un message clair,
+// plutot que de laisser une fonctionnalite echouer en silence plus tard en
+// production. Etendue le 2026-09-16 en prevision du transfert vers AWS :
+// avant, seules les 2 variables Square etaient verifiees.
+const requiredEnvVariables = [
+  "SQUARE_ACCESS_TOKEN",
+  "SQUARE_LOCATION_ID",
+  "DATABASE_URL",
+  "ASSETS_BASE_URL",
+  "CANADA_POST_API_KEY",
+  "CANADA_POST_API_SECRET",
+  "PUROLATOR_CLIENT_ID",
+  "PUROLATOR_CLIENT_SECRET",
+  "PUROLATOR_API_KEY",
+  "RESEND_API_KEY",
+];
 
 function readEnv(name, fallback = undefined) {
   const value = process.env[name];

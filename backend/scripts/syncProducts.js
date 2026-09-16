@@ -1,4 +1,5 @@
 // scripts/syncProducts.js
+import "dotenv/config";
 import { syncAllProductsToSquare } from "../services/square.catalog.service.js";
 
 const results = await syncAllProductsToSquare();

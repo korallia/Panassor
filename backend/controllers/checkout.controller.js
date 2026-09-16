@@ -84,6 +84,16 @@ export async function createCheckout(req, res) {
       // the Discord notification can point at the right carrier's portal
       // without Korallia having to remember which one the shopper picked.
       carrier: validatedShipping?.carrier || null,
+      // Snapshot of the EXACT shipping option the shopper picked and
+      // paid for -- kept on the order itself (not just folded into the
+      // Square service charge's free-text name) so the thank-you page
+      // and any future admin view can show it right away, without
+      // waiting on the Square webhook to create a shipment row. See
+      // getOrderSummaryById in orders.service.js.
+      shippingCarrierLabel: validatedShipping?.carrierLabel || null,
+      shippingServiceCode: validatedShipping?.serviceCode || null,
+      shippingServiceLabel: validatedShipping?.serviceLabel || null,
+      shippingCents,
     });
 
     const redirectUrl = buildThankYouRedirectUrl({

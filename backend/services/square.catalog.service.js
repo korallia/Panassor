@@ -124,6 +124,37 @@ export async function syncProductToSquare(productId) {
       [mapping.object_id, savedVariation?.version || null, localVariantId]
     );
   }
+
+  // A variant whose OLD square_variation_id didn't exist on Square at
+  // all (e.g. created under a different Square environment) goes
+  // through upsertCatalogObject's "recreate fresh" fallback instead of
+  // the normal #variation_<id> path above, so it never matches the
+  // regex loop -- resolve those here via the old-id -> real-id map that
+  // fallback hands back, or the stale row would silently keep
+  // referencing an id that no longer resolves anywhere (see the
+  // checkout 404 Korallia hit on 2026-09-16).
+  const staleIdToRealId = data.staleIdToRealId || {};
+
+  for (const variant of product.variants || []) {
+    if (
+      variant.square_variation_id &&
+      staleIdToRealId[variant.square_variation_id] &&
+      !variantRealIds.has(variant.id)
+    ) {
+      const realVariationId = staleIdToRealId[variant.square_variation_id];
+      const savedVariation = saved.item_data?.variations?.find(
+        (v) => v.id === realVariationId
+      );
+
+      variantRealIds.set(variant.id, realVariationId);
+
+      await db.query(
+        `UPDATE product_color_variants SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
+        [realVariationId, savedVariation?.version || null, variant.id]
+      );
+    }
+  }
+
   for (const variant of product.variants || []) {
     if (variant.square_variation_id && !variantRealIds.has(variant.id)) {
       variantRealIds.set(variant.id, variant.square_variation_id);

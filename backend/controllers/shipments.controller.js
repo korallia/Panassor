@@ -240,6 +240,12 @@ export async function getShipmentTrackingEntry(req, res) {
       // the page so Korallia knows which service to buy, independent of
       // whatever the carrier dropdown below currently says.
       paidShipping: {
+        // The raw carrier code the shopper picked at checkout (e.g.
+        // "postes_canada") -- lets the form below default its dropdown to
+        // what was actually paid for instead of always "Postes Canada".
+        // Distinct from shipment.carrier above, which is null until
+        // Korallia has actually submitted this form once.
+        carrier: order?.selected_carrier || null,
         carrierLabel: order?.shipping_carrier_label || null,
         serviceLabel: order?.shipping_service_label || null,
         cents:

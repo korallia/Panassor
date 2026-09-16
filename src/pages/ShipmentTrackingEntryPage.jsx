@@ -55,7 +55,22 @@ function ShipmentTrackingEntryPage() {
     getShipmentTrackingEntry(shipmentId, key)
       .then((result) => {
         setEntry(result);
-        if (result.carrier) setCarrier(result.carrier);
+
+        // Default the dropdown to whatever's already been saved for this
+        // shipment (re-opening the form after a first submit) -- and
+        // otherwise to the carrier the shopper actually paid for at
+        // checkout, instead of always falling back to "Postes Canada".
+        const paidCarrier = result.paidShipping?.carrier;
+        const isKnownCarrier = CARRIER_OPTIONS.some(
+          (option) => option.value === paidCarrier
+        );
+
+        if (result.carrier) {
+          setCarrier(result.carrier);
+        } else if (isKnownCarrier) {
+          setCarrier(paidCarrier);
+        }
+
         if (result.trackingNumber) setTrackingNumber(result.trackingNumber);
         if (result.trackingUrl) setTrackingUrl(result.trackingUrl);
         setStatus("ready");

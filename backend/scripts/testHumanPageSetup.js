@@ -4,7 +4,15 @@
 // tracking form for real, testing the real HTTP/page path a human takes
 // instead of calling submitShipmentTracking() directly in code.
 //
-//   node backend/scripts/testHumanPageSetup.js <email>
+//   node backend/scripts/testHumanPageSetup.js <email> [carrierLabel] [serviceLabel] [cents]
+//
+//   [carrierLabel] defaults to "Postes Canada"
+//   [serviceLabel] defaults to "Colis standard"
+//   [cents]        defaults to 2314 ($23.14) -- lets you see the "Service
+//                    paye par le client" callout on the /expedition page
+//                    and the "Service" field on the Discord message,
+//                    since both now read orders.shipping_*_label /
+//                    shipping_cents (Korallia added these 2026-09-16).
 //
 // Does NOT clean up -- run testHumanPageCleanup.js <shipmentId> <orderId>
 // afterwards (the setup script prints the exact command to run).
@@ -15,10 +23,15 @@ import { createPendingLocalOrder } from "../services/orders.service.js";
 import { ensureShipmentForOrderId } from "../services/shipments.service.js";
 import { env } from "../config/env.js";
 
-const [, , email] = process.argv;
+const [, , email, carrierLabelArg, serviceLabelArg, centsArg] = process.argv;
+const carrierLabel = carrierLabelArg || "Postes Canada";
+const serviceLabel = serviceLabelArg || "Colis standard";
+const shippingCents = centsArg ? Number(centsArg) : 2314;
 
 if (!email) {
-  console.error("Usage: node backend/scripts/testHumanPageSetup.js <email>");
+  console.error(
+    "Usage: node backend/scripts/testHumanPageSetup.js <email> [carrierLabel] [serviceLabel] [cents]"
+  );
   process.exit(1);
 }
 
@@ -36,9 +49,13 @@ async function main() {
     ],
     subtotalCents: 29500,
     taxCents: 0,
-    totalCents: 29500,
+    totalCents: 29500 + shippingCents,
     orderNote: "TEST SCRIPT -- testHumanPageSetup.js -- safe to delete",
     carrier: "postes_canada",
+    shippingCarrierLabel: carrierLabel,
+    shippingServiceCode: "test_service",
+    shippingServiceLabel: serviceLabel,
+    shippingCents,
   });
 
   await pool.query(`UPDATE orders SET status = 'paid' WHERE id = $1;`, [orderId]);

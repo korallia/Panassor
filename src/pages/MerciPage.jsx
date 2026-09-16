@@ -546,6 +546,19 @@ function MerciPage() {
                             </span>
                           </div>
 
+                          {typeof order?.shipping?.cents === "number" && (
+                            <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
+                              <span>{copy.shipping}</span>
+                              <span>
+                                {formatMoney(
+                                  order.shipping.cents,
+                                  order.totals.currency,
+                                  pageLanguage
+                                )}
+                              </span>
+                            </div>
+                          )}
+
                           <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
                             <span>{copy.taxes}</span>
                             <span>

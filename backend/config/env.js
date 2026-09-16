@@ -17,6 +17,15 @@ export const env = {
   port: readEnv("PORT", "3001"),
   siteUrl: readEnv("SITE_URL", "http://localhost:5173"),
 
+  // Connexion Postgres (Neon / RDS) -- centralisee ici comme le reste au
+  // lieu d'etre lue directement via process.env dans db/pool.js.
+  databaseUrl: readEnv("DATABASE_URL"),
+
+  // Base URL du bucket/CDN d'images produits (ex: assets.panassor.ca) --
+  // centralisee ici au lieu d'etre lue directement via process.env dans
+  // square.catalog.service.js.
+  assetsBaseUrl: readEnv("ASSETS_BASE_URL"),
+
   square: {
     environment: readEnv("SQUARE_ENVIRONMENT", "sandbox"),
     accessToken: readEnv("SQUARE_ACCESS_TOKEN"),
@@ -41,11 +50,11 @@ export const env = {
     // rate as a Solutions for Small Business member instead.
     contractNumber: readEnv("CANADA_POST_CONTRACT_NUMBER"),
 
-    // "test" uses the Test app's credentials — same gateway URL as
-    // production, but Canada Post returns static/stubbed rates and never
-    // bills. Switch to "production" (with a Production app's keys) once
-    // real numbers are needed, e.g. before going live.
-    environment: readEnv("CANADA_POST_ENVIRONMENT", "test"),
+    // Retire le 2026-09-16 : CANADA_POST_ENVIRONMENT n'etait jamais lue
+    // par canadaPost.service.js (Postes Canada utilise la meme URL de
+    // gateway pour test et production -- seule la paire Key/Secret
+    // change). Contrairement a Purolator ci-dessous, il n'y a rien a
+    // basculer ici.
   },
 
   // Adresse d'origine des envois — le centre/comptoir de dépôt (pas de
@@ -59,7 +68,6 @@ export const env = {
     province: readEnv("SHIPPING_ORIGIN_PROVINCE", "QC"),
     postalCode: readEnv("SHIPPING_ORIGIN_POSTAL_CODE", "J0N1G0"),
     country: readEnv("SHIPPING_ORIGIN_COUNTRY", "CA"),
-    phone: readEnv("SHIPPING_ORIGIN_PHONE"),
   },
 
   // Purolator REST API (E-Ship / API Portal) - "Business Integration" app.
@@ -70,11 +78,14 @@ export const env = {
     clientSecret: readEnv("PUROLATOR_CLIENT_SECRET"),
     apiKey: readEnv("PUROLATOR_API_KEY"),
 
-    // Test-mode-only account numbers from the Purolator dev app. In test
-    // mode, billingAccountNumber must be the test sender account, not a
+    // Test-mode-only account number from the Purolator dev app. In test
+    // mode, billingAccountNumber must be this test sender account, not a
     // real Purolator account number.
+    //
+    // (PUROLATOR_TEST_RECEIVER_ACCOUNT retire le 2026-09-16 : jamais
+    // consomme par purolator.service.js -- on ne facture jamais le
+    // destinataire, seulement l'expediteur.)
     testSenderAccount: readEnv("PUROLATOR_TEST_SENDER_ACCOUNT"),
-    testReceiverAccount: readEnv("PUROLATOR_TEST_RECEIVER_ACCOUNT"),
 
     // Real Purolator courier account number, once Panassor has one and
     // moves to production credentials.

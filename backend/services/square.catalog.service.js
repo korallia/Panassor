@@ -182,7 +182,7 @@ export async function syncProductToSquare(productId) {
 
 function resolveImageUrl(path) {
   if (/^https?:\/\//i.test(path)) return path;
-  const base = (process.env.ASSETS_BASE_URL || "").replace(/\/$/, "");
+  const base = (env.assetsBaseUrl || "").replace(/\/$/, "");
   return `${base}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 

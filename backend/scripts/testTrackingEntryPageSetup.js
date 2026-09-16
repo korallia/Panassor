@@ -4,7 +4,7 @@
 // tracking form for real, testing the real HTTP/page path a human takes
 // instead of calling submitShipmentTracking() directly in code.
 //
-//   node backend/scripts/testHumanPageSetup.js <email> [carrierLabel] [serviceLabel] [cents]
+//   node backend/scripts/testTrackingEntryPageSetup.js <email> [carrierLabel] [serviceLabel] [cents]
 //
 //   [carrierLabel] defaults to "Postes Canada"
 //   [serviceLabel] defaults to "Colis standard"
@@ -14,7 +14,7 @@
 //                    since both now read orders.shipping_*_label /
 //                    shipping_cents (Korallia added these 2026-09-16).
 //
-// Does NOT clean up -- run testHumanPageCleanup.js <shipmentId> <orderId>
+// Does NOT clean up -- run testTrackingEntryPageCleanup.js <shipmentId> <orderId>
 // afterwards (the setup script prints the exact command to run).
 import "dotenv/config";
 import { randomUUID } from "crypto";
@@ -105,7 +105,7 @@ async function main() {
   console.log(`\nOrder #${orderId} / Shipment #${shipment.id} ready.`);
   console.log(`URL: ${url}`);
   console.log(`\nOuvre ce lien, remplis le formulaire (transporteur + numero de tracking), soumets -- puis roule:`);
-  console.log(`  node backend/scripts/testHumanPageCleanup.js ${shipment.id} ${orderId}`);
+  console.log(`  node backend/scripts/testTrackingEntryPageCleanup.js ${shipment.id} ${orderId}`);
 }
 
 main()

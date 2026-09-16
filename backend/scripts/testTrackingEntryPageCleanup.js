@@ -2,7 +2,7 @@
 // submission actually saved carrier/tracking_number/status/discord edit),
 // prints it, then deletes the test order/shipment rows.
 //
-//   node backend/scripts/testHumanPageCleanup.js <shipmentId> <orderId>
+//   node backend/scripts/testTrackingEntryPageCleanup.js <shipmentId> <orderId>
 import "dotenv/config";
 import pool from "../db/pool.js";
 
@@ -11,7 +11,7 @@ const shipmentId = Number(shipmentIdArg);
 const orderId = Number(orderIdArg);
 
 if (!shipmentId || !orderId) {
-  console.error("Usage: node backend/scripts/testHumanPageCleanup.js <shipmentId> <orderId>");
+  console.error("Usage: node backend/scripts/testTrackingEntryPageCleanup.js <shipmentId> <orderId>");
   process.exit(1);
 }
 

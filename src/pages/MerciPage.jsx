@@ -447,16 +447,16 @@ function MerciPage() {
                               </p>
                             )}
 
-                            {shippingAddress.line1 && (
+                            {shippingAddress?.line1 && (
                               <p>{shippingAddress.line1}</p>
                             )}
 
-                            {shippingAddress.line2 && (
+                            {shippingAddress?.line2 && (
                               <p>{shippingAddress.line2}</p>
                             )}
 
-                            {(shippingAddress.locality ||
-                              shippingAddress.province) && (
+                            {(shippingAddress?.locality ||
+                              shippingAddress?.province) && (
                               <p>
                                 {[
                                   shippingAddress.locality,
@@ -467,11 +467,11 @@ function MerciPage() {
                               </p>
                             )}
 
-                            {shippingAddress.postalCode && (
+                            {shippingAddress?.postalCode && (
                               <p>{shippingAddress.postalCode}</p>
                             )}
 
-                            {shippingAddress.country && (
+                            {shippingAddress?.country && (
                               <p>{shippingAddress.country}</p>
                             )}
                           </div>

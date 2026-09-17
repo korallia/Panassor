@@ -60,6 +60,13 @@ export function createCheckout(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function getShippingQuote(payload) {
+  return request("/api/shipping/quote", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 export function getOrderSummary(orderId, key) {
   const params = new URLSearchParams();
 
@@ -80,4 +87,29 @@ export function syncSquareOrder(orderId, key) {
   return request(`/api/orders/${orderId}/sync-square?${params.toString()}`, {
     method: "POST",
   });
+}
+export function getShipmentTrackingEntry(shipmentId, key) {
+  const params = new URLSearchParams();
+
+  if (key) {
+    params.set("key", key);
+  }
+
+  return request(`/api/shipments/${shipmentId}/tracking-entry?${params.toString()}`);
+}
+
+export function submitShipmentTrackingEntry(shipmentId, key, payload) {
+  const params = new URLSearchParams();
+
+  if (key) {
+    params.set("key", key);
+  }
+
+  return request(
+    `/api/shipments/${shipmentId}/tracking-entry?${params.toString()}`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
 }

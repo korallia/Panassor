@@ -14,6 +14,16 @@ export async function createPendingLocalOrder({
   taxCents,
   totalCents,
   orderNote,
+  carrier = null,
+  // Snapshot of the exact shipping option chosen at checkout -- see
+  // checkout.controller.js. Requires the shipping_carrier_label /
+  // shipping_service_code / shipping_service_label / shipping_cents
+  // columns on `orders` (add them once via the ALTER TABLE Korallia ran
+  // 2026-09-16 -- see the migration note in getOrderSummaryById below).
+  shippingCarrierLabel = null,
+  shippingServiceCode = null,
+  shippingServiceLabel = null,
+  shippingCents = null,
 }) {
   const result = await pool.query(
     `
@@ -27,7 +37,13 @@ export async function createPendingLocalOrder({
       currency,
 
       order_note,
-      cart_snapshot
+      cart_snapshot,
+      selected_carrier,
+
+      shipping_carrier_label,
+      shipping_service_code,
+      shipping_service_label,
+      shipping_cents
     )
     VALUES (
       'pending',
@@ -39,7 +55,13 @@ export async function createPendingLocalOrder({
       'CAD',
 
       $5,
-      $6::jsonb
+      $6::jsonb,
+      $7,
+
+      $8,
+      $9,
+      $10,
+      $11
     )
     RETURNING
       id,
@@ -54,6 +76,12 @@ export async function createPendingLocalOrder({
 
       orderNote?.trim() || null,
       JSON.stringify(normalizedItems),
+      carrier,
+
+      shippingCarrierLabel,
+      shippingServiceCode,
+      shippingServiceLabel,
+      shippingCents,
     ]
   );
 
@@ -470,6 +498,13 @@ export async function getOrderSummaryById(id, thankYouToken = null) {
       total_cents,
       currency,
       cart_snapshot,
+
+      selected_carrier,
+      shipping_carrier_label,
+      shipping_service_code,
+      shipping_service_label,
+      shipping_cents,
+
       created_at,
       updated_at
     FROM orders
@@ -500,6 +535,23 @@ export async function getOrderSummaryById(id, thankYouToken = null) {
 
     items: normalizeCartSnapshot(order.cart_snapshot),
 
+    // The shipping METHOD the shopper picked and paid for -- known as
+    // soon as the order is created, unlike `shipment` below which stays
+    // null until Square's webhook confirms payment and hands us the
+    // delivery address. Lets the thank-you page show "how" right away
+    // even before it can show "where".
+    shipping: {
+      carrier: order.selected_carrier,
+      carrierLabel: order.shipping_carrier_label,
+      serviceCode: order.shipping_service_code,
+      serviceLabel: order.shipping_service_label,
+      cents: order.shipping_cents,
+    },
+
+    // The delivery ADDRESS + recipient -- only populated once Square's
+    // webhook has fired and ensureShipmentForOrderId() created the
+    // shipment row (see shipments.service.js). Null right after payment
+    // if the webhook hasn't landed yet.
     shipment: mapShipmentForOrderSummary(shipment),
 
     createdAt: order.created_at,

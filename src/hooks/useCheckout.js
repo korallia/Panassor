@@ -7,7 +7,7 @@ import { useLanguage } from "../context/LanguageContext";
 const LAST_CHECKOUT_STORAGE_KEY = "panassor_last_checkout";
 
 export function useCheckout() {
-  const { items, orderNote } = useCart();
+  const { items, orderNote, selectedShipping } = useCart();
   const { language } = useLanguage();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -23,14 +23,28 @@ export function useCheckout() {
       return;
     }
 
+    if (!selectedShipping) {
+      setCheckoutError(
+        language === "en"
+          ? "Choose a shipping option before checking out."
+          : "Choisis une option de livraison avant de passer à la caisse."
+      );
+      return;
+    }
+
     setIsCheckingOut(true);
     setCheckoutError("");
 
     try {
+      // `shipping` is forwarded with its destination (postalCode/city,
+      // attached in ShippingEstimator.jsx) so the backend can re-run the
+      // same quote and verify the price before charging it -- see
+      // checkout.controller.js's validateSelectedShippingOption call.
       const checkout = await createCheckout({
         language,
         orderNote,
         items,
+        shipping: selectedShipping,
       });
 
       if (!checkout?.checkoutUrl) {
@@ -64,6 +78,6 @@ export function useCheckout() {
     startCheckout,
     isCheckingOut,
     checkoutError,
-    canCheckout: items.length > 0 && !isCheckingOut,
+    canCheckout: items.length > 0 && Boolean(selectedShipping) && !isCheckingOut,
   };
 }

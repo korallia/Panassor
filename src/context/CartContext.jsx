@@ -57,6 +57,7 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState(getStoredCartItems);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [orderNote, setOrderNote] = useState("");
+  const [selectedShipping, setSelectedShipping] = useState(null);
 
   useEffect(() => {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
@@ -140,6 +141,7 @@ export function CartProvider({ children }) {
 const clearCart = () => {
   setItems([]);
   setOrderNote("");
+  setSelectedShipping(null);
 
   try {
     window.localStorage.removeItem(CART_STORAGE_KEY);
@@ -159,6 +161,9 @@ const clearCart = () => {
     return total + normalizeAddQuantity(item.quantity);
   }, 0);
 
+  const shippingCents = selectedShipping?.priceCents || 0;
+  const estimatedTotalCents = subtotalCents + shippingCents;
+
   const value = useMemo(
     () => ({
       items,
@@ -167,6 +172,11 @@ const clearCart = () => {
 
       orderNote,
       setOrderNote,
+
+      selectedShipping,
+      setSelectedShipping,
+      shippingCents,
+      estimatedTotalCents,
 
       isCartOpen,
       openCart,
@@ -177,7 +187,16 @@ const clearCart = () => {
       removeItem,
       clearCart,
     }),
-    [items, itemCount, subtotalCents, orderNote, isCartOpen]
+    [
+      items,
+      itemCount,
+      subtotalCents,
+      orderNote,
+      selectedShipping,
+      shippingCents,
+      estimatedTotalCents,
+      isCartOpen,
+    ]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

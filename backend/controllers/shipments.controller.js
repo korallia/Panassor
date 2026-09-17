@@ -2,10 +2,13 @@ import { env } from "../config/env.js";
 import {
   getShipmentDetailsById,
   getShipmentDetailsByOrderId,
+  getShipmentForTrackingEntry,
+  submitShipmentTracking,
   updateShipmentItemStatus,
   updateShipmentStatus,
   updateShipmentTracking,
 } from "../services/shipments.service.js";
+import { buildItemSummaries } from "../services/discord.service.js";
 
 function blockShipmentRoutesInProduction(res) {
   if (env.nodeEnv !== "production") {
@@ -194,6 +197,102 @@ export async function patchShipmentTracking(req, res) {
     res.status(error.status || 500).json({
       message: error.message || "Failed to update shipment tracking",
       errors: error.errors || [],
+    });
+  }
+}
+function isProduction() {
+  return env.nodeEnv === "production";
+}
+
+// Both routes below are intentionally NOT behind
+// blockShipmentRoutesInProduction -- they're gated by the per-shipment
+// admin_access_token instead (same pattern as orders' thank_you_token),
+// so they're safe to expose in production, unlike the raw /:id admin
+// endpoints above which have no auth at all yet.
+export async function getShipmentTrackingEntry(req, res) {
+  try {
+    const { id } = req.params;
+    const { key } = req.query;
+
+    if (isProduction() && !key) {
+      return res.status(404).json({ message: "Shipment not found" });
+    }
+
+    const result = await getShipmentForTrackingEntry({ shipmentId: id, key });
+
+    if (!result) {
+      return res.status(404).json({ message: "Shipment not found" });
+    }
+
+    const { shipment, shipmentItems, order } = result;
+
+    res.json({
+      orderId: shipment.order_id,
+      recipientDisplayName: shipment.recipient_display_name,
+      status: shipment.status,
+      carrier: shipment.carrier,
+      trackingNumber: shipment.tracking_number,
+      trackingUrl: shipment.tracking_url,
+      trackingEmailSentAt: shipment.tracking_email_sent_at,
+      items: buildItemSummaries(shipmentItems),
+
+      // What the shopper actually paid for -- shows up as a callout on
+      // the page so Korallia knows which service to buy, independent of
+      // whatever the carrier dropdown below currently says.
+      paidShipping: {
+        // The raw carrier code the shopper picked at checkout (e.g.
+        // "postes_canada") -- lets the form below default its dropdown to
+        // what was actually paid for instead of always "Postes Canada".
+        // Distinct from shipment.carrier above, which is null until
+        // Korallia has actually submitted this form once.
+        carrier: order?.selected_carrier || null,
+        carrierLabel: order?.shipping_carrier_label || null,
+        serviceLabel: order?.shipping_service_label || null,
+        cents:
+          typeof order?.shipping_cents === "number"
+            ? order.shipping_cents
+            : null,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch shipment tracking-entry info:", error);
+
+    res.status(error.status || 500).json({
+      message: error.message || "Failed to fetch shipment",
+    });
+  }
+}
+
+export async function postShipmentTrackingEntry(req, res) {
+  try {
+    const { id } = req.params;
+    const { key } = req.query;
+    const { carrier, trackingNumber, trackingUrl } = req.body;
+
+    if (isProduction() && !key) {
+      return res.status(404).json({ message: "Shipment not found" });
+    }
+
+    const updatedShipment = await submitShipmentTracking({
+      shipmentId: id,
+      key,
+      carrier,
+      trackingNumber,
+      trackingUrl,
+    });
+
+    res.json({
+      status: updatedShipment.status,
+      carrier: updatedShipment.carrier,
+      trackingNumber: updatedShipment.tracking_number,
+      trackingUrl: updatedShipment.tracking_url,
+      trackingEmailSentAt: updatedShipment.tracking_email_sent_at,
+    });
+  } catch (error) {
+    console.error("Failed to save shipment tracking:", error);
+
+    res.status(error.status || 500).json({
+      message: error.message || "Failed to save shipment tracking",
     });
   }
 }

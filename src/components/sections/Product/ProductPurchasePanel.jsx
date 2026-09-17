@@ -4,6 +4,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 import { useCart } from "../../../context/CartContext";
 import { getProductSlug, t } from "../../../utils/localization";
 import { getAssetUrl } from "../../../utils/assets";
+import { getCustomizableProducts } from "../../../../backend/panassorApi";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
@@ -49,17 +50,17 @@ function ProductPurchasePanel({
   useEffect(() => {
     async function loadToolOptions() {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/products/customizable`
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to load customizable products: ${response.status}`
-          );
-        }
-
-        const data = await response.json();
+        // Goes through panassorApi.js's shared `request()` helper instead
+        // of building the URL here -- that helper falls back to
+        // http://localhost:3001 when VITE_API_BASE_URL isn't set, which
+        // this component's own fetch used to skip. Without that fallback,
+        // a local .env with no VITE_API_BASE_URL turned this into a
+        // literal "undefined/api/products/customizable" request, resolved
+        // by the browser as a path on Vite's own dev server (not the
+        // backend) -- hence the "<!doctype..." JSON parse error and 404
+        // Korallia hit on 2026-09-16. Only ever surfaced locally, since
+        // Vercel sets VITE_API_BASE_URL at build time.
+        const data = await getCustomizableProducts();
 
         setToolOptions(Array.isArray(data) ? data : []);
       } catch (error) {

@@ -57,7 +57,7 @@ function stripSslParamsFromConnectionString(connectionString) {
 // "The server does not support SSL connections".
 const sslConfig = env.db.disableSsl
   ? false
-  : isAwsRdsHost(process.env.DATABASE_URL)
+  : isAwsRdsHost(env.databaseUrl)
   ? { ca: rdsCaCert, rejectUnauthorized: true }
   : { rejectUnauthorized: true };
 
@@ -68,7 +68,7 @@ if (env.db.disableSsl) {
 }
 
 const pool = new Pool({
-  connectionString: stripSslParamsFromConnectionString(process.env.DATABASE_URL),
+  connectionString: stripSslParamsFromConnectionString(env.databaseUrl),
   ssl: sslConfig,
 });
 

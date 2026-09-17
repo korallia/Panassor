@@ -9,18 +9,34 @@ import {
 import {
   calculateSubtotalCents,
   calculateTaxCents,
-  calculateTotalCents,
 } from "../utils/money.js";
 import {
   normalizeCartItem,
   validateCheckoutItems,
   buildSquareLineItems,
 } from "../services/cart.service.js";
+import { validateSelectedShippingOption } from "../services/shippingQuote.service.js";
 import { createSquarePaymentLink } from "../services/square.service.js";
 import {
   attachSquarePaymentLinkToLocalOrder,
   createPendingLocalOrder,
 } from "../services/orders.service.js";
+
+// One retry before failing checkout outright -- the shipping
+// re-validation calls both carriers live again, and a single transient
+// blip there (same kind of thing fetchWithRetry already smooths over
+// inside each carrier call) shouldn't block a customer from paying.
+async function validateSelectedShippingOptionWithRetry(shipping, items) {
+  try {
+    return await validateSelectedShippingOption(shipping, items);
+  } catch (error) {
+    console.error(
+      "Shipping re-validation failed, retrying once before failing checkout:",
+      error.message
+    );
+    return await validateSelectedShippingOption(shipping, items);
+  }
+}
 
 function buildThankYouRedirectUrl({ language, localOrderId, thankYouToken }) {
   const thankYouPath = getThankYouPath(language);
@@ -34,7 +50,7 @@ function buildThankYouRedirectUrl({ language, localOrderId, thankYouToken }) {
 
 export async function createCheckout(req, res) {
   try {
-    const { items = [], language = "fr", orderNote = "" } = req.body;
+    const { items = [], language = "fr", orderNote = "", shipping } = req.body;
     const normalizedLanguage = normalizeLanguage(language);
 
     const normalizedItems = items.map((item) =>
@@ -43,9 +59,16 @@ export async function createCheckout(req, res) {
 
     validateCheckoutItems(normalizedItems);
 
+    // Never trust the shipping price the client submitted -- re-run the
+    // same quote from the destination they gave us and use whatever
+    // price THAT returns. Throws (409) if the chosen option no longer
+    // exists (e.g. rates changed, or the client tampered with the id).
+    const validatedShipping = await validateSelectedShippingOptionWithRetry(shipping, items);
+    const shippingCents = validatedShipping?.priceCents || 0;
+
     const subtotalCents = calculateSubtotalCents(normalizedItems);
-    const taxCents = calculateTaxCents(subtotalCents);
-    const totalCents = calculateTotalCents(subtotalCents, taxCents);
+    const taxCents = calculateTaxCents(subtotalCents + shippingCents);
+    const totalCents = subtotalCents + shippingCents + taxCents;
 
     const thankYouToken = randomUUID();
 
@@ -56,6 +79,21 @@ export async function createCheckout(req, res) {
       taxCents,
       totalCents,
       orderNote,
+      // Carried through to the shipment once the order is paid (see
+      // ensureShipmentForOrderId) so the "create shipping label" link in
+      // the Discord notification can point at the right carrier's portal
+      // without Korallia having to remember which one the shopper picked.
+      carrier: validatedShipping?.carrier || null,
+      // Snapshot of the EXACT shipping option the shopper picked and
+      // paid for -- kept on the order itself (not just folded into the
+      // Square service charge's free-text name) so the thank-you page
+      // and any future admin view can show it right away, without
+      // waiting on the Square webhook to create a shipment row. See
+      // getOrderSummaryById in orders.service.js.
+      shippingCarrierLabel: validatedShipping?.carrierLabel || null,
+      shippingServiceCode: validatedShipping?.serviceCode || null,
+      shippingServiceLabel: validatedShipping?.serviceLabel || null,
+      shippingCents,
     });
 
     const redirectUrl = buildThankYouRedirectUrl({
@@ -66,9 +104,33 @@ export async function createCheckout(req, res) {
 
     const lineItems = await buildSquareLineItems(normalizedItems);
 
+    // A service charge, not a line item -- keeps shipping out of the
+    // "N items" count and displayed in its own row (like taxes), instead
+    // of looking like a purchased product. SUBTOTAL_PHASE + taxable:true
+    // matches our own tax calc above (GST/QST computed on subtotal +
+    // shipping).
+    const serviceCharges = validatedShipping
+      ? [
+          {
+            uid: "shipping",
+            name:
+              normalizedLanguage === "en"
+                ? `Shipping — ${validatedShipping.carrierLabel} ${validatedShipping.serviceLabel}`
+                : `Livraison — ${validatedShipping.carrierLabel} ${validatedShipping.serviceLabel}`,
+            amount_money: {
+              amount: validatedShipping.priceCents,
+              currency: "CAD",
+            },
+            calculation_phase: "SUBTOTAL_PHASE",
+            taxable: true,
+          },
+        ]
+      : [];
+
     const { squareBody, paymentLink } = await createSquarePaymentLink({
       normalizedLanguage,
       lineItems,
+      serviceCharges,
       redirectUrl,
       buyerLanguageKey: getBuyerLanguageKey(normalizedLanguage),
       orderNote,

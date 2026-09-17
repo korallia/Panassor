@@ -13,6 +13,7 @@ import AtelierPage from "./pages/AtelierPage";
 import ContactPage from "./pages/ContactPage";
 import CartDrawer from "./components/cart/CartDrawer";
 import MerciPage from "./pages/MerciPage";
+import ShipmentTrackingEntryPage from "./pages/ShipmentTrackingEntryPage";
 import  { CollectionsProvider } from "../src/context/CollectionsContext"
 import  { LanguageProvider  } from "../src/context/LanguageContext"
 import  { CartProvider   } from "../src/context/CartContext"
@@ -32,6 +33,7 @@ function App() {
         <Route path="/produits/:slug" element={<ProductPage />} />
         <Route path="/merci" element={<MerciPage />} />
         <Route path="/thank-you" element={<MerciPage />} />
+        <Route path="/expedition" element={<ShipmentTrackingEntryPage />} />
         <Route path="/atelier" element={<AtelierPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>

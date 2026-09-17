@@ -76,6 +76,25 @@ async function syncModifierListForComponent(component, tools) {
     );
   }
 
+  // Same idea as syncProductToSquare's variant fixup: an existing
+  // modifier whose OLD square_modifier_id turned out not to exist on
+  // Square goes through upsertCatalogObject's "recreate fresh" fallback
+  // instead of the #modifier_<n>_<n> path above, so it never matches
+  // that regex. Resolve those via the old-id -> real-id map the
+  // fallback hands back, or the row keeps referencing a dead id.
+  const staleIdToRealId = data.staleIdToRealId || {};
+
+  for (const [toolProductId, oldModifierId] of existingModifierIds.entries()) {
+    if (oldModifierId && staleIdToRealId[oldModifierId]) {
+      await db.query(
+        `INSERT INTO kit_component_modifiers (kit_component_id, tool_product_id, square_modifier_id)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (kit_component_id, tool_product_id) DO UPDATE SET square_modifier_id = $3`,
+        [component.id, toolProductId, staleIdToRealId[oldModifierId]]
+      );
+    }
+  }
+
   return { componentId: component.id, modifierListId: saved.id };
 }
 

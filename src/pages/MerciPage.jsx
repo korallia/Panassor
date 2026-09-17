@@ -317,6 +317,19 @@ function MerciPage() {
 
   const showShippingAddress = hasShippingAddress(shippingAddress);
 
+  // Known right away from the order itself -- unlike shippingAddress
+  // above, which stays empty until Square's webhook creates the
+  // shipment row. So this can (and should) show up on the thank-you
+  // page even seconds after payment, before the address does.
+  const shippingMethodLabel = [
+    order?.shipping?.carrierLabel,
+    order?.shipping?.serviceLabel,
+  ]
+    .filter(Boolean)
+    .join(" — ");
+  const hasShippingMethod = Boolean(shippingMethodLabel);
+  const showShippingSection = hasShippingMethod || showShippingAddress;
+
   return (
     <main className="bg-[#080504] text-[#f3e7cf]">
       <section className="relative overflow-hidden px-3 py-6 md:px-6 md:py-14">
@@ -416,18 +429,34 @@ function MerciPage() {
                           {copy.shipping}
                         </h2>
 
-                        {showShippingAddress ? (
+                        {showShippingSection ? (
                           <div className="mt-2 space-y-1 font-['EB_Garamond'] text-lg leading-7 text-[#d7c8ad]/88 md:text-xl">
-                            {shippingAddress.line1 && (
+                            {hasShippingMethod && (
+                              <p className="font-medium text-[#fff1d2]">
+                                {shippingMethodLabel}
+                                {typeof order?.shipping?.cents === "number" && (
+                                  <span className="text-[#d7c8ad]/70">
+                                    {" — "}
+                                    {formatMoney(
+                                      order.shipping.cents,
+                                      order.totals.currency,
+                                      pageLanguage
+                                    )}
+                                  </span>
+                                )}
+                              </p>
+                            )}
+
+                            {shippingAddress?.line1 && (
                               <p>{shippingAddress.line1}</p>
                             )}
 
-                            {shippingAddress.line2 && (
+                            {shippingAddress?.line2 && (
                               <p>{shippingAddress.line2}</p>
                             )}
 
-                            {(shippingAddress.locality ||
-                              shippingAddress.province) && (
+                            {(shippingAddress?.locality ||
+                              shippingAddress?.province) && (
                               <p>
                                 {[
                                   shippingAddress.locality,
@@ -438,11 +467,11 @@ function MerciPage() {
                               </p>
                             )}
 
-                            {shippingAddress.postalCode && (
+                            {shippingAddress?.postalCode && (
                               <p>{shippingAddress.postalCode}</p>
                             )}
 
-                            {shippingAddress.country && (
+                            {shippingAddress?.country && (
                               <p>{shippingAddress.country}</p>
                             )}
                           </div>
@@ -516,6 +545,19 @@ function MerciPage() {
                               )}
                             </span>
                           </div>
+
+                          {typeof order?.shipping?.cents === "number" && (
+                            <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
+                              <span>{copy.shipping}</span>
+                              <span>
+                                {formatMoney(
+                                  order.shipping.cents,
+                                  order.totals.currency,
+                                  pageLanguage
+                                )}
+                              </span>
+                            </div>
+                          )}
 
                           <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
                             <span>{copy.taxes}</span>

@@ -17,6 +17,7 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
     quote,
     destination,
     error,
+    pendingCarriers,
     requestQuote,
   } = useShippingQuote(items);
 
@@ -47,6 +48,11 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
     );
 
     if (!stillOffered) {
+      // Son transporteur n'a pas encore repondu (Postes Canada lent) :
+      // on attend sa reponse avant de conclure que l'option a disparu.
+      if (pendingCarriers.includes(selectedShipping.carrier)) {
+        return;
+      }
       onSelect(null);
       return;
     }
@@ -59,7 +65,7 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quote]);
+  }, [quote, pendingCarriers]);
 
   return (
     <section className="border-t border-[#6f5423]/35 pt-3 sm:pt-4">
@@ -160,6 +166,24 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
               </button>
             );
           })}
+
+          {pendingCarriers.includes("postes_canada") && quote.country !== "INTL" && (
+            <p className="animate-pulse font-['EB_Garamond'] text-sm italic text-[#d7c8ad]/70">
+              {language === "en"
+                ? "Loading Canada Post rates…"
+                : "Chargement des tarifs Postes Canada…"}
+            </p>
+          )}
+
+          {!pendingCarriers.includes("postes_canada") &&
+            quote.country !== "INTL" &&
+            !quote.options.some((option) => option.carrier === "postes_canada") && (
+              <p className="font-['EB_Garamond'] text-sm italic text-[#d7c8ad]/70">
+                {language === "en"
+                  ? "Canada Post is temporarily unavailable. Please choose another shipping option or try again later."
+                  : "Postes Canada est temporairement indisponible. Veuillez choisir une autre option de livraison ou réessayer plus tard."}
+              </p>
+            )}
         </div>
       )}
     </section>

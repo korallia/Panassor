@@ -161,7 +161,21 @@ function invalidRequestError(message) {
   return error;
 }
 
-export async function getShippingQuote({ postalCode, city, items = [] }) {
+const ALL_CARRIERS = ["postes_canada", "purolator"];
+
+// `carriers` (optionnel) : limite le devis a certains transporteurs. Le
+// panier fait 2 requetes en parallele (une par transporteur) pour afficher
+// Purolator tout de suite sans attendre Postes Canada, qui peut prendre
+// 10-30 s quand leur API Rating est lente. Sans `carriers` = les deux,
+// comme avant.
+function normalizeCarriers(carriers) {
+  if (!Array.isArray(carriers) || carriers.length === 0) return ALL_CARRIERS;
+  const wanted = carriers.filter((carrier) => ALL_CARRIERS.includes(carrier));
+  return wanted.length ? wanted : ALL_CARRIERS;
+}
+
+export async function getShippingQuote({ postalCode, city, items = [], carriers }) {
+  const wantedCarriers = normalizeCarriers(carriers);
   const trimmedPostalCode = String(postalCode || "").trim();
   const trimmedCity = String(city || "").trim();
 
@@ -177,6 +191,10 @@ export async function getShippingQuote({ postalCode, city, items = [] }) {
     // flat placeholder price the mock used until that's designed -- see
     // the "customs/duties payer for Purolator international" open
     // question in the shipping plan.
+    if (!wantedCarriers.includes("purolator")) {
+      return { country: "INTL", options: [] };
+    }
+
     return {
       country: "INTL",
       options: [
@@ -215,15 +233,18 @@ export async function getShippingQuote({ postalCode, city, items = [] }) {
   const canadaPostStartedAt = Date.now();
   const purolatorStartedAt = Date.now();
 
+  const skipped = (carrier) =>
+    Promise.reject(Object.assign(new Error("SKIPPED"), { skipped: true, carrier }));
+
   const [canadaPostResult, purolatorResult] = await Promise.allSettled([
-    getCanadaPostRatesCached({
+    !wantedCarriers.includes("postes_canada") ? skipped("postes_canada") : getCanadaPostRatesCached({
       originPostalCode: env.shippingOrigin.postalCode,
       destinationPostalCode: trimmedPostalCode,
       ...parcel,
     }).finally(() => {
       console.log(`[shipping-quote] Canada Post took ${Date.now() - canadaPostStartedAt}ms`);
     }),
-    getPurolatorEstimate({
+    !wantedCarriers.includes("purolator") ? skipped("purolator") : getPurolatorEstimate({
       destinationPostalCode: trimmedPostalCode,
       // Real city from the shopper when they gave us one (the input asks
       // for "Ville, Code postal" now); falls back to a guessed
@@ -245,13 +266,13 @@ export async function getShippingQuote({ postalCode, city, items = [] }) {
 
   if (canadaPostResult.status === "fulfilled") {
     options.push(...canadaPostResult.value.map(toFrontendOption));
-  } else {
+  } else if (!canadaPostResult.reason?.skipped) {
     console.error("Canada Post rate lookup failed:", canadaPostResult.reason);
   }
 
   if (purolatorResult.status === "fulfilled") {
     options.push(...purolatorResult.value.map(toFrontendOption));
-  } else {
+  } else if (!purolatorResult.reason?.skipped) {
     console.error(
       "Purolator rate lookup failed:",
       purolatorResult.reason?.message,
@@ -281,10 +302,18 @@ export async function validateSelectedShippingOption(shipping, items = []) {
     return null;
   }
 
+  // Ne re-verifie que le transporteur de l'option choisie : un client qui
+  // a pris Purolator ne doit pas attendre (ni echouer) a cause de Postes
+  // Canada au moment de payer.
+  const selectedCarrier = String(shipping.id).startsWith("cp-")
+    ? "postes_canada"
+    : "purolator";
+
   const freshQuote = await getShippingQuote({
     postalCode: shipping.postalCode,
     city: shipping.city,
     items,
+    carriers: [selectedCarrier],
   });
 
   const matchedOption = freshQuote.options.find(

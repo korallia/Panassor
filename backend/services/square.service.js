@@ -316,6 +316,7 @@ export async function createSquarePaymentLink({
       buyer_language_key: buyerLanguageKey,
       redirect_url: redirectUrl,
       ask_for_shipping_address: true,
+      enable_coupon: true,
     },
   };
 

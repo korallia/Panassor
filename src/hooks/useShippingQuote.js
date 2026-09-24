@@ -20,6 +20,19 @@ import { getShippingQuote } from "../../backend/panassorApi";
 const CA_POSTAL_CODE_TAIL_REGEX =
   /([ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\s*\d[ABCEGHJ-NPRSTV-Z]\d)\s*$/i;
 
+// Une requete par transporteur, en parallele : Purolator repond en ~0,5 s,
+// Postes Canada peut prendre 10-30 s quand leur API est lente. On affiche
+// chaque transporteur des qu'il repond au lieu d'attendre le plus lent.
+// L'ordre ici = l'ordre d'affichage (stable, pour que la liste ne "saute"
+// pas sous le doigt du client quand Postes Canada arrive apres).
+const CARRIERS = ["purolator", "postes_canada"];
+
+function sortByCarrier(options) {
+  return [...options].sort(
+    (a, b) => CARRIERS.indexOf(a.carrier) - CARRIERS.indexOf(b.carrier)
+  );
+}
+
 function parseShippingInput(rawValue) {
   const trimmedValue = String(rawValue || "").trim();
   const commaIndex = trimmedValue.indexOf(",");
@@ -62,6 +75,14 @@ export function useShippingQuote(items = []) {
   // first quote.
   const hasQuoteRef = useRef(false);
 
+  // Transporteurs dont la reponse n'est pas encore arrivee (pour afficher
+  // "Chargement des tarifs Postes Canada..." sous les options deja la).
+  const [pendingCarriers, setPendingCarriers] = useState([]);
+
+  // Ignore les reponses d'un ancien clic "Calculer" si le client a relance
+  // entre-temps (autre code postal, panier modifie...).
+  const requestIdRef = useRef(0);
+
   // A cart with the same items in a different order is the same cart --
   // sort so re-ordering the cart doesn't trigger a pointless re-quote.
   const itemsSignature = items
@@ -80,25 +101,65 @@ export function useShippingQuote(items = []) {
 
     const { city, postalCode: parsedPostalCode } = parsed;
 
+    const requestId = ++requestIdRef.current;
+    const isCurrent = () => requestId === requestIdRef.current;
+
     setStatus("loading");
     setError("");
+    setPendingCarriers(CARRIERS);
 
-    try {
-      const result = await getShippingQuote({
-        postalCode: parsedPostalCode,
-        city,
-        items: items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-        })),
-      });
-      setQuote(result);
-      setDestination({ city, postalCode: parsedPostalCode });
-      setStatus("success");
-      hasQuoteRef.current = true;
-    } catch (err) {
+    const payload = {
+      postalCode: parsedPostalCode,
+      city,
+      items: items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    };
+
+    let merged = null;
+    let lastError = null;
+
+    await Promise.all(
+      CARRIERS.map(async (carrier) => {
+        try {
+          const result = await getShippingQuote({ ...payload, carriers: [carrier] });
+
+          if (!isCurrent() || !result?.options?.length) {
+            return;
+          }
+
+          const known = new Set((merged?.options || []).map((option) => option.id));
+          merged = {
+            ...(merged || result),
+            options: sortByCarrier([
+              ...(merged?.options || []),
+              ...result.options.filter((option) => !known.has(option.id)),
+            ]),
+          };
+
+          setQuote(merged);
+          setDestination({ city, postalCode: parsedPostalCode });
+          setStatus("success");
+          hasQuoteRef.current = true;
+        } catch (err) {
+          lastError = err;
+        } finally {
+          if (isCurrent()) {
+            setPendingCarriers((current) => current.filter((c) => c !== carrier));
+          }
+        }
+      })
+    );
+
+    if (!isCurrent()) {
+      return;
+    }
+
+    // Erreur seulement si AUCUN transporteur n'a donne d'option.
+    if (!merged) {
       setStatus("error");
-      setError(err.message || "QUOTE_FAILED");
+      setError(lastError?.message || "QUOTE_FAILED");
       setQuote(null);
       setDestination(null);
       hasQuoteRef.current = false;
@@ -127,6 +188,8 @@ export function useShippingQuote(items = []) {
   }, [itemsSignature]);
 
   function resetQuote() {
+    requestIdRef.current += 1;
+    setPendingCarriers([]);
     setQuote(null);
     setDestination(null);
     setStatus("idle");
@@ -141,6 +204,7 @@ export function useShippingQuote(items = []) {
     quote,
     destination,
     error,
+    pendingCarriers,
     requestQuote,
     resetQuote,
   };

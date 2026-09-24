@@ -107,6 +107,54 @@ function toFrontendOption(rate) {
   };
 }
 
+// Cache en memoire des tarifs Postes Canada (le serveur EC2/pm2 est un
+// process persistant, donc le cache survit entre les requetes).
+//  - Frais (< 30 min) : on ne rappelle pas Postes Canada. C'est surtout ce
+//    qui protege le paiement : validateSelectedShippingOption() refait un
+//    devis au clic sur "Payer", et avant ca un timeout/401 a ce moment-la
+//    faisait echouer la commande.
+//  - Perime (< 24 h) : seulement si l'appel en direct echoue, pour que le
+//    client voie quand meme les options Postes Canada au dernier prix connu.
+const CP_CACHE_FRESH_MS = 30 * 60 * 1000;
+const CP_CACHE_STALE_MS = 24 * 60 * 60 * 1000;
+const CP_CACHE_MAX_ENTRIES = 500;
+const canadaPostRateCache = new Map(); // key -> { rates, storedAt }
+
+function canadaPostCacheKey({ destinationPostalCode, weightKg, dimensionsCm }) {
+  const postal = String(destinationPostalCode || "").replace(/[\s-]+/g, "").toUpperCase();
+  const d = dimensionsCm || {};
+  return [postal, weightKg, d.length, d.width, d.height].join("|");
+}
+
+async function getCanadaPostRatesCached(params) {
+  const key = canadaPostCacheKey(params);
+  const cached = canadaPostRateCache.get(key);
+  const age = cached ? Date.now() - cached.storedAt : Infinity;
+
+  if (cached && age < CP_CACHE_FRESH_MS) {
+    return cached.rates;
+  }
+
+  try {
+    const rates = await getCanadaPostDomesticRates(params);
+    if (rates.length > 0) {
+      if (canadaPostRateCache.size >= CP_CACHE_MAX_ENTRIES) {
+        canadaPostRateCache.delete(canadaPostRateCache.keys().next().value);
+      }
+      canadaPostRateCache.set(key, { rates, storedAt: Date.now() });
+    }
+    return rates;
+  } catch (error) {
+    if (cached && age < CP_CACHE_STALE_MS) {
+      console.warn(
+        `[shipping-quote] Canada Post live call failed (${error.message}) -- using cached rates from ${Math.round(age / 60000)} min ago`
+      );
+      return cached.rates;
+    }
+    throw error;
+  }
+}
+
 function invalidRequestError(message) {
   const error = new Error(message);
   error.status = 400;
@@ -168,7 +216,7 @@ export async function getShippingQuote({ postalCode, city, items = [] }) {
   const purolatorStartedAt = Date.now();
 
   const [canadaPostResult, purolatorResult] = await Promise.allSettled([
-    getCanadaPostDomesticRates({
+    getCanadaPostRatesCached({
       originPostalCode: env.shippingOrigin.postalCode,
       destinationPostalCode: trimmedPostalCode,
       ...parcel,

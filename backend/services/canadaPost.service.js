@@ -23,6 +23,10 @@ export const CANADA_POST_DOMESTIC_SERVICE_CODES = ["DOM.RP", "DOM.XP"];
 
 let cachedToken = null; // { accessToken, expiresAt: epochMs }
 
+// Timeout par essai pour l'appel Rating (le token/tracking gardent les 8s
+// par defaut de fetchWithRetry).
+const RATES_TIMEOUT_MS = 12000;
+
 function assertCanadaPostConfig() {
   if (!env.canadaPost.apiKey || !env.canadaPost.apiSecret) {
     throw new Error(
@@ -115,8 +119,6 @@ export async function getCanadaPostDomesticRates({
 }) {
   assertCanadaPostConfig();
 
-  const accessToken = await getAccessToken();
-
   const body = {
     quoteType: "commercial",
     parcelCharacteristics: {
@@ -151,16 +153,34 @@ export async function getCanadaPostDomesticRates({
     body.contractId = env.canadaPost.contractNumber;
   }
 
-  const response = await fetchWithRetry(RATES_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "Accept-Language": "fr-CA",
-    },
-    body: JSON.stringify(body),
-  });
+  const postRates = async (accessToken) =>
+    fetchWithRetry(
+      RATES_URL,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": "fr-CA",
+        },
+        body: JSON.stringify(body),
+      },
+      // Vu en prod (logs pm2, 2026-09-24) : Rating depasse souvent les 8s
+      // par defaut ("Canada Post took 16004ms" = 2 essais x 8s avortes).
+      { timeoutMs: RATES_TIMEOUT_MS, retries: 1 }
+    );
+
+  let response = await postRates(await getAccessToken());
+
+  // Vu en prod : 401 intermittent avec un jeton encore "valide" selon
+  // expires_in (Postes Canada le revoque plus tot). On jette le jeton en
+  // cache, on en redemande un neuf et on reessaie une seule fois.
+  if (response.status === 401) {
+    console.warn("[canada-post] 401 on rating -- refreshing OAuth token and retrying once");
+    cachedToken = null;
+    response = await postRates(await getAccessToken());
+  }
 
   const data = await response.json().catch(() => null);
 

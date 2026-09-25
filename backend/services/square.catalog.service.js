@@ -36,6 +36,11 @@ export async function syncProductToSquare(productId) {
   const product = productResult.rows[0];
   if (!product) throw new Error(`Product ${productId} not found`);
 
+  // Garde-fou : sans prix, Square creerait l'article a 0,00 $ (achetable).
+  if (product.price_cents === null || product.price_cents === undefined) {
+    throw new Error(`Produit ${productId} (${product.slug_fr}) sans prix -- pas envoye a Square`);
+  }
+
   const imagesResult = await db.query(
     `SELECT url, color_id, is_main FROM product_images WHERE product_id = $1 ORDER BY sort_order ASC`,
     [productId]
@@ -254,10 +259,66 @@ async function uploadImageToSquare(objectId, imageUrl, name) {
   return data.image.id;
 }
 
-export async function syncAllProductsToSquare() {
+async function findCollectionBySlug(slug) {
+  const result = await db.query(
+    `SELECT id, slug_fr, name_fr FROM collections WHERE slug_fr = $1 OR slug_en = $1`,
+    [slug]
+  );
+
+  if (!result.rows[0]) {
+    const all = await db.query(`SELECT slug_fr FROM collections ORDER BY id`);
+    throw new Error(
+      `Collection "${slug}" introuvable. Collections existantes : ${all.rows
+        .map((row) => row.slug_fr)
+        .join(", ")}`
+    );
+  }
+
+  return result.rows[0];
+}
+
+// Options :
+//  - collectionSlug : ne synchronise QUE les produits de cette collection
+//    (slug FR ou EN). Les autres produits ne sont pas envoyes a Square du
+//    tout -> leurs infos et leur inventaire ne peuvent pas etre touches.
+//  - dryRun : n'appelle pas Square, affiche seulement ce qui serait fait.
+export async function syncAllProductsToSquare({ collectionSlug, dryRun = false } = {}) {
+  let collection = null;
+  if (collectionSlug) {
+    collection = await findCollectionBySlug(collectionSlug);
+  }
+
+  const result = await db.query(
+    `SELECT id, slug_fr, name_fr, is_kit, square_item_id FROM products
+     ${collection ? "WHERE collection_id = $1" : ""}
+     ORDER BY id`,
+    collection ? [collection.id] : []
+  );
+
+  const scopeLabel = collection
+    ? `collection "${collection.slug_fr}" (${collection.name_fr})`
+    : "TOUS les produits";
+
+  console.log(`\n${dryRun ? "[DRY-RUN] " : ""}Synchro Square : ${scopeLabel} -- ${result.rows.length} produit(s)`);
+
+  if (dryRun) {
+    for (const row of result.rows) {
+      console.log(
+        `  - #${row.id} ${row.slug_fr} "${row.name_fr}"${row.is_kit ? " [kit]" : ""} -> ${
+          row.square_item_id ? "MISE A JOUR (deja dans Square)" : "CREATION (nouveau dans Square)"
+        }`
+      );
+    }
+    console.log("\n[DRY-RUN] Rien n'a ete envoye a Square.");
+    return result.rows.map((row) => ({ productId: row.id, dryRun: true }));
+  }
+
   assertSquareConfig();
-  await syncKitComponentModifierLists();
-  const result = await db.query(`SELECT id FROM products ORDER BY id`);
+  await syncKitComponentModifierLists(
+    collection
+      ? { kitProductIds: result.rows.filter((row) => row.is_kit).map((row) => row.id) }
+      : {}
+  );
   const results = [];
 
   for (const row of result.rows) {

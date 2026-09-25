@@ -2,15 +2,24 @@ import { squareFetch, assertSquareConfig, upsertCatalogObject } from "./square.s
 import { fetchCustomizableProducts } from "./products.service.js";
 import db from "../db/pool.js";
 
-export async function syncKitComponentModifierLists() {
+// kitProductIds (optionnel) : limite la synchro aux kits donnes (utilise
+// par `syncProducts.js --collection` pour ne pas toucher aux autres kits).
+export async function syncKitComponentModifierLists({ kitProductIds } = {}) {
   assertSquareConfig();
+
+  const filterByKits = Array.isArray(kitProductIds);
+  if (filterByKits && kitProductIds.length === 0) {
+    return [];
+  }
 
   const componentsResult = await db.query(
     `SELECT kc.id, kc.kit_product_id, kc.included_product_id, kc.square_modifier_id, kc.square_modifier_list_version,
             p.name_fr AS included_name
      FROM kit_components kc
      JOIN products p ON p.id = kc.included_product_id
-     WHERE p.customizable = true`
+     WHERE p.customizable = true
+       ${filterByKits ? "AND kc.kit_product_id = ANY($1::int[])" : ""}`,
+    filterByKits ? [kitProductIds] : []
   );
   const components = componentsResult.rows;
 

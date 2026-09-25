@@ -240,9 +240,19 @@ export async function fetchCollectionWithProductsBySlug(slug) {
 
   const kitItems = await fetchKitItemsByKitProductId(kitProduct.id);
 
+  // Produits de la collection qui ne font PAS partie du kit (ex. les
+  // ensembles "Clé vierge + lime" du kit du voleur) : affiches apres le
+  // contenu du kit, sinon ils seraient invisibles sur la page collection.
+  const shownIds = new Set([kitProduct.id, ...kitItems.map((item) => item.id)]);
+  // Les outils "au choix" (customizable) restent exclus : ils sont deja
+  // proposes dans le kit, pas vendus comme cartes separees ici.
+  const otherProducts = (await fetchProductsByCollectionId(collection.id)).filter(
+    (product) => !shownIds.has(product.id) && !product.customizable
+  );
+
   return {
     ...collection,
-    products: [kitProduct, ...kitItems],
+    products: [kitProduct, ...kitItems, ...otherProducts],
   };
 }
 

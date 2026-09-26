@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCollections } from "../../context/CollectionsContext";
@@ -6,6 +6,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
 import { getCollectionUrl, getProductSlug, t } from "../../utils/localization";
 import { getAssetUrl } from "../../utils/assets";
+import { getComingSoonCollections } from "../../../backend/panassorApi";
 
 const contactEmail = "contact@panassor.ca";
 const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";
@@ -55,6 +56,29 @@ function Navbar() {
   const { openCart, itemCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Collections "a venir" en BD (status = 'coming_soon'). L'entree
+  // "Collections a venir" du menu n'apparait que s'il y en a au moins une.
+  const [comingSoonCollections, setComingSoonCollections] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getComingSoonCollections()
+      .then((data) => {
+        if (isMounted) setComingSoonCollections(Array.isArray(data) ? data : []);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch coming soon collections:", error);
+        if (isMounted) setComingSoonCollections([]);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const firstComingSoon = comingSoonCollections[0];
+
   const dropdownItems = [
     {
       id: "all-collections",
@@ -70,13 +94,20 @@ function Navbar() {
       image: collection.thumbnail_image_url || collection.hero_image_url,
       eyebrow: t(collection, "eyebrow", language),
     })),
-    {
-      id: "coming-soon",
-      title: language === "en" ? "Coming collections" : "Collections à venir",
-      url: "/atelier#sneak-peek",
-      image: "/images/kit_de_voleur.jpg",
-      eyebrow: language === "en" ? "Coming soon" : "Prochainement",
-    },
+    ...(firstComingSoon
+      ? [
+          {
+            id: "coming-soon",
+            title: language === "en" ? "Coming collections" : "Collections à venir",
+            url: "/atelier#sneak-peek",
+            image:
+              firstComingSoon.thumbnail_image_url ||
+              firstComingSoon.hero_image_url ||
+              "/images/kit_de_voleur.jpg",
+            eyebrow: language === "en" ? "Coming soon" : "Prochainement",
+          },
+        ]
+      : []),
   ];
 
   const mobileItems = [
@@ -92,6 +123,16 @@ function Navbar() {
       title: t(collection, "title", language) || t(collection, "name", language),
       url: getKitUrl(collection, language),
     })),
+    // Meme regle que le menu desktop : seulement s'il y a une collection a venir en BD.
+    ...(firstComingSoon
+      ? [
+          {
+            id: "coming-soon",
+            title: language === "en" ? "Coming collections" : "Collections à venir",
+            url: "/atelier#sneak-peek",
+          },
+        ]
+      : []),
     {
       id: "all-collections",
       title: language === "en" ? "All collections" : "Toutes les collections",

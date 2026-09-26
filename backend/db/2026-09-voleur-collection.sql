@@ -43,7 +43,7 @@ INSERT INTO products (collection_id, slug_fr, slug_en, name_fr, name_en, price_c
 SELECT c.id, v.slug_fr, v.slug_en, v.name_fr, v.name_en, v.price_cents,
        v.au_choix, v.is_kit, FALSE
 FROM (VALUES
-  ('kit-du-voleur',                    'thiefs-kit',                        'Kit du voleur',            'Thief''s Kit',              24500, FALSE, TRUE),
+  ('kit-du-voleur',                    'thiefs-kit',                        'Kit du voleur',            'Thief''s Kit',              23500, FALSE, TRUE),
   ('cle-vierge-voleur',                'blank-key-thief',                   'Clé vierge',               'Blank Key',                  2000, FALSE, FALSE),
   ('crochet-voleur',                   'lock-pick-thief',                   'Crochet',                  'Lock Pick',                  2000, FALSE, FALSE),
   ('lime-voleur',                      'file-thief',                        'Lime',                     'File',                       4000, TRUE,  FALSE),

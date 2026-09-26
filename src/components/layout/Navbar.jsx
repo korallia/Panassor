@@ -30,24 +30,6 @@ function CartIcon() {
   );
 }
 
-function getCollectionByKey(collections, key) {
-  return collections.find((collection) => {
-    const values = [
-      collection.slug,
-      collection.slug_fr,
-      collection.slug_en,
-      collection.name_fr,
-      collection.name_en,
-      collection.title_fr,
-      collection.title_en,
-    ]
-      .filter(Boolean)
-      .map((value) => String(value).toLowerCase());
-
-    return values.some((value) => value.includes(key));
-  });
-}
-
 function getKitProduct(collection) {
   return collection?.products?.find((product) => product.is_kit);
 }
@@ -72,9 +54,6 @@ function Navbar() {
   const { language, toggleLanguage } = useLanguage();
   const { openCart, itemCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const surgeonCollection = getCollectionByKey(collections, "chirurgien");
-  const torturerCollection = getCollectionByKey(collections, "tortionnaire");
 
   const dropdownItems = [
     {
@@ -106,16 +85,13 @@ function Navbar() {
       title: language === "en" ? "Products" : "Produits",
       url: "/produits",
     },
-    {
-      id: "surgeon-kit",
-      title: language === "en" ? "Surgeon Kit" : "Kit du chirurgien",
-      url: getKitUrl(surgeonCollection, language),
-    },
-    {
-      id: "torturer-kit",
-      title: language === "en" ? "Torturer Kit" : "Kit tortionnaire",
-      url: getKitUrl(torturerCollection, language),
-    },
+    // Une entree par collection publiee (meme liste que le menu desktop) :
+    // une nouvelle collection apparait ici automatiquement une fois publiee.
+    ...collections.map((collection) => ({
+      id: `collection-${collection.id}`,
+      title: t(collection, "title", language) || t(collection, "name", language),
+      url: getKitUrl(collection, language),
+    })),
     {
       id: "all-collections",
       title: language === "en" ? "All collections" : "Toutes les collections",

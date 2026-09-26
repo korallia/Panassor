@@ -1,21 +1,26 @@
 import { useEffect } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
+import { useCollections } from "../../../context/CollectionsContext";
 import { t } from "../../../utils/localization";
 import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
+import SectionTitle from "../../layout/SectionTitle";
 
 function ToolSelectionModal({
   isOpen,
   tools = [],
+  // Collection du kit qu'on personnalise : son groupe s'affiche en premier.
+  currentCollectionId = null,
   selectedItem,
   onSelectTool,
   onClose,
   copy = {},
 }) {
   const { language } = useLanguage();
+  const collections = useCollections();
 
   useEffect(() => {
     if (!isOpen) {
@@ -66,6 +71,44 @@ function ToolSelectionModal({
   const replacedToolName =
     t(selectedItem, "title", language) || t(selectedItem, "name", language);
 
+  // Desktop : outils regroupes par collection, avec un titre par groupe.
+  // Ordre : la collection du kit courant en premier, puis les autres par
+  // nombre d'outils croissant (la plus grosse en dernier ; a egalite, on
+  // garde l'ordre recu de l'API).
+  const toolGroups = [];
+  const groupByKey = new Map();
+
+  for (const tool of tools) {
+    const key = tool.collection_id ?? "autres";
+    if (!groupByKey.has(key)) {
+      // Memes donnees que partout ailleurs sur le site (titre + eyebrow de la
+      // collection), via le contexte des collections publiees.
+      const collection = collections.find((c) => c.id === tool.collection_id);
+      const group = {
+        key,
+        eyebrow: t(collection, "eyebrow", language),
+        title:
+          t(collection, "title", language) ||
+          t(tool, "collection_name", language) ||
+          (language === "en" ? "Other tools" : "Autres outils"),
+        tools: [],
+      };
+      groupByKey.set(key, group);
+      toolGroups.push(group);
+    }
+    groupByKey.get(key).tools.push(tool);
+  }
+
+  const isCurrent = (group) =>
+    currentCollectionId !== null &&
+    currentCollectionId !== undefined &&
+    group.key === currentCollectionId;
+
+  toolGroups.sort((a, b) => {
+    if (isCurrent(a) !== isCurrent(b)) return isCurrent(a) ? -1 : 1;
+    return a.tools.length - b.tools.length;
+  });
+
   const ImageOverlay = () => (
     <>
       <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/66 via-transparent to-[#080504]/10" />
@@ -82,7 +125,7 @@ function ToolSelectionModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#080504]/86 backdrop-blur-sm md:flex md:items-center md:justify-center md:px-6">
+    <div className="fixed inset-0 z-50 bg-[#080504]/90 md:flex md:items-center md:justify-center md:px-6">
       {/* MOBILE */}
       <div className="flex h-full flex-col bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] text-[#f3e7cf] md:hidden">
         <div className="sticky top-0 z-30 border-b border-[#6f5423]/70 bg-[#0b0603]/96 px-4 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)]">
@@ -137,7 +180,7 @@ function ToolSelectionModal({
                       alt={toolName}
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
+                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition-transform duration-300 ease-out group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
                     />
 
                     <ImageOverlay />
@@ -172,7 +215,7 @@ function ToolSelectionModal({
         <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
         <div className="relative z-10">
-          <div className="mb-8 flex items-start justify-between gap-6">
+          <div className="mb-16 flex items-start justify-between gap-6">
             <div>
               <OrnamentDivider
                 className="mb-5 justify-start"
@@ -204,55 +247,71 @@ function ToolSelectionModal({
             </button>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {tools.map((tool) => {
-              const toolName = t(tool, "name", language);
-              const toolTitle = t(tool, "title", language) || toolName;
-              const toolDescription = t(tool, "description", language);
+          <div>
+            {toolGroups.map((group) => (
+              <section key={group.key}>
+                <SectionTitle
+                  eyebrow={group.eyebrow}
+                  title={group.title}
+                  titleSizeClassName="text-4xl"
+                  className="mb-8"
+                />
 
-              return (
-                <button
-                  key={tool.id}
-                  type="button"
-                  onClick={() => onSelectTool(tool)}
-                  className="group/tool relative flex min-h-[360px] cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78),0_0_34px_rgba(200,155,60,0.08)]"
-                >
-                  <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                  {group.tools.map((tool) => {
+                    const toolName = t(tool, "name", language);
+                    const toolTitle = t(tool, "title", language) || toolName;
+                    const toolDescription = t(tool, "description", language);
 
-                  <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
-                    <img
-                      src={getAssetUrl(tool.image_url)}
-                      alt={toolName}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
-                    />
+                    return (
+                      <button
+                        key={tool.id}
+                        type="button"
+                        onClick={() => onSelectTool(tool)}
+                        className="group/tool relative flex min-h-[360px] cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition-[transform,border-color] duration-200 ease-out will-change-transform hover:-translate-y-1 hover:border-[#c89b3c]/90"
+                      >
+                        <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
-                    <ImageOverlay />
-                  </div>
+                        <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
+                          <img
+                            src={getAssetUrl(tool.image_url)}
+                            alt={toolName}
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition-transform duration-300 ease-out group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
+                          />
 
-                  <div className="relative z-10 flex flex-1 flex-col p-4">
-                    <div className="mb-4 h-px w-20 bg-[#c89b3c]/70" />
+                          <ImageOverlay />
+                        </div>
 
-                    <h3 className="mb-4 min-h-[4.5rem] font-['IM_Fell_English_SC'] text-3xl uppercase leading-none text-[#fff1d2] transition group-hover/tool:text-[#e7c97b]">
-                      {toolTitle}
-                    </h3>
+                        <div className="relative z-10 flex flex-1 flex-col p-4">
+                          <div className="mb-4 h-px w-20 bg-[#c89b3c]/70" />
 
-                    {toolDescription && (
-                      <p className="mb-5 min-h-[4.75rem] font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/86">
-                        {toolDescription}
-                      </p>
-                    )}
+                          <h3 className="mb-4 min-h-[4.5rem] font-['IM_Fell_English_SC'] text-3xl uppercase leading-none text-[#fff1d2] transition group-hover/tool:text-[#e7c97b]">
+                            {toolTitle}
+                          </h3>
 
-                    <div className="mt-auto pt-2">
-                      <span className="inline-flex w-fit items-center justify-center border border-[#c89b3c] bg-[#24170d] px-4 py-2 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition group-hover/tool:bg-[#c89b3c] group-hover/tool:text-[#100805]">
-                        {labels.select}
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+                          {toolDescription && (
+                            <p className="mb-5 min-h-[4.75rem] font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/86">
+                              {toolDescription}
+                            </p>
+                          )}
+
+                          <div className="mt-auto pt-2">
+                            <span className="inline-flex w-fit items-center justify-center border border-[#c89b3c] bg-[#24170d] px-4 py-2 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition group-hover/tool:bg-[#c89b3c] group-hover/tool:text-[#100805]">
+                              {labels.select}
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Ornement sous chaque collection, y compris la dernière. */}
+                <OrnamentDivider className="my-8" width={112} opacity={0.55} />
+              </section>
+            ))}
           </div>
         </div>
       </div>

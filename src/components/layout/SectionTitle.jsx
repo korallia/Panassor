@@ -4,6 +4,8 @@ function SectionTitle({
   align = "left",
   className = "",
   showDivider = true,
+  // Taille du titre (optionnel) : par defaut le grand titre de section.
+  titleSizeClassName = "text-5xl md:text-7xl",
 }) {
   const isCentered = align === "center";
 
@@ -18,7 +20,7 @@ function SectionTitle({
       </p>
 
       <h2
-        className={`font-['IM_Fell_English_SC'] text-5xl uppercase leading-none text-[#fff1d2] md:text-7xl ${
+        className={`font-['IM_Fell_English_SC'] uppercase leading-none text-[#fff1d2] ${titleSizeClassName} ${
           isCentered ? "text-center" : ""
         }`}
       >

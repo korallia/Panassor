@@ -1,21 +1,26 @@
 import { useEffect } from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
+import { useCollections } from "../../../context/CollectionsContext";
 import { t } from "../../../utils/localization";
 import { getAssetUrl } from "../../../utils/assets";
 
 import CornerFrame from "../../ui/CornerFrame";
 import OrnamentDivider from "../../ui/OrnamentDivider";
+import SectionTitle from "../../layout/SectionTitle";
 
 function ToolSelectionModal({
   isOpen,
   tools = [],
+  // Collection du kit qu'on personnalise : son groupe s'affiche en premier.
+  currentCollectionId = null,
   selectedItem,
   onSelectTool,
   onClose,
   copy = {},
 }) {
   const { language } = useLanguage();
+  const collections = useCollections();
 
   useEffect(() => {
     if (!isOpen) {
@@ -66,18 +71,24 @@ function ToolSelectionModal({
   const replacedToolName =
     t(selectedItem, "title", language) || t(selectedItem, "name", language);
 
-  // Desktop : outils regroupes par collection, avec un sous-titre par
-  // groupe. La collection de l'outil qu'on remplace passe en premier ; les
-  // autres gardent l'ordre recu de l'API.
+  // Desktop : outils regroupes par collection, avec un titre par groupe.
+  // Ordre : la collection du kit courant en premier, puis les autres par
+  // nombre d'outils croissant (la plus grosse en dernier ; a egalite, on
+  // garde l'ordre recu de l'API).
   const toolGroups = [];
   const groupByKey = new Map();
 
   for (const tool of tools) {
     const key = tool.collection_id ?? "autres";
     if (!groupByKey.has(key)) {
+      // Memes donnees que partout ailleurs sur le site (titre + eyebrow de la
+      // collection), via le contexte des collections publiees.
+      const collection = collections.find((c) => c.id === tool.collection_id);
       const group = {
         key,
+        eyebrow: t(collection, "eyebrow", language),
         title:
+          t(collection, "title", language) ||
           t(tool, "collection_name", language) ||
           (language === "en" ? "Other tools" : "Autres outils"),
         tools: [],
@@ -88,13 +99,15 @@ function ToolSelectionModal({
     groupByKey.get(key).tools.push(tool);
   }
 
-  const currentCollectionId = selectedItem?.collection_id;
-  if (currentCollectionId !== undefined && currentCollectionId !== null) {
-    toolGroups.sort(
-      (a, b) =>
-        Number(b.key === currentCollectionId) - Number(a.key === currentCollectionId)
-    );
-  }
+  const isCurrent = (group) =>
+    currentCollectionId !== null &&
+    currentCollectionId !== undefined &&
+    group.key === currentCollectionId;
+
+  toolGroups.sort((a, b) => {
+    if (isCurrent(a) !== isCurrent(b)) return isCurrent(a) ? -1 : 1;
+    return a.tools.length - b.tools.length;
+  });
 
   const ImageOverlay = () => (
     <>
@@ -202,7 +215,7 @@ function ToolSelectionModal({
         <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
         <div className="relative z-10">
-          <div className="mb-8 flex items-start justify-between gap-6">
+          <div className="mb-16 flex items-start justify-between gap-6">
             <div>
               <OrnamentDivider
                 className="mb-5 justify-start"
@@ -234,15 +247,15 @@ function ToolSelectionModal({
             </button>
           </div>
 
-          <div className="space-y-10">
+          <div>
             {toolGroups.map((group) => (
               <section key={group.key}>
-                <div className="mb-5 flex items-center gap-4">
-                  <h3 className="shrink-0 font-['IM_Fell_English_SC'] text-lg uppercase tracking-[0.24em] text-[#c89b3c]">
-                    {group.title}
-                  </h3>
-                  <span className="h-px flex-1 bg-gradient-to-r from-[#c89b3c]/55 to-transparent" />
-                </div>
+                <SectionTitle
+                  eyebrow={group.eyebrow}
+                  title={group.title}
+                  titleSizeClassName="text-4xl"
+                  className="mb-8"
+                />
 
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                   {group.tools.map((tool) => {
@@ -294,6 +307,9 @@ function ToolSelectionModal({
                     );
                   })}
                 </div>
+
+                {/* Ornement sous chaque collection, y compris la dernière. */}
+                <OrnamentDivider className="my-8" width={112} opacity={0.55} />
               </section>
             ))}
           </div>

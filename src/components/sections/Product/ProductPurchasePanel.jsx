@@ -264,6 +264,7 @@ function ProductPurchasePanel({
       <ToolSelectionModal
         isOpen={activeItemIndex !== null}
         tools={toolOptions}
+        currentCollectionId={collection?.id}
         selectedItem={activeItem}
         onSelectTool={selectTool}
         onClose={closeToolModal}

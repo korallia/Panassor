@@ -66,6 +66,36 @@ function ToolSelectionModal({
   const replacedToolName =
     t(selectedItem, "title", language) || t(selectedItem, "name", language);
 
+  // Desktop : outils regroupes par collection, avec un sous-titre par
+  // groupe. La collection de l'outil qu'on remplace passe en premier ; les
+  // autres gardent l'ordre recu de l'API.
+  const toolGroups = [];
+  const groupByKey = new Map();
+
+  for (const tool of tools) {
+    const key = tool.collection_id ?? "autres";
+    if (!groupByKey.has(key)) {
+      const group = {
+        key,
+        title:
+          t(tool, "collection_name", language) ||
+          (language === "en" ? "Other tools" : "Autres outils"),
+        tools: [],
+      };
+      groupByKey.set(key, group);
+      toolGroups.push(group);
+    }
+    groupByKey.get(key).tools.push(tool);
+  }
+
+  const currentCollectionId = selectedItem?.collection_id;
+  if (currentCollectionId !== undefined && currentCollectionId !== null) {
+    toolGroups.sort(
+      (a, b) =>
+        Number(b.key === currentCollectionId) - Number(a.key === currentCollectionId)
+    );
+  }
+
   const ImageOverlay = () => (
     <>
       <div className="absolute inset-0 bg-gradient-to-t from-[#080504]/66 via-transparent to-[#080504]/10" />
@@ -82,7 +112,7 @@ function ToolSelectionModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#080504]/86 backdrop-blur-sm md:flex md:items-center md:justify-center md:px-6">
+    <div className="fixed inset-0 z-50 bg-[#080504]/90 md:flex md:items-center md:justify-center md:px-6">
       {/* MOBILE */}
       <div className="flex h-full flex-col bg-[linear-gradient(180deg,#160e08_0%,#0b0603_100%)] text-[#f3e7cf] md:hidden">
         <div className="sticky top-0 z-30 border-b border-[#6f5423]/70 bg-[#0b0603]/96 px-4 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.55)]">
@@ -137,7 +167,7 @@ function ToolSelectionModal({
                       alt={toolName}
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
+                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition-transform duration-300 ease-out group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
                     />
 
                     <ImageOverlay />
@@ -204,55 +234,68 @@ function ToolSelectionModal({
             </button>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {tools.map((tool) => {
-              const toolName = t(tool, "name", language);
-              const toolTitle = t(tool, "title", language) || toolName;
-              const toolDescription = t(tool, "description", language);
+          <div className="space-y-10">
+            {toolGroups.map((group) => (
+              <section key={group.key}>
+                <div className="mb-5 flex items-center gap-4">
+                  <h3 className="shrink-0 font-['IM_Fell_English_SC'] text-lg uppercase tracking-[0.24em] text-[#c89b3c]">
+                    {group.title}
+                  </h3>
+                  <span className="h-px flex-1 bg-gradient-to-r from-[#c89b3c]/55 to-transparent" />
+                </div>
 
-              return (
-                <button
-                  key={tool.id}
-                  type="button"
-                  onClick={() => onSelectTool(tool)}
-                  className="group/tool relative flex min-h-[360px] cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition duration-300 hover:-translate-y-1 hover:border-[#c89b3c]/90 hover:shadow-[0_24px_70px_rgba(0,0,0,0.78),0_0_34px_rgba(200,155,60,0.08)]"
-                >
-                  <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                  {group.tools.map((tool) => {
+                    const toolName = t(tool, "name", language);
+                    const toolTitle = t(tool, "title", language) || toolName;
+                    const toolDescription = t(tool, "description", language);
 
-                  <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
-                    <img
-                      src={getAssetUrl(tool.image_url)}
-                      alt={toolName}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition duration-500 group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
-                    />
+                    return (
+                      <button
+                        key={tool.id}
+                        type="button"
+                        onClick={() => onSelectTool(tool)}
+                        className="group/tool relative flex min-h-[360px] cursor-pointer flex-col overflow-hidden border border-[#6f5423]/75 bg-[linear-gradient(180deg,#170f08_0%,#0d0805_100%)] text-left shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition-[transform,border-color] duration-200 ease-out will-change-transform hover:-translate-y-1 hover:border-[#c89b3c]/90"
+                      >
+                        <div className="pointer-events-none absolute inset-2 border border-[#c89b3c]/10" />
 
-                    <ImageOverlay />
-                  </div>
+                        <div className="relative aspect-[5/4] overflow-hidden bg-[#0b0704]">
+                          <img
+                            src={getAssetUrl(tool.image_url)}
+                            alt={toolName}
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full object-cover brightness-[0.9] contrast-[1.1] saturate-[1.02] transition-transform duration-300 ease-out group-hover/tool:scale-[1.04] group-hover/tool:brightness-[0.98]"
+                          />
 
-                  <div className="relative z-10 flex flex-1 flex-col p-4">
-                    <div className="mb-4 h-px w-20 bg-[#c89b3c]/70" />
+                          <ImageOverlay />
+                        </div>
 
-                    <h3 className="mb-4 min-h-[4.5rem] font-['IM_Fell_English_SC'] text-3xl uppercase leading-none text-[#fff1d2] transition group-hover/tool:text-[#e7c97b]">
-                      {toolTitle}
-                    </h3>
+                        <div className="relative z-10 flex flex-1 flex-col p-4">
+                          <div className="mb-4 h-px w-20 bg-[#c89b3c]/70" />
 
-                    {toolDescription && (
-                      <p className="mb-5 min-h-[4.75rem] font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/86">
-                        {toolDescription}
-                      </p>
-                    )}
+                          <h3 className="mb-4 min-h-[4.5rem] font-['IM_Fell_English_SC'] text-3xl uppercase leading-none text-[#fff1d2] transition group-hover/tool:text-[#e7c97b]">
+                            {toolTitle}
+                          </h3>
 
-                    <div className="mt-auto pt-2">
-                      <span className="inline-flex w-fit items-center justify-center border border-[#c89b3c] bg-[#24170d] px-4 py-2 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition group-hover/tool:bg-[#c89b3c] group-hover/tool:text-[#100805]">
-                        {labels.select}
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+                          {toolDescription && (
+                            <p className="mb-5 min-h-[4.75rem] font-['EB_Garamond'] text-lg leading-6 text-[#d7c8ad]/86">
+                              {toolDescription}
+                            </p>
+                          )}
+
+                          <div className="mt-auto pt-2">
+                            <span className="inline-flex w-fit items-center justify-center border border-[#c89b3c] bg-[#24170d] px-4 py-2 font-['IM_Fell_English_SC'] text-base uppercase tracking-[0.06em] text-[#e7c97b] transition group-hover/tool:bg-[#c89b3c] group-hover/tool:text-[#100805]">
+                              {labels.select}
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
           </div>
         </div>
       </div>

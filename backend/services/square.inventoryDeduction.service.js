@@ -92,7 +92,12 @@ export async function deductKitComponentInventory(squareOrder) {
         from_state: "IN_STOCK",
         to_state: "SOLD",
         quantity: String(quantity),
-        occurred_at: new Date().toISOString(),
+        // Date FIXE (celle de la commande) : Square renvoie souvent le même
+        // paiement plusieurs fois. Avec une date qui change, le 2e envoi
+        // était refusé (IDEMPOTENCY_KEY_REUSED) et remplissait les logs
+        // d'erreurs. Avec la même date, Square reconnaît la même demande
+        // et répond OK sans rien retirer une 2e fois.
+        occurred_at: squareOrder.created_at || new Date().toISOString(),
       },
     });
   }

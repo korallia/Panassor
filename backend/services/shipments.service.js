@@ -47,7 +47,10 @@ export async function getOrderForShipment(orderId) {
       selected_carrier,
       shipping_carrier_label,
       shipping_service_label,
-      shipping_cents
+      shipping_cents,
+      discount_cents,
+      discount_label,
+      paid_total_cents
     FROM orders
     WHERE id = $1;
     `,

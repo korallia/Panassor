@@ -221,6 +221,7 @@ function MerciPage() {
             customer: "Customer",
             shipping: "Shipping",
             subtotal: "Subtotal",
+            coupon: "Coupon",
             taxes: "Taxes",
             total: "Total",
             selectedItems: "Selected tools",
@@ -242,6 +243,7 @@ function MerciPage() {
             customer: "Client",
             shipping: "Livraison",
             subtotal: "Sous-total",
+            coupon: "Coupon",
             taxes: "Taxes",
             total: "Total",
             selectedItems: "Outils choisis",
@@ -552,6 +554,25 @@ function MerciPage() {
                               <span>
                                 {formatMoney(
                                   order.shipping.cents,
+                                  order.totals.currency,
+                                  pageLanguage
+                                )}
+                              </span>
+                            </div>
+                          )}
+
+                          {order.totals.discountCents > 0 && (
+                            <div className="grid grid-cols-[1fr_auto] gap-6 md:gap-8">
+                              <span>
+                                {copy.coupon}
+                                {order.totals.discountLabel
+                                  ? ` (${order.totals.discountLabel})`
+                                  : ""}
+                              </span>
+                              <span>
+                                −
+                                {formatMoney(
+                                  order.totals.discountCents,
                                   order.totals.currency,
                                   pageLanguage
                                 )}

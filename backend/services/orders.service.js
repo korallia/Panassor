@@ -264,15 +264,38 @@ export async function updateLocalOrderSquareOrderSnapshot(squareOrder) {
     return null;
   }
 
+  // Ce que Square a VRAIMENT facturé (coupon compris). Le coupon s'entre
+  // sur la page de paiement Square, après le calcul de notre panier : on
+  // recopie donc les montants de Square tels quels, sans rien recalculer.
+  const money = (value) =>
+    typeof value?.amount === "number" ? value.amount : null;
+  const discountCents = money(squareOrder.total_discount_money);
+  const discountLabel =
+    (squareOrder.discounts || [])
+      .map((discount) => discount.name)
+      .filter(Boolean)
+      .join(", ") || null;
+
   const result = await pool.query(
     `
     UPDATE orders
     SET
-      square_order_snapshot = $1::jsonb
+      square_order_snapshot = $1::jsonb,
+      discount_cents = $3,
+      discount_label = $4,
+      paid_tax_cents = $5,
+      paid_total_cents = $6
     WHERE square_order_id = $2
     RETURNING id, status;
     `,
-    [JSON.stringify(squareOrder), squareOrder.id]
+    [
+      JSON.stringify(squareOrder),
+      squareOrder.id,
+      discountCents,
+      discountLabel,
+      money(squareOrder.total_tax_money),
+      money(squareOrder.total_money),
+    ]
   );
 
   return result.rows[0] || null;
@@ -517,6 +540,11 @@ export async function getOrderSummaryById(id, thankYouToken = null) {
       shipping_service_label,
       shipping_cents,
 
+      discount_cents,
+      discount_label,
+      paid_tax_cents,
+      paid_total_cents,
+
       created_at,
       updated_at
     FROM orders
@@ -540,10 +568,14 @@ export async function getOrderSummaryById(id, thankYouToken = null) {
     number: order.order_number,
     status: order.status,
 
+    // Taxes et total = ce que Square a facturé dès qu'on le connaît
+    // (coupon compris) ; sinon le calcul du panier.
     totals: {
       subtotalCents: order.subtotal_cents,
-      taxCents: order.tax_cents,
-      totalCents: order.total_cents,
+      discountCents: order.discount_cents || 0,
+      discountLabel: order.discount_label,
+      taxCents: order.paid_tax_cents ?? order.tax_cents,
+      totalCents: order.paid_total_cents ?? order.total_cents,
       currency: order.currency,
     },
 

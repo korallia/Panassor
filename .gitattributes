@@ -1,0 +1,16 @@
+# Fins de ligne : toujours LF dans le dépôt ET dans les fichiers de travail,
+# même sur Windows. Évite que Git voie 100 fichiers « modifiés » pour rien.
+* text=auto eol=lf
+
+# Fichiers binaires : ne jamais toucher.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.mp4 binary
+*.webm binary
+*.woff binary
+*.woff2 binary
+*.pdf binary

@@ -237,7 +237,10 @@ export async function updateLocalOrderFromSquarePayment(payment) {
   const updatedOrder = result.rows[0];
 
   if (!updatedOrder) {
-    console.warn("No local order found for Square payment:", {
+    // Paiement Square sans commande du site : vente en salon (terminal
+    // Square) ou ancienne commande. Rien à mettre à jour ici -- simple info,
+    // pas une erreur.
+    console.log("Paiement Square hors site (pas de commande locale) :", {
       paymentId: payment.id,
       squareOrderId: payment.order_id,
       status: payment.status,

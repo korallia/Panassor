@@ -53,7 +53,12 @@ export async function handleSquareWebhook(req, res) {
         try {
           await deductKitComponentInventory(squareOrder);
         } catch (inventoryError) {
-          console.warn("Failed to deduct kit component inventory:", inventoryError);
+          // Déjà décompté lors d'un envoi précédent du même paiement : normal.
+          if (inventoryError?.errors?.[0]?.code === "IDEMPOTENCY_KEY_REUSED") {
+            console.log(`Inventaire déjà décompté pour la commande Square ${squareOrder?.id}.`);
+          } else {
+            console.warn("Failed to deduct kit component inventory:", inventoryError);
+          }
         }
       }
 

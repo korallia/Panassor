@@ -219,9 +219,17 @@ export async function updateLocalOrderFromSquarePayment(payment) {
     SET
       status = $1::order_status,
       square_payment_id = $2,
-      square_payment_snapshot = $3::jsonb
+      square_payment_snapshot = $3::jsonb,
+      -- Numero de commande visible (Discord, page merci, courriel) :
+      -- donne SEULEMENT au paiement, une seule fois. Les paniers ouverts
+      -- puis abandonnes (tests compris) n'en recoivent jamais, donc la
+      -- numerotation des vraies commandes n'a pas de trous.
+      order_number = CASE
+        WHEN $1::order_status = 'paid' AND order_number IS NULL THEN nextval('order_number_seq')
+        ELSE order_number
+      END
     WHERE square_order_id = $4
-    RETURNING id, status;
+    RETURNING id, status, order_number;
     `,
     [nextStatus, payment.id, JSON.stringify(payment), payment.order_id]
   );
@@ -492,6 +500,7 @@ export async function getOrderSummaryById(id, thankYouToken = null) {
     `
     SELECT
       id,
+      order_number,
       status,
       subtotal_cents,
       tax_cents,
@@ -524,6 +533,8 @@ export async function getOrderSummaryById(id, thankYouToken = null) {
 
   return {
     id: order.id,
+    // Numero visible par le client ; null tant que la commande n'est pas payee.
+    number: order.order_number,
     status: order.status,
 
     totals: {

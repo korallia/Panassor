@@ -261,7 +261,7 @@ export async function getPurolatorEstimate({
     .map((wrapper) => wrapper?.shipmentEstimate)
     .filter(Boolean);
 
-  // Normalized into the same shape shippingPlaceholder.js's mock uses.
+  // Normalized into the same shape as the Canada Post quotes.
   return estimates
     .map((estimate) => ({
       id: `purolator-${estimate.serviceId}`.toLowerCase(),

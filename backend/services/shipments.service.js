@@ -39,6 +39,7 @@ export async function getOrderForShipment(orderId) {
     `
     SELECT
       id,
+      order_number,
       status,
       cart_snapshot,
       total_cents,
@@ -996,7 +997,7 @@ export async function submitShipmentTracking({
     await sendTrackingEmail({
       recipientEmail: updatedShipment.recipient_email,
       recipientName: updatedShipment.recipient_display_name,
-      orderId: order?.id ?? updatedShipment.order_id,
+      orderId: order?.order_number ?? order?.id ?? updatedShipment.order_id,
       shipmentItems,
       carrier: normalizedCarrier,
       trackingNumber: normalizedTrackingNumber,

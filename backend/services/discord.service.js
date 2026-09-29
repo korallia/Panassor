@@ -107,7 +107,7 @@ export async function notifyNewOrderShipment({ order, shipment, shipmentItems })
       : null;
 
     const embed = {
-      title: `🆕 Nouvelle commande payée — #${order.id}`,
+      title: `🆕 Nouvelle commande payée — #${order.order_number ?? order.id}`,
       color: 0x2ecc71,
       fields: [
         {
@@ -279,7 +279,7 @@ export async function editShipmentDiscordStatus({
     }
 
     const embed = {
-      title: `${stageConfig.titlePrefix} — commande #${order.id}`,
+      title: `${stageConfig.titlePrefix} — commande #${order.order_number ?? order.id}`,
       color: stageConfig.color,
       fields,
       timestamp: new Date().toISOString(),

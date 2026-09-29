@@ -373,7 +373,7 @@ function MerciPage() {
                       </p>
 
                       <p className="mt-1 font-['IM_Fell_English_SC'] text-3xl uppercase text-[#fff1d2]">
-                        #{order.id}
+                        {order.number ? `#${order.number}` : "—"}
                       </p>
                     </div>
 

@@ -64,10 +64,24 @@ export function useCheckout() {
     } catch (error) {
       console.error("Checkout failed:", error);
 
+      // 409 = le serveur a refuse le panier : soit la livraison choisie
+      // n'existe plus, soit un produit n'a plus d'equivalent dans Square
+      // (voir buildSquareLineItems dans cart.service.js).
+      const isShippingGone = error?.message === "SHIPPING_OPTION_UNAVAILABLE";
+      const isProductGone = error?.status === 409 && !isShippingGone;
+
       setCheckoutError(
-        language === "en"
-          ? "Unable to open checkout. Please try again."
-          : "Impossible d’ouvrir le paiement. Réessaie dans un instant."
+        isProductGone
+          ? language === "en"
+            ? "An item in your cart is no longer available. Please remove it and try again."
+            : "Un produit de ton panier n’est plus disponible. Retire-le et réessaie."
+          : isShippingGone
+            ? language === "en"
+              ? "Your shipping option is no longer available. Please recalculate shipping."
+              : "L’option de livraison n’est plus disponible. Recalcule la livraison."
+            : language === "en"
+              ? "Unable to open checkout. Please try again."
+              : "Impossible d’ouvrir le paiement. Réessaie dans un instant."
       );
 
       setIsCheckingOut(false);

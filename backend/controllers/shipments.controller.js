@@ -10,8 +10,10 @@ import {
 } from "../services/shipments.service.js";
 import { buildItemSummaries } from "../services/discord.service.js";
 
+// Fermees par defaut ; ouvertes seulement avec ALLOW_DEV_ROUTES=true
+// (voir config/env.js).
 function blockShipmentRoutesInProduction(res) {
-  if (env.nodeEnv !== "production") {
+  if (env.allowDevRoutes) {
     return false;
   }
 
@@ -201,7 +203,7 @@ export async function patchShipmentTracking(req, res) {
   }
 }
 function isProduction() {
-  return env.nodeEnv === "production";
+  return !env.allowDevRoutes;
 }
 
 // Both routes below are intentionally NOT behind

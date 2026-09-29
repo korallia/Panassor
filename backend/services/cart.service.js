@@ -258,27 +258,21 @@ export async function buildSquareLineItems(items) {
 
       lineItems.push(lineItem);
     } else {
-      console.warn(`>>> Pas de catalog_object_id trouvé pour productId=${item.productId}, fallback ad hoc`);
+      // Securite (rapport d'architecture 2026-09-26, point 1) : on ne cree
+      // JAMAIS de ligne "libre" au prix envoye par le navigateur -- n'importe
+      // qui pourrait fabriquer une requete a 0,01 $. Chaque article doit
+      // correspondre a une variante du catalogue Square, dont Square
+      // applique lui-meme le prix.
+      console.warn(
+        `>>> Checkout refuse : aucune variante Square pour productId=${item.productId} (${item.name})`
+      );
 
-      const lineItem = {
-        name: item.name,
-        quantity: String(item.quantity),
-        base_price_money: { amount: item.unitPriceCents, currency: "CAD" },
-      };
-
-      if (item.colorName) {
-        lineItem.variation_name = item.colorName;
-      }
-
-      if (modifiers.length > 0) {
-        lineItem.modifiers = modifiers;
-      }
-
-      if (item.note) {
-        lineItem.note = item.note;
-      }
-
-      lineItems.push(lineItem);
+      const error = new Error(
+        `« ${item.name} » n'est plus disponible. Retire-le du panier et réessaie.`
+      );
+      error.status = 409;
+      error.code = "PRODUCT_UNAVAILABLE";
+      throw error;
     }
   }
 

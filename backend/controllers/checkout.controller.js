@@ -66,6 +66,11 @@ export async function createCheckout(req, res) {
     const validatedShipping = await validateSelectedShippingOptionWithRetry(shipping, items);
     const shippingCents = validatedShipping?.priceCents || 0;
 
+    // Resolu AVANT de creer la commande locale : un article sans variante
+    // Square fait echouer le paiement tout de suite (409), sans laisser de
+    // commande "pending" orpheline en base.
+    const lineItems = await buildSquareLineItems(normalizedItems);
+
     const subtotalCents = calculateSubtotalCents(normalizedItems);
     const taxCents = calculateTaxCents(subtotalCents + shippingCents);
     const totalCents = subtotalCents + shippingCents + taxCents;
@@ -101,8 +106,6 @@ export async function createCheckout(req, res) {
       localOrderId: localOrder.id,
       thankYouToken,
     });
-
-    const lineItems = await buildSquareLineItems(normalizedItems);
 
     // A service charge, not a line item -- keeps shipping out of the
     // "N items" count and displayed in its own row (like taxes), instead

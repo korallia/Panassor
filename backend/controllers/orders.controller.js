@@ -6,8 +6,10 @@ import {
   syncLocalOrderFromSquareOrder,
 } from "../services/orders.service.js";
 
+// "Production" = routes protegees. Vrai partout sauf si ALLOW_DEV_ROUTES=true
+// (voir config/env.js).
 function isProduction() {
-  return env.nodeEnv === "production";
+  return !env.allowDevRoutes;
 }
 
 function hasValidThankYouKey(localOrder, key) {

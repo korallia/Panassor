@@ -30,6 +30,12 @@ function readEnv(name, fallback = undefined) {
 
 export const env = {
   nodeEnv: readEnv("NODE_ENV", "development"),
+
+  // Routes d'admin sans authentification (envois, faux paiement) : FERMEES
+  // par defaut. Elles ne s'ouvrent que si ALLOW_DEV_ROUTES=true est mis
+  // expres (en local seulement). Avant, elles etaient ouvertes des que
+  // NODE_ENV n'etait pas exactement "production" (rapport 2026-09-26, #2).
+  allowDevRoutes: readEnv("ALLOW_DEV_ROUTES") === "true",
   port: readEnv("PORT", "3001"),
   siteUrl: readEnv("SITE_URL", "http://localhost:5173"),
 

@@ -196,7 +196,7 @@ export async function getCanadaPostDomesticRates({
   }
 
   // Normalize into the shape the frontend's shipping-quote contract
-  // expects (see src/utils/shippingPlaceholder.js) — cents, not dollars.
+  // expects — cents, not dollars.
   //
   // NOTE: Postes Canada n'est pas cohérent sur la casse de ces deux champs
   // -- confirmé le 2026-09-10 via un vrai appel de PRODUCTION que ces

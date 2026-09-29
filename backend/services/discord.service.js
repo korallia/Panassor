@@ -69,12 +69,25 @@ function formatItemLine(item) {
   return `${item.quantity}x ${item.name}, ${details.join(", ")}`;
 }
 
+// Total réellement payé chez Square (coupon compris) quand on le connaît.
 function formatTotal(order) {
-  if (typeof order?.total_cents !== "number") {
+  const cents =
+    typeof order?.paid_total_cents === "number"
+      ? order.paid_total_cents
+      : order?.total_cents;
+
+  if (typeof cents !== "number") {
     return "—";
   }
 
-  return `${(order.total_cents / 100).toFixed(2)} $ ${order.currency || "CAD"}`;
+  const total = `${(cents / 100).toFixed(2)} $ ${order.currency || "CAD"}`;
+
+  if (order?.discount_cents > 0) {
+    const coupon = order.discount_label ? ` (${order.discount_label})` : "";
+    return `${total}\nCoupon${coupon} : −${(order.discount_cents / 100).toFixed(2)} $`;
+  }
+
+  return total;
 }
 
 // Fire-and-forget: this must never throw and never block the caller

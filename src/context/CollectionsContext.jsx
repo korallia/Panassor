@@ -11,11 +11,18 @@ import {
 import {
   getCollections,
   getCollectionBySlug,
-} from "../../backend/panassorApi";
+} from "../api/panassorApi";
 
 const CollectionsContext = createContext(null);
 
+// Si l'API ne répond pas, on réessaie en espaçant de plus en plus
+// (3 s, 6 s, 12 s… jusqu'à 1 min) au lieu de toutes les 3 s sans fin.
 const RETRY_DELAY_MS = 3000;
+const MAX_RETRY_DELAY_MS = 60000;
+
+function retryDelay(attempt) {
+  return Math.min(RETRY_DELAY_MS * 2 ** attempt, MAX_RETRY_DELAY_MS);
+}
 
 export function CollectionsProvider({ children }) {
   const [collections, setCollections] = useState([]);
@@ -27,6 +34,7 @@ export function CollectionsProvider({ children }) {
   useEffect(() => {
     let isMounted = true;
     let retryTimeoutId = null;
+    let attempt = 0;
 
     async function loadCollections() {
       try {
@@ -40,7 +48,7 @@ export function CollectionsProvider({ children }) {
 
         if (!isMounted) return;
 
-        retryTimeoutId = window.setTimeout(loadCollections, RETRY_DELAY_MS);
+        retryTimeoutId = window.setTimeout(loadCollections, retryDelay(attempt++));
       }
     }
 
@@ -133,6 +141,7 @@ export function useCollectionDetails(slug) {
 
     let isMounted = true;
     let retryTimeoutId = null;
+    let attempt = 0;
 
     async function loadDetails() {
       try {
@@ -153,7 +162,7 @@ export function useCollectionDetails(slug) {
           return;
         }
 
-        retryTimeoutId = window.setTimeout(loadDetails, RETRY_DELAY_MS);
+        retryTimeoutId = window.setTimeout(loadDetails, retryDelay(attempt++));
       }
     }
 

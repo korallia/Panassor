@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { getOrderSummary, syncSquareOrder } from "../../backend/panassorApi";
+import { getOrderSummary, syncSquareOrder } from "../api/panassorApi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 

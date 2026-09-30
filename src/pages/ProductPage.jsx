@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { getProductBySlug } from "../../backend/panassorApi";
+import { getProductBySlug } from "../api/panassorApi";
 import {
   useCollections,
   useCollectionDetails,

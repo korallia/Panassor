@@ -4,7 +4,7 @@ import OrnamentDivider from "../../ui/OrnamentDivider";
 import SectionAtmosphere from "../../layout/SectionAtmosphere";
 import SectionTitle from "../../layout/SectionTitle";
 import CollectionAvenirHero from "./CollectionAvenirHero";
-import { getComingSoonCollections } from "../../../../backend/panassorApi";
+import { getComingSoonCollections } from "../../../api/panassorApi";
 
 function AtelierSneakPeekSection({ copy = {} }) {
   const [comingSoonCollections, setComingSoonCollections] = useState([]);

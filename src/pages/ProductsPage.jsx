@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getProducts } from "../../backend/panassorApi";
+import { getProducts } from "../api/panassorApi";
 
 import { useLanguage } from "../context/LanguageContext";
 import { getPageText } from "../utils/content";

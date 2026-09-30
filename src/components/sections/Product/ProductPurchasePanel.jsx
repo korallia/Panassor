@@ -4,7 +4,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 import { useCart } from "../../../context/CartContext";
 import { getProductSlug, t } from "../../../utils/localization";
 import { getAssetUrl } from "../../../utils/assets";
-import { getCustomizableProducts } from "../../../../backend/panassorApi";
+import { getCustomizableProducts } from "../../../api/panassorApi";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 
@@ -50,7 +50,7 @@ function ProductPurchasePanel({
   useEffect(() => {
     async function loadToolOptions() {
       try {
-        // Goes through panassorApi.js's shared `request()` helper instead
+        // Goes through src/api/panassorApi.js's shared `request()` helper instead
         // of building the URL here -- that helper falls back to
         // http://localhost:3001 when VITE_API_BASE_URL isn't set, which
         // this component's own fetch used to skip. Without that fallback,

@@ -41,6 +41,7 @@ export const cartContent = {
       calculatingLabel: "Calcul en cours...",
       emptyPostalCodeError: "Entrez votre ville et votre code postal pour voir les options de livraison.",
       genericError: "Impossible de calculer la livraison pour cette adresse.",
+      tooManyRequestsError: "Trop de calculs d'un coup. Réessaie dans quelques minutes.",
       internationalNote:
         "Livraison internationale (1 transporteur) -- vérifiez votre code postal s'il devrait être Québécois (ex: A1A 1A1).",
     },
@@ -99,6 +100,7 @@ export const cartContent = {
       calculatingLabel: "Calculating...",
       emptyPostalCodeError: "Enter your city and postal code to see shipping options.",
       genericError: "Unable to calculate shipping for this address.",
+      tooManyRequestsError: "Too many calculations at once. Please try again in a few minutes.",
       internationalNote:
         "International shipping (1 carrier) -- double-check your postal code if it should be Canadian (e.g. A1A 1A1).",
     },

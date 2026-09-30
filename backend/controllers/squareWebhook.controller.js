@@ -7,7 +7,7 @@ import {
   updateLocalOrderSquareOrderSnapshot,
 } from "../services/orders.service.js";
 import { extractSquareShipmentRecipient } from "../services/shipping.service.js";
-import { ensureShipmentForOrderId } from "../services/shipments.service.js";
+import { ensureShipmentForOrderId } from "../services/shipments/shipmentCreation.service.js";
 import { deductKitComponentInventory } from "../services/square.inventoryDeduction.service.js";
 
 export async function handleSquareWebhook(req, res) {

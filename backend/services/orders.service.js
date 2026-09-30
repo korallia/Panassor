@@ -2,10 +2,8 @@ import pool from "../db/pool.js";
 
 import { getSquareOrder, getSquarePayment } from "./square.service.js";
 import { extractSquareShipmentRecipient } from "./shipping.service.js";
-import {
-  ensureShipmentForOrderId,
-  getShipmentDetailsByOrderId,
-} from "./shipments.service.js";
+import { ensureShipmentForOrderId } from "./shipments/shipmentCreation.service.js";
+import { getShipmentDetailsByOrderId } from "./shipments/shipments.repository.js";
 
 export async function createPendingLocalOrder({
   thankYouToken,

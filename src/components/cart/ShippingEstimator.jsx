@@ -103,7 +103,9 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
         <p className="mt-2 font-['EB_Garamond'] text-sm text-red-300">
           {error === "EMPTY_POSTAL_CODE"
             ? copy.emptyPostalCodeError
-            : copy.genericError}
+            : error === "TOO_MANY_REQUESTS"
+              ? copy.tooManyRequestsError
+              : copy.genericError}
         </p>
       )}
 

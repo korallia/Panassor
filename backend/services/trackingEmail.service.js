@@ -1,6 +1,6 @@
 import { env } from "../config/env.js";
 import { sendEmail } from "./resend.service.js";
-import { buildItemSummaries } from "./discord.service.js";
+import { buildItemSummaries } from "./shipments/shipmentItems.util.js";
 
 // Sends the "your order has shipped" email once Korallia enters a
 // tracking number (see the tracking-entry page + shipments.controller.js).

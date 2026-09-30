@@ -2,13 +2,15 @@ import { env } from "../config/env.js";
 import {
   getShipmentDetailsById,
   getShipmentDetailsByOrderId,
-  getShipmentForTrackingEntry,
-  submitShipmentTracking,
   updateShipmentItemStatus,
   updateShipmentStatus,
   updateShipmentTracking,
-} from "../services/shipments.service.js";
-import { buildItemSummaries } from "../services/discord.service.js";
+} from "../services/shipments/shipments.repository.js";
+import {
+  getShipmentForTrackingEntry,
+  submitShipmentTracking,
+} from "../services/shipments/shipmentTracking.service.js";
+import { buildItemSummaries } from "../services/shipments/shipmentItems.util.js";
 
 // Fermees par defaut ; ouvertes seulement avec ALLOW_DEV_ROUTES=true
 // (voir config/env.js).

@@ -2,7 +2,7 @@ import {
   fetchAllProducts,
   fetchCustomizableProducts,
   fetchProductWithDetailsBySlug,
-} from "../services/products.service.js";
+} from "../services/catalog.service.js";
 
 export async function getCustomizableProducts(req, res) {
   try {

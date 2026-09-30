@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   getShipmentTrackingEntry,
   submitShipmentTrackingEntry,
-} from "../../backend/panassorApi";
+} from "../api/panassorApi";
 
 // Internal-only utility page, not part of the storefront: Korallia opens
 // this from the link in the Discord "new order" notification to enter a

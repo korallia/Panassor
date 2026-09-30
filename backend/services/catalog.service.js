@@ -1,3 +1,13 @@
+// =========================================
+// CATALOGUE -- collections, produits, kits, images, couleurs
+//
+// Un seul fichier pour tout le catalogue. Avant, products.service.js et
+// collections.service.js étaient deux copies presque identiques qui
+// avaient commencé à diverger (rapport d'architecture, #4) :
+//   - la page collection affiche aussi les produits hors kit (ensembles) ;
+//   - le contenu d'un kit renvoie kit_component_id (outils au choix).
+// =========================================
+
 import pool from "../db/pool.js";
 
 const COLLECTION_COLUMNS = `
@@ -474,6 +484,7 @@ export async function fetchKitItemsForProduct(productId) {
   const result = await pool.query(
     `
     SELECT
+      ki.id AS kit_component_id,
       included.id,
       included.slug_fr,
       included.slug_en,

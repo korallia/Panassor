@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { createCheckout } from "../../backend/panassorApi";
+import { createCheckout } from "../api/panassorApi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 

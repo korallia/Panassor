@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { getShippingQuote } from "../../backend/panassorApi";
+import { getShippingQuote } from "../api/panassorApi";
 
 // The placeholder suggests "Ville, Code postal", but the comma is a
 // suggestion, not a hard requirement -- if someone just types

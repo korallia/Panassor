@@ -3,11 +3,8 @@ import { getPurolatorTrackingStatus } from "../services/purolator.service.js";
 import {
   getShipmentsAwaitingDelivery,
   touchShipmentTrackingCheckedAt,
-  markShipmentDelivered,
-  getOrderForShipment,
-  getShipmentItems,
-} from "../services/shipments.service.js";
-import { editShipmentDiscordStatus } from "../services/discord.service.js";
+} from "../services/shipments/shipments.repository.js";
+import { recordShipmentDelivered } from "../services/shipments/shipmentTracking.service.js";
 
 // =========================================
 // CARRIER TRACKING POLLER
@@ -15,7 +12,7 @@ import { editShipmentDiscordStatus } from "../services/discord.service.js";
 // Periodically checks every "shipped" shipment against its carrier's
 // tracking API. The moment a carrier reports a delivery, the shipment
 // flips to "delivered" and the Discord order message is edited to match
-// (see discord.service.js's editShipmentDiscordStatus).
+// (see discord/discordManager.js's updateOrderMessage).
 //
 // Intentionally simple: no webhooks from the carriers, no queue, just a
 // poll loop -- matches the rest of this shipping integration (manual
@@ -59,29 +56,16 @@ async function checkOneShipment(shipment) {
     return;
   }
 
-  const updatedShipment = await markShipmentDelivered({
-    shipmentId: shipment.id,
+  // Statut « livré » + message Discord « Livré » (voir
+  // shipments/shipmentTracking.service.js).
+  const updatedShipment = await recordShipmentDelivered({
+    shipment,
     deliveredAt: trackingStatus.deliveredAt,
   });
 
   if (!updatedShipment) {
     return;
   }
-
-  const [order, shipmentItems] = await Promise.all([
-    getOrderForShipment(updatedShipment.order_id),
-    getShipmentItems(updatedShipment.id),
-  ]);
-
-  // Never throws (see discord.service.js) -- a Discord hiccup here must
-  // never undo the delivered status we just saved.
-  await editShipmentDiscordStatus({
-    order,
-    shipment: updatedShipment,
-    shipmentItems,
-    stage: "delivered",
-    trackingUrl: shipment.tracking_url,
-  });
 
   console.log(
     `Tracking poller: shipment #${shipment.id} marked delivered (${shipment.carrier}).`

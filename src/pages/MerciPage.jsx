@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-import { getOrderSummary, syncSquareOrder } from "../../backend/panassorApi";
+import { getOrderSummary, syncSquareOrder } from "../api/panassorApi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useLocalizedUrl } from "../hooks/useLocalizedUrl";
 
 import CornerFrame from "../components/ui/CornerFrame";
 import OrnamentDivider from "../components/ui/OrnamentDivider";
@@ -185,26 +186,18 @@ function storeLastPaidOrderId(orderId) {
 }
 
 function MerciPage() {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { clearCart } = useCart();
+  const location = useLocation();
 
-  const isEnglishPath = window.location.pathname === "/thank-you";
-  const isFrenchPath = window.location.pathname === "/merci";
-  const pageLanguage = isEnglishPath ? "en" : isFrenchPath ? "fr" : language;
+  // /merci en français, /thank-you en anglais : l'adresse décide à
+  // l'arrivée, puis suit le bouton de langue.
+  useLocalizedUrl("merci", location.pathname, { fr: "/merci", en: "/thank-you" });
+  const pageLanguage = language;
 
   const [order, setOrder] = useState(USE_MOCK_ORDER ? MOCK_ORDER : null);
   const [isLoading, setIsLoading] = useState(!USE_MOCK_ORDER);
 
-  useEffect(() => {
-    if (isEnglishPath) {
-      setLanguage?.("en");
-      return;
-    }
-
-    if (isFrenchPath) {
-      setLanguage?.("fr");
-    }
-  }, [isEnglishPath, isFrenchPath, setLanguage]);
 
   const copy = useMemo(
     () =>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getAtelierVideos } from "../../backend/panassorApi";
+import { getAtelierVideos } from "../api/panassorApi";
 import PageHeroBanner from "../components/layout/PageHeroBanner";
 import { useLanguage } from "../context/LanguageContext";
 import { getPageText } from "../utils/content";

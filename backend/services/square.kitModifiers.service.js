@@ -1,5 +1,5 @@
 import { squareFetch, assertSquareConfig, upsertCatalogObject } from "./square.service.js";
-import { fetchCustomizableProducts } from "./products.service.js";
+import { fetchCustomizableProducts } from "./catalog.service.js";
 import db from "../db/pool.js";
 
 // kitProductIds (optionnel) : limite la synchro aux kits donnes (utilise

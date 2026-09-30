@@ -6,7 +6,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
 import { getCollectionUrl, getProductSlug, t } from "../../utils/localization";
 import { getAssetUrl } from "../../utils/assets";
-import { getComingSoonCollections } from "../../../backend/panassorApi";
+import { getComingSoonCollections } from "../../api/panassorApi";
 
 const contactEmail = "contact@panassor.ca";
 const facebookUrl = "https://www.facebook.com/profile.php?id=61587079943525";

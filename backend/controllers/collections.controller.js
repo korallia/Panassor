@@ -2,7 +2,7 @@ import {
   fetchPublishedCollections,
   fetchComingSoonCollections,
   fetchCollectionWithProductsBySlug,
-} from "../services/collections.service.js";
+} from "../services/catalog.service.js";
 
 export async function getPublishedCollections(req, res) {
   try {

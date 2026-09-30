@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
 import { getProductBySlug } from "../api/panassorApi";
@@ -7,6 +7,7 @@ import {
   useCollectionDetails,
 } from "../context/CollectionsContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useLocalizedUrl } from "../hooks/useLocalizedUrl";
 import { getCollectionSlug, getProductSlug, t } from "../utils/localization";
 import { getPageText } from "../utils/content";
 import { getAssetUrl } from "../utils/assets";
@@ -40,9 +41,27 @@ function ProductPage() {
   const collectionSlug = getProductCollectionSlug(product, language);
   const { collection } = useCollectionDetails(collectionSlug);
 
+  useLocalizedUrl(product?.id, `/produits/${slug}`, product && {
+    fr: `/produits/${product.slug_fr}`,
+    en: product.slug_en ? `/produits/${product.slug_en}` : "",
+  });
+
+  // Le produit déjà affiché, pour ne pas le recharger quand seule
+  // l'adresse change de langue (slug FR <-> slug EN).
+  const productRef = useRef(null);
+
+  useEffect(() => {
+    productRef.current = product;
+  }, [product]);
+
   useEffect(() => {
     let isMounted = true;
     let retryTimeoutId = null;
+
+    const shown = productRef.current;
+    if (shown && (shown.slug_fr === slug || shown.slug_en === slug)) {
+      return;
+    }
 
     async function loadProduct() {
       try {

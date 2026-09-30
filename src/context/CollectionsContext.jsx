@@ -76,11 +76,17 @@ export function CollectionsProvider({ children }) {
 
     const request = getCollectionBySlug(slug)
       .then((data) => {
-        detailsCacheRef.current[slug] = data;
+        // Rangée sous ses deux slugs (FR et EN) : changer de langue sur la
+        // page collection ne la recharge pas.
+        const keys = [slug, data?.slug_fr, data?.slug_en].filter(Boolean);
+
+        for (const key of keys) {
+          detailsCacheRef.current[key] = data;
+        }
 
         setCollectionDetailsBySlug((previousDetails) => ({
           ...previousDetails,
-          [slug]: data,
+          ...Object.fromEntries(keys.map((key) => [key, data])),
         }));
 
         return data;

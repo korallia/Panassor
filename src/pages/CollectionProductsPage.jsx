@@ -1,6 +1,7 @@
 import { Navigate, useParams } from "react-router-dom";
 
 import { useCollectionDetails } from "../context/CollectionsContext";
+import { useLocalizedUrl } from "../hooks/useLocalizedUrl";
 import { useLanguage } from "../context/LanguageContext";
 import { t } from "../utils/localization";
 import { getPageText } from "../utils/content";
@@ -16,6 +17,11 @@ function CollectionProductsPage() {
 
   const { collection, notFound } = useCollectionDetails(slug);
   const copy = getPageText(collectionProductsContent, language);
+
+  useLocalizedUrl(collection?.id, `/collections/${slug}`, collection && {
+    fr: `/collections/${collection.slug_fr}`,
+    en: collection.slug_en ? `/collections/${collection.slug_en}` : "",
+  });
 
   if (notFound) {
     return <Navigate to="/collections" replace />;

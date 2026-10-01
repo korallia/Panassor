@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS product_options (
   UNIQUE (product_id, label_fr)
 );
 
+-- Ordre = sort_order : la première option est celle choisie par défaut
+-- (2 aiguilles, 1 droite + 1 courbe).
 -- Sur la page : un menu « 1 ou 2 » (quantity), puis des pastilles pour
 -- les options de cette quantité (icon = le dessin de la pastille).
 ALTER TABLE product_options
@@ -36,13 +38,13 @@ DELETE FROM product_options WHERE label_fr IN ('2 pareilles', '2 différentes');
 INSERT INTO product_options (product_id, label_fr, label_en, price_cents, sort_order, quantity, icon)
 SELECT p.id, x.label_fr, x.label_en, x.price_cents, x.sort_order, x.quantity, x.icon
 FROM (VALUES
-  ('aiguilles-suture',  '1 droite',             '1 straight',             1200, 0, 1, 'droite'),
-  ('aiguilles-suture',  '1 courbe',             '1 curved',               1200, 1, 1, 'courbe'),
-  ('aiguilles-suture',  '2 droites',            '2 straight',             2000, 2, 2, 'droite-droite'),
-  ('aiguilles-suture',  '2 courbes',            '2 curved',               2000, 3, 2, 'courbe-courbe'),
-  ('aiguilles-suture',  '1 droite + 1 courbe',  '1 straight + 1 curved',  2000, 4, 2, 'droite-courbe'),
-  ('aiguilles-douleur', '1 aiguille',           '1 needle',               1800, 0, 1, NULL),
-  ('aiguilles-douleur', '2 aiguilles',          '2 needles',              3000, 1, 2, NULL)
+  ('aiguilles-suture',  '1 droite',             '1 straight',             1200, 3, 1, 'droite'),
+  ('aiguilles-suture',  '1 courbe',             '1 curved',               1200, 4, 1, 'courbe'),
+  ('aiguilles-suture',  '2 droites',            '2 straight',             2000, 1, 2, 'droite-droite'),
+  ('aiguilles-suture',  '2 courbes',            '2 curved',               2000, 2, 2, 'courbe-courbe'),
+  ('aiguilles-suture',  '1 droite + 1 courbe',  '1 straight + 1 curved',  2000, 0, 2, 'droite-courbe'),
+  ('aiguilles-douleur', '1 aiguille',           '1 needle',               1800, 1, 1, NULL),
+  ('aiguilles-douleur', '2 aiguilles',          '2 needles',              3000, 0, 2, NULL)
 ) AS x(slug, label_fr, label_en, price_cents, sort_order, quantity, icon)
 JOIN products p ON p.slug_fr = x.slug
 ON CONFLICT (product_id, label_fr) DO UPDATE SET
@@ -56,4 +58,4 @@ ON CONFLICT (product_id, label_fr) DO UPDATE SET
 SELECT p.name_fr, o.quantity, o.label_fr, o.icon, (o.price_cents / 100.0)::numeric(10,2) AS prix
 FROM product_options o
 JOIN products p ON p.id = o.product_id
-ORDER BY p.name_fr, o.quantity, o.sort_order;
+ORDER BY p.name_fr, o.sort_order;

@@ -19,7 +19,7 @@ function OptionIcon({ icon, isSelected }) {
   const strokes = ICONS[icon] || [];
 
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
       {strokes.map(([path, shift], index) => (
         <path
           key={index}
@@ -27,7 +27,7 @@ function OptionIcon({ icon, isSelected }) {
           transform={`translate(${shift} ${shift})`}
           fill="none"
           stroke={isSelected ? "#e7c97b" : "#d7c8ad"}
-          strokeWidth="1.6"
+          strokeWidth="1.5"
           strokeLinecap="round"
         />
       ))}
@@ -52,13 +52,13 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
   };
 
   return (
-    <div className="mt-7 max-w-[300px]">
-      <div className="relative w-52 border-b border-[#c89b3c]/50">
+    <div className="mt-6 max-w-[300px]">
+      <div className="relative border-b border-[#c89b3c]/40 transition hover:border-[#c89b3c]/80">
         <select
           value={currentQuantity}
           onChange={handleQuantityChange}
           aria-label={language === "en" ? "Quantity" : "Quantité"}
-          className="w-full cursor-pointer appearance-none bg-transparent py-1 pr-8 font-['EB_Garamond'] text-lg text-[#e7c97b] outline-none"
+          className="w-full cursor-pointer appearance-none bg-transparent pb-2 pr-8 font-['EB_Garamond'] text-xl leading-none text-[#e7c97b] outline-none"
         >
           {quantities.map((quantity) => (
             <option key={quantity} value={quantity} className="bg-[#120b06] text-[#e7c97b]">
@@ -66,14 +66,20 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[#c89b3c]">
-          ⌄
-        </span>
+        <svg
+          className="pointer-events-none absolute right-1 top-1/2 -translate-y-[70%]"
+          width="12"
+          height="8"
+          viewBox="0 0 12 8"
+          aria-hidden="true"
+        >
+          <path d="M1 1.5 L6 6.5 L11 1.5" fill="none" stroke="#c89b3c" strokeWidth="1.3" />
+        </svg>
       </div>
 
       {groupOptions.length > 1 && (
         <>
-          <div className="mt-5 flex gap-3">
+          <div className="mt-5 flex flex-wrap gap-4">
             {groupOptions.map((option) => {
               const isSelected = option.id === selectedOption?.id;
 
@@ -97,7 +103,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
             })}
           </div>
 
-          <p className="mt-2 font-['EB_Garamond'] text-base italic text-[#d7c8ad]/75">
+          <p className="mt-3 font-['EB_Garamond'] text-lg italic leading-none text-[#d7c8ad]/80">
             {label(selectedOption)}
           </p>
         </>

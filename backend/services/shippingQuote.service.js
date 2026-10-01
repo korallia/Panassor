@@ -398,11 +398,22 @@ async function getInternationalQuote({ postalCode, city, country, items, wantedC
   ]);
 
   const options = [];
+  const notServed = [];
 
-  for (const [label, result] of [["Purolator", purolatorResult], ["Canada Post", canadaPostResult]]) {
+  for (const [label, carrier, result] of [
+    ["Purolator", "purolator", purolatorResult],
+    ["Canada Post", "postes_canada", canadaPostResult],
+  ]) {
     if (result.status === "fulfilled") {
       options.push(...result.value.map(toFrontendOption));
-    } else if (!result.reason?.skipped) {
+    } else if (result.reason?.skipped) {
+      // transporteur non demandé
+    } else if (result.reason?.body?.errors?.some((e) => e.errorCode === "9111")) {
+      // 9111 : Postes Canada ne dessert pas ce pays en ce moment (vu pour
+      // FR et DE en prod, 2026-09-30). Pas une panne : on ne l'affiche pas.
+      console.log(`[shipping-quote] ${label} ne dessert pas ${country} (9111)`);
+      notServed.push(carrier);
+    } else {
       console.error(
         `[shipping-quote] ${label} international (${country}) failed:`,
         result.reason?.message,
@@ -411,13 +422,13 @@ async function getInternationalQuote({ postalCode, city, country, items, wantedC
     }
   }
 
-  if (options.length === 0) {
+  if (options.length === 0 && notServed.length === 0) {
     const quoteError = new Error("QUOTE_FAILED");
     quoteError.status = 502;
     throw quoteError;
   }
 
-  return { country, options };
+  return { country, options, notServed };
 }
 
 // Tarifs Postes Canada hors Canada, gardés 30 min comme au Canada. Ne

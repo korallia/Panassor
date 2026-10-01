@@ -100,6 +100,9 @@ export function useShippingQuote(items = []) {
   // Transporteurs dont la reponse n'est pas encore arrivee (pour afficher
   // "Chargement des tarifs Postes Canada..." sous les options deja la).
   const [pendingCarriers, setPendingCarriers] = useState([]);
+  // Transporteurs qui ne desservent pas le pays choisi (ex. Postes Canada
+  // vers la France) : on ne les affiche pas du tout.
+  const [notServedCarriers, setNotServedCarriers] = useState([]);
 
   // Ignore les reponses d'un ancien clic "Calculer" si le client a relance
   // entre-temps (autre code postal, panier modifie...).
@@ -131,6 +134,7 @@ export function useShippingQuote(items = []) {
       if (!wantedCountry) {
         requestIdRef.current += 1;
         setPendingCarriers([]);
+        setNotServedCarriers([]);
         setQuote(null);
         setDestination(null);
         setStatus("needsCountry");
@@ -151,6 +155,7 @@ export function useShippingQuote(items = []) {
     setStatus("loading");
     setError("");
     setPendingCarriers(carriersForRequest);
+    setNotServedCarriers([]);
 
     const payload = {
       postalCode: parsedPostalCode,
@@ -169,6 +174,10 @@ export function useShippingQuote(items = []) {
       carriersForRequest.map(async (carrier) => {
         try {
           const result = await getShippingQuote({ ...payload, carriers: [carrier] });
+
+          if (isCurrent() && result?.notServed?.length) {
+            setNotServedCarriers((current) => [...current, ...result.notServed]);
+          }
 
           if (!isCurrent() || !result?.options?.length) {
             return;
@@ -235,6 +244,7 @@ export function useShippingQuote(items = []) {
   function resetQuote() {
     requestIdRef.current += 1;
     setPendingCarriers([]);
+    setNotServedCarriers([]);
     setQuote(null);
     setDestination(null);
     setStatus("idle");
@@ -253,6 +263,7 @@ export function useShippingQuote(items = []) {
     destination,
     error,
     pendingCarriers,
+    notServedCarriers,
     requestQuote,
     resetQuote,
   };

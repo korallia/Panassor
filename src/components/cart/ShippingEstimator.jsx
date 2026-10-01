@@ -35,6 +35,7 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
     destination,
     error,
     pendingCarriers,
+    notServedCarriers,
     requestQuote,
     country,
     setCountry,
@@ -257,7 +258,8 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
               >
                 {carrierLoadingText(carrier, language)}
               </p>
-            ) : !quote.options.some((option) => option.carrier === carrier) ? (
+            ) : !quote.options.some((option) => option.carrier === carrier) &&
+              !notServedCarriers.includes(carrier) ? (
               <p key={carrier} className="font-['EB_Garamond'] text-sm italic text-[#d7c8ad]/70">
                 {carrierUnavailableText(carrier, language)}
               </p>

@@ -141,6 +141,7 @@ export async function getCanadaPostRates({
   weightKg,
   dimensionsCm,
   serviceCodes,
+  tweakBody, // scripts de diagnostic seulement
 }) {
   assertCanadaPostConfig();
 
@@ -175,6 +176,8 @@ export async function getCanadaPostRates({
   if (env.canadaPost.contractNumber) {
     body.contractId = env.canadaPost.contractNumber;
   }
+
+  if (tweakBody) tweakBody(body);
 
   const postRates = async (accessToken) =>
     fetchWithRetry(

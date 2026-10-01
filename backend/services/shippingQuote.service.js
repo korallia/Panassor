@@ -435,14 +435,37 @@ async function getCanadaPostInternationalRatesCached({ country, postalCode, parc
     return cached.rates;
   }
 
-  const rates = (
-    await getCanadaPostRates({
-      originPostalCode: env.shippingOrigin.postalCode,
-      destination: canadaPostDestination(country, postalCode),
-      serviceCodes,
-      ...parcel,
-    })
-  ).filter((rate) => serviceCodes.includes(rate.serviceCode));
+  // Un appel par service : si Postes Canada juge un des services
+  // inapproprié pour ce colis (erreur 9111), il refuse TOUTE la demande.
+  // Séparément, on garde ceux qui marchent et on note les autres.
+  const results = await Promise.allSettled(
+    serviceCodes.map((serviceCode) =>
+      getCanadaPostRates({
+        originPostalCode: env.shippingOrigin.postalCode,
+        destination: canadaPostDestination(country, postalCode),
+        serviceCodes: [serviceCode],
+        ...parcel,
+      })
+    )
+  );
+
+  const rates = [];
+  results.forEach((result, index) => {
+    if (result.status === "fulfilled") {
+      rates.push(...result.value.filter((rate) => rate.serviceCode === serviceCodes[index]));
+    } else {
+      const code = result.reason?.body?.errors?.[0]?.errorCode || result.reason?.status;
+      console.warn(
+        `[shipping-quote] Canada Post ${serviceCodes[index]} (${country}) non offert : ${code} ${result.reason?.body?.errors?.[0]?.message || result.reason?.message}`
+      );
+    }
+  });
+
+  if (rates.length === 0) {
+    console.warn(
+      `[shipping-quote] Canada Post international (${country}) : aucun des services demandés (${serviceCodes.join(", ")}) dans la réponse -- réponse d'exemple de la sandbox, ou services non offerts pour ce colis.`
+    );
+  }
 
   if (rates.length > 0) {
     if (canadaPostIntlCache.size >= CP_CACHE_MAX_ENTRIES) {

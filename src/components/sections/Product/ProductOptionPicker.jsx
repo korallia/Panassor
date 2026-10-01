@@ -1,7 +1,8 @@
 // Choix d'option d'un produit (ex. aiguilles de suture) :
-// un menu « 1 ou 2 », puis des pastilles pour les options de cette
-// quantité (1 : droite ou courbe; 2 : 2 droites, 2 courbes ou 1 de chaque).
-// Sans pastilles quand la quantité n'a qu'une option (aiguilles de douleur).
+// « 1 aiguille / 2 aiguilles » en texte, puis des pastilles pour les
+// options de cette quantité (1 : droite ou courbe; 2 : 2 droites,
+// 2 courbes ou 1 de chaque). Sans pastilles quand la quantité n'a
+// qu'une option (aiguilles de douleur).
 
 const LINE = "M5 19 L19 5";
 const CURVE = "M5 19 Q7 6 19 5";
@@ -36,7 +37,7 @@ function OptionIcon({ icon, isSelected }) {
 }
 
 function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
-  const quantities = [...new Set(options.map((option) => option.quantity))];
+  const quantities = [...new Set(options.map((option) => option.quantity))].sort((a, b) => a - b);
   const currentQuantity = selectedOption?.quantity ?? quantities[0];
   const groupOptions = options.filter((option) => option.quantity === currentQuantity);
   const label = (option) => (language === "en" ? option.label_en : option.label_fr);
@@ -45,36 +46,39 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
       ? `${quantity} ${quantity > 1 ? "needles" : "needle"}`
       : `${quantity} ${quantity > 1 ? "aiguilles" : "aiguille"}`;
 
-  const handleQuantityChange = (event) => {
-    const quantity = Number(event.target.value);
+  // Changer de quantité choisit la première option de ce groupe.
+  const selectQuantity = (quantity) => {
     const first = options.find((option) => option.quantity === quantity);
     if (first) onSelect(first.id);
   };
 
   return (
-    <div className="mt-8 max-w-[300px]">
-      <div className="relative border-b border-[#c89b3c]/40 transition hover:border-[#c89b3c]/80">
-        <select
-          value={currentQuantity}
-          onChange={handleQuantityChange}
-          aria-label={language === "en" ? "Quantity" : "Quantité"}
-          className="w-full cursor-pointer appearance-none bg-transparent pb-2 pr-8 font-['EB_Garamond'] text-xl leading-none text-[#e7c97b] outline-none"
-        >
-          {quantities.map((quantity) => (
-            <option key={quantity} value={quantity} className="bg-[#120b06] text-[#e7c97b]">
+    <div className="mt-6 max-w-[300px]">
+      {/* 1 ou 2 : du texte, l'option choisie en or et soulignée. */}
+      <div
+        className="flex gap-6"
+        role="group"
+        aria-label={language === "en" ? "Quantity" : "Quantité"}
+      >
+        {quantities.map((quantity) => {
+          const isSelected = quantity === currentQuantity;
+
+          return (
+            <button
+              key={quantity}
+              type="button"
+              aria-pressed={isSelected}
+              onClick={() => selectQuantity(quantity)}
+              className={`border-b pb-1 font-['EB_Garamond'] text-xl leading-none transition ${
+                isSelected
+                  ? "border-[#c89b3c] text-[#e7c97b]"
+                  : "border-transparent text-[#d7c8ad]/50 hover:text-[#d7c8ad]/80"
+              }`}
+            >
               {quantityLabel(quantity)}
-            </option>
-          ))}
-        </select>
-        <svg
-          className="pointer-events-none absolute right-1 top-1/2 -translate-y-[70%]"
-          width="12"
-          height="8"
-          viewBox="0 0 12 8"
-          aria-hidden="true"
-        >
-          <path d="M1 1.5 L6 6.5 L11 1.5" fill="none" stroke="#c89b3c" strokeWidth="1.3" />
-        </svg>
+            </button>
+          );
+        })}
       </div>
 
       {groupOptions.length > 1 && (

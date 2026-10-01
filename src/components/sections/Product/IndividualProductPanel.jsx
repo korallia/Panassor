@@ -122,17 +122,7 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
             description={productDescription}
           />
 
-          {/* Choix des aiguilles AVANT le prix : le prix affiché suit le choix. */}
-          {options.length > 0 && (
-            <ProductOptionPicker
-              options={options}
-              selectedOption={selectedOption}
-              onSelect={setSelectedOptionId}
-              language={language}
-            />
-          )}
-
-          <div className={`${options.length > 0 ? "mt-7" : "mt-8"} max-w-[300px]`}>
+          <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
               {formatPrice(displayedPriceCents, language)}
             </p>
@@ -151,6 +141,24 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
               {addToCartLabel}
             </button>
           </div>
+
+          {/* Même place que les pastilles de couleur sur la page d'un kit. */}
+          {options.length > 0 && (
+            <>
+              <OrnamentDivider
+                className="mt-8 w-52 justify-start"
+                width={64}
+                opacity={0.5}
+              />
+
+              <ProductOptionPicker
+                options={options}
+                selectedOption={selectedOption}
+                onSelect={setSelectedOptionId}
+                language={language}
+              />
+            </>
+          )}
 
 
           <OrnamentDivider

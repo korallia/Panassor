@@ -52,7 +52,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
   };
 
   return (
-    <div className="mt-6 max-w-[300px]">
+    <div className="mt-8 max-w-[300px]">
       <div className="relative border-b border-[#c89b3c]/40 transition hover:border-[#c89b3c]/80">
         <select
           value={currentQuantity}

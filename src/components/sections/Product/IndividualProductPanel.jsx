@@ -122,7 +122,17 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
             description={productDescription}
           />
 
-          <div className="mt-8 max-w-[300px]">
+          {/* Choix des aiguilles AVANT le prix : le prix affiché suit le choix. */}
+          {options.length > 0 && (
+            <ProductOptionPicker
+              options={options}
+              selectedOption={selectedOption}
+              onSelect={setSelectedOptionId}
+              language={language}
+            />
+          )}
+
+          <div className={`${options.length > 0 ? "mt-7" : "mt-8"} max-w-[300px]`}>
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
               {formatPrice(displayedPriceCents, language)}
             </p>
@@ -142,22 +152,6 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
             </button>
           </div>
 
-          {options.length > 0 && (
-            <>
-              <OrnamentDivider
-                className="mt-8 w-52 justify-start"
-                width={64}
-                opacity={0.5}
-              />
-
-              <ProductOptionPicker
-                options={options}
-                selectedOption={selectedOption}
-                onSelect={setSelectedOptionId}
-                language={language}
-              />
-            </>
-          )}
 
           <OrnamentDivider
             className="mt-8 w-52 justify-start"

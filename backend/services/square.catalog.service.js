@@ -50,6 +50,15 @@ export async function syncProductToSquare(productId) {
 
   const modifierListIds = await getModifierListIdsForKit(product.id);
 
+  // Options du produit (ex. aiguilles « 1 droite », « 2 pareilles ») :
+  // chacune devient une variation Square avec son propre prix.
+  const optionsResult = await db.query(
+    `SELECT id, label_fr, price_cents, square_variation_id, square_variation_version
+     FROM product_options WHERE product_id = $1 ORDER BY sort_order, id`,
+    [productId]
+  );
+  const options = optionsResult.rows;
+
   const variations = (product.variants || []).map((variant) => ({
     type: "ITEM_VARIATION",
     id: variant.square_variation_id || `#variation_${variant.id}`,
@@ -65,6 +74,20 @@ export async function syncProductToSquare(productId) {
       ...(variant.square_image_id && { image_ids: [variant.square_image_id] }),
     },
   }));
+
+  for (const option of options) {
+    variations.push({
+      type: "ITEM_VARIATION",
+      id: option.square_variation_id || `#option_${option.id}`,
+      ...(option.square_variation_version && { version: Number(option.square_variation_version) }),
+      item_variation_data: {
+        name: option.label_fr,
+        pricing_type: "FIXED_PRICING",
+        price_money: { amount: Number(option.price_cents), currency: "CAD" },
+        track_inventory: true,
+      },
+    });
+  }
 
   if (variations.length === 0) {
     variations.push({
@@ -108,8 +131,31 @@ export async function syncProductToSquare(productId) {
     [saved.id, saved.version, product.id]
   );
 
+  // Produit à options : pas de variation « par défaut ». Un article du
+  // panier sans option choisie est donc refusé au paiement, au lieu de
+  // partir au prix de la première option.
+  if (options.length > 0) {
+    await db.query(`UPDATE products SET square_default_variation_id = NULL WHERE id = $1`, [
+      product.id,
+    ]);
+  }
+
+  for (const option of options) {
+    const realId =
+      idMappings.find((m) => m.client_object_id === `#option_${option.id}`)?.object_id ||
+      data.staleIdToRealId?.[option.square_variation_id] ||
+      option.square_variation_id;
+    const savedVariation = saved.item_data?.variations?.find((v) => v.id === realId);
+    if (realId) {
+      await db.query(
+        `UPDATE product_options SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
+        [realId, savedVariation?.version || null, option.id]
+      );
+    }
+  }
+
   // Produits sans variante de couleur : sauvegarder l'id de la variation "Par défaut"
-  if ((product.variants || []).length === 0 && saved.item_data?.variations?.[0]?.id) {
+  if (options.length === 0 && (product.variants || []).length === 0 && saved.item_data?.variations?.[0]?.id) {
     await db.query(`UPDATE products SET square_default_variation_id = $1 WHERE id = $2`, [
       saved.item_data.variations[0].id,
       product.id,

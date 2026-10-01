@@ -562,8 +562,15 @@ export async function fetchProductWithDetailsBySlug(slug) {
     kitItems = await fetchKitItemsForProduct(product.id);
   }
 
+  const optionsResult = await pool.query(
+    `SELECT id, label_fr, label_en, price_cents
+     FROM product_options WHERE product_id = $1 ORDER BY sort_order, id`,
+    [product.id]
+  );
+
   return {
     ...product,
+    options: optionsResult.rows,
     colors: typeof product.colors === "string" ? JSON.parse(product.colors) : (product.colors || []),
     images,
     kit_components: kitItems,

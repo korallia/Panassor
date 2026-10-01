@@ -108,6 +108,15 @@ export function buildCartItemNote(item, language = "fr") {
     );
   }
 
+  const optionName =
+    item?.[`optionName_${normalizedLanguage}`] || item?.optionName_fr || null;
+
+  if (optionName) {
+    notes.push(
+      normalizedLanguage === "en" ? `Option: ${optionName}` : `Option : ${optionName}`
+    );
+  }
+
   const selectedItems = normalizeSelectedItems(
     item?.selectedItems,
     normalizedLanguage
@@ -151,6 +160,10 @@ export function normalizeCartItem(item, language = "fr") {
     colorKey: item?.colorKey || null,
     colorName,
 
+    optionId: item?.optionId ?? null,
+    optionName:
+      item?.[`optionName_${normalizedLanguage}`] || item?.optionName_fr || null,
+
     selectedItems,
     note: buildCartItemNote(item, normalizedLanguage),
   };
@@ -178,6 +191,15 @@ export function validateCheckoutItems(items) {
 
 async function resolveVariationCatalogId(item) {
   if (!item.productId) return null;
+
+  // Produit à options : la variation Square de l'option choisie (son prix).
+  if (item.optionId != null) {
+    const result = await db.query(
+      `SELECT square_variation_id FROM product_options WHERE id = $1 AND product_id = $2`,
+      [Number(item.optionId), item.productId]
+    );
+    return result.rows[0]?.square_variation_id || null;
+  }
 
   const colorId = item.colorKey != null ? Number(item.colorKey) : null;
 

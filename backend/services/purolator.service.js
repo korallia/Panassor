@@ -1,4 +1,5 @@
 import { env } from "../config/env.js";
+import { PUROLATOR_SERVICE_LABELS } from "./internationalShipping.js";
 import { fetchWithRetry } from "../utils/fetchWithRetry.js";
 
 // Purolator's new (2026) REST API Portal: OAuth2 client_credentials over
@@ -268,7 +269,7 @@ export async function getPurolatorEstimate({
       carrier: "purolator",
       carrierLabel: "Purolator",
       serviceCode: estimate.serviceId,
-      serviceLabel: estimate.serviceId,
+      serviceLabel: PUROLATOR_SERVICE_LABELS[estimate.serviceId] || estimate.serviceId,
       priceCents: Math.round(Number(estimate.totalPrice || 0) * 100),
       expectedDeliveryDate: estimate.expectedDeliveryDate || null,
       expectedTransitDays: estimate.estimatedTransitDays ?? null,

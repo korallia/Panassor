@@ -1,10 +1,20 @@
 import { env } from "../config/env.js";
-import { getCanadaPostDomesticRates } from "./canadaPost.service.js";
+import { getCanadaPostDomesticRates, getCanadaPostRates } from "./canadaPost.service.js";
 import {
   getPurolatorEstimate,
   PUROLATOR_DOMESTIC_SERVICE_ID,
 } from "./purolator.service.js";
 import { computeParcelForCartItems } from "./packing.service.js";
+import {
+  CANADA_POST_US_SERVICE_CODES,
+  CANADA_POST_WORLD_SERVICE_CODES,
+  canadaPostDestination,
+  US_SERVICE_ID,
+  WORLD_SERVICE_ID,
+  isValidCountryCode,
+  isValidUsZip,
+  usStateFromZip,
+} from "./internationalShipping.js";
 
 // Unified shipping-quote service: chooses between Postes Canada
 // (domestic standard tiers) and Purolator (domestic Express + all
@@ -155,6 +165,65 @@ async function getCanadaPostRatesCached(params) {
   }
 }
 
+// Même principe pour Purolator : même destination + même colis dans les
+// 15 dernières minutes = même prix, on ne rappelle pas Purolator. Rend
+// aussi le « Calculer » instantané quand le client revient au panier, et
+// la revalidation au paiement réutilise le même prix que celui affiché.
+const PUROLATOR_CACHE_FRESH_MS = 15 * 60 * 1000;
+const PUROLATOR_CACHE_MAX_ENTRIES = 500;
+const purolatorRateCache = new Map();
+
+async function getPurolatorEstimateCached(params) {
+  const d = params.dimensionsCm || {};
+  const key = [
+    String(params.destinationPostalCode || "").replace(/[\s-]+/g, "").toUpperCase(),
+    String(params.destinationCity || "").trim().toLowerCase(),
+    params.destinationCountry || "CA",
+    params.serviceId || "",
+    params.weightKg,
+    d.length,
+    d.width,
+    d.height,
+  ].join("|");
+
+  const cached = purolatorRateCache.get(key);
+  if (cached && Date.now() - cached.storedAt < PUROLATOR_CACHE_FRESH_MS) {
+    return cached.rates;
+  }
+
+  const rates = await getPurolatorEstimate(params);
+  if (rates.length > 0) {
+    if (purolatorRateCache.size >= PUROLATOR_CACHE_MAX_ENTRIES) {
+      purolatorRateCache.delete(purolatorRateCache.keys().next().value);
+    }
+    purolatorRateCache.set(key, { rates, storedAt: Date.now() });
+  }
+  return rates;
+}
+
+// Garde-fous sur ce que le navigateur envoie : un panier réel n'a jamais
+// des centaines de lignes ni une ville de 500 caractères.
+const MAX_CART_LINES = 30;
+const MAX_QUANTITY_PER_LINE = 20;
+const MAX_CITY_LENGTH = 80;
+
+function assertReasonableQuoteInput({ city, items }) {
+  if (!Array.isArray(items) || items.length > MAX_CART_LINES) {
+    throw invalidRequestError("INVALID_CART");
+  }
+
+  for (const item of items) {
+    const quantity = Number(item?.quantity ?? 1);
+    if (!Number.isFinite(quantity) || quantity < 1 || quantity > MAX_QUANTITY_PER_LINE) {
+      throw invalidRequestError("INVALID_CART");
+    }
+  }
+
+  if (String(city || "").length > MAX_CITY_LENGTH) {
+    throw invalidRequestError("INVALID_CITY");
+  }
+}
+
 function invalidRequestError(message) {
   const error = new Error(message);
   error.status = 400;
@@ -174,7 +243,7 @@ function normalizeCarriers(carriers) {
   return wanted.length ? wanted : ALL_CARRIERS;
 }
 
-export async function getShippingQuote({ postalCode, city, items = [], carriers }) {
+export async function getShippingQuote({ postalCode, city, country, items = [], carriers }) {
   const wantedCarriers = normalizeCarriers(carriers);
   const trimmedPostalCode = String(postalCode || "").trim();
   const trimmedCity = String(city || "").trim();
@@ -183,32 +252,21 @@ export async function getShippingQuote({ postalCode, city, items = [], carriers 
     throw invalidRequestError("EMPTY_POSTAL_CODE");
   }
 
-  if (!isDomesticPostalCode(trimmedPostalCode)) {
-    // TODO(shipping-intl): the cart only collects a bare postal code, with
-    // no destination-country field, so we can't build a real Purolator
-    // international estimate yet (the Estimate API needs the receiver's
-    // country/city/province, not just a postal code). Keeping the same
-    // flat placeholder price the mock used until that's designed -- see
-    // the "customs/duties payer for Purolator international" open
-    // question in the shipping plan.
-    if (!wantedCarriers.includes("purolator")) {
-      return { country: "INTL", options: [] };
-    }
+  // Assez large pour tous les formats du monde (le plus long fait 10 caractères).
+  if (trimmedPostalCode.length > 16) {
+    throw invalidRequestError("INVALID_POSTAL_CODE");
+  }
 
-    return {
-      country: "INTL",
-      options: [
-        {
-          id: "purolator-international",
-          carrier: "purolator",
-          carrierLabel: "Purolator",
-          serviceLabel: "International",
-          priceCents: 4500,
-          etaLabel_fr: "7 à 10 jours ouvrables",
-          etaLabel_en: "7 to 10 business days",
-        },
-      ],
-    };
+  assertReasonableQuoteInput({ city: trimmedCity, items });
+
+  if (!isDomesticPostalCode(trimmedPostalCode)) {
+    return getInternationalQuote({
+      postalCode: trimmedPostalCode,
+      city: trimmedCity,
+      country: String(country || "").trim().toUpperCase(),
+      items,
+      wantedCarriers,
+    });
   }
 
   // Real per-product weight/dimensions once they're measured (see
@@ -244,7 +302,7 @@ export async function getShippingQuote({ postalCode, city, items = [], carriers 
     }).finally(() => {
       console.log(`[shipping-quote] Canada Post took ${Date.now() - canadaPostStartedAt}ms`);
     }),
-    !wantedCarriers.includes("purolator") ? skipped("purolator") : getPurolatorEstimate({
+    !wantedCarriers.includes("purolator") ? skipped("purolator") : getPurolatorEstimateCached({
       destinationPostalCode: trimmedPostalCode,
       // Real city from the shopper when they gave us one (the input asks
       // for "Ville, Code postal" now); falls back to a guessed
@@ -297,6 +355,105 @@ export async function getShippingQuote({ postalCode, city, items = [], carriers 
 // directly -- re-run the same quote from the destination they gave us,
 // confirm the chosen option still exists in it, and return THAT freshly
 // computed option (its price is what gets charged).
+// Hors Canada : Purolator seulement (voir internationalShipping.js). Le pays
+// vient du panier, qui le demande quand le code postal n'est pas canadien.
+async function getInternationalQuote({ postalCode, city, country, items, wantedCarriers }) {
+  if (!country) {
+    throw invalidRequestError("COUNTRY_REQUIRED");
+  }
+
+  if (!isValidCountryCode(country)) {
+    throw invalidRequestError("INVALID_COUNTRY");
+  }
+
+  if (country === "US" && !isValidUsZip(postalCode)) {
+    throw invalidRequestError("INVALID_POSTAL_CODE");
+  }
+
+  const parcel = (await computeParcelForCartItems(items)) || PLACEHOLDER_PARCEL;
+  const timed = (label, promise) => {
+    const startedAt = Date.now();
+    return promise.finally(() =>
+      console.log(`[shipping-quote] ${label} ${country} took ${Date.now() - startedAt}ms`)
+    );
+  };
+  const skipped = () => Promise.reject(Object.assign(new Error("SKIPPED"), { skipped: true }));
+
+  const [purolatorResult, canadaPostResult] = await Promise.allSettled([
+    !wantedCarriers.includes("purolator")
+      ? skipped()
+      : timed("Purolator", getPurolatorEstimateCached({
+          destinationPostalCode: postalCode,
+          destinationCity: city,
+          destinationProvince: country === "US" ? usStateFromZip(postalCode) : "",
+          destinationCountry: country,
+          serviceId: country === "US" ? US_SERVICE_ID : WORLD_SERVICE_ID,
+          showAlternativeServicesIndicator: false,
+          ...parcel,
+        })),
+    !wantedCarriers.includes("postes_canada")
+      ? skipped()
+      : timed("Canada Post", getCanadaPostInternationalRatesCached({ country, postalCode, parcel })),
+  ]);
+
+  const options = [];
+
+  for (const [label, result] of [["Purolator", purolatorResult], ["Canada Post", canadaPostResult]]) {
+    if (result.status === "fulfilled") {
+      options.push(...result.value.map(toFrontendOption));
+    } else if (!result.reason?.skipped) {
+      console.error(
+        `[shipping-quote] ${label} international (${country}) failed:`,
+        result.reason?.message,
+        result.reason?.body ? JSON.stringify(result.reason.body).slice(0, 400) : ""
+      );
+    }
+  }
+
+  if (options.length === 0) {
+    const quoteError = new Error("QUOTE_FAILED");
+    quoteError.status = 502;
+    throw quoteError;
+  }
+
+  return { country, options };
+}
+
+// Tarifs Postes Canada hors Canada, gardés 30 min comme au Canada. Ne
+// garde que les services demandés : la sandbox de Postes Canada renvoie
+// une réponse d'exemple (un service canadien), qu'on ne doit jamais
+// montrer comme un vrai prix international.
+const canadaPostIntlCache = new Map();
+
+async function getCanadaPostInternationalRatesCached({ country, postalCode, parcel }) {
+  const serviceCodes = country === "US" ? CANADA_POST_US_SERVICE_CODES : CANADA_POST_WORLD_SERVICE_CODES;
+  const d = parcel.dimensionsCm || {};
+  const key = [country, country === "US" ? String(postalCode).slice(0, 5) : "", parcel.weightKg, d.length, d.width, d.height].join("|");
+
+  const cached = canadaPostIntlCache.get(key);
+  if (cached && Date.now() - cached.storedAt < CP_CACHE_FRESH_MS) {
+    return cached.rates;
+  }
+
+  const rates = (
+    await getCanadaPostRates({
+      originPostalCode: env.shippingOrigin.postalCode,
+      destination: canadaPostDestination(country, postalCode),
+      serviceCodes,
+      ...parcel,
+    })
+  ).filter((rate) => serviceCodes.includes(rate.serviceCode));
+
+  if (rates.length > 0) {
+    if (canadaPostIntlCache.size >= CP_CACHE_MAX_ENTRIES) {
+      canadaPostIntlCache.delete(canadaPostIntlCache.keys().next().value);
+    }
+    canadaPostIntlCache.set(key, { rates, storedAt: Date.now() });
+  }
+
+  return rates;
+}
+
 export async function validateSelectedShippingOption(shipping, items = []) {
   if (!shipping || !shipping.id) {
     return null;
@@ -312,6 +469,7 @@ export async function validateSelectedShippingOption(shipping, items = []) {
   const freshQuote = await getShippingQuote({
     postalCode: shipping.postalCode,
     city: shipping.city,
+    country: shipping.country,
     items,
     carriers: [selectedCarrier],
   });

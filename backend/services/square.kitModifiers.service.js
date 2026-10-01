@@ -17,6 +17,8 @@ export async function syncKitComponentModifierLists({ kitProductIds } = {}) {
             p.name_fr AS included_name
      FROM kit_components kc
      JOIN products p ON p.id = kc.included_product_id
+     -- Outil au choix : seulement dans les kits, pas les ensembles (duos).
+     JOIN products kit ON kit.id = kc.kit_product_id AND kit.is_kit = true
      WHERE p.customizable = true
        ${filterByKits ? "AND kc.kit_product_id = ANY($1::int[])" : ""}`,
     filterByKits ? [kitProductIds] : []

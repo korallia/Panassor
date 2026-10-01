@@ -42,8 +42,11 @@ export const cartContent = {
       emptyPostalCodeError: "Entrez votre ville et votre code postal pour voir les options de livraison.",
       genericError: "Impossible de calculer la livraison pour cette adresse.",
       tooManyRequestsError: "Trop de calculs d'un coup. Réessaie dans quelques minutes.",
-      internationalNote:
-        "Livraison internationale (1 transporteur) -- vérifiez votre code postal s'il devrait être Québécois (ex: A1A 1A1).",
+      countryQuestion: "Adresse hors Canada : dans quel pays ?",
+      countryPlaceholder: "Choisir un pays",
+      invalidPostalCodeError: "Vérifiez le code postal de cette adresse.",
+      cityRequiredError: "Ajoutez la ville avant le code postal (ex. : Tokyo, 100-0001).",
+      dutiesNote: "Les droits et taxes d'importation sont payables à la réception du colis.",
     },
 
     footer: {
@@ -101,8 +104,11 @@ export const cartContent = {
       emptyPostalCodeError: "Enter your city and postal code to see shipping options.",
       genericError: "Unable to calculate shipping for this address.",
       tooManyRequestsError: "Too many calculations at once. Please try again in a few minutes.",
-      internationalNote:
-        "International shipping (1 carrier) -- double-check your postal code if it should be Canadian (e.g. A1A 1A1).",
+      countryQuestion: "Address outside Canada: which country?",
+      countryPlaceholder: "Choose a country",
+      invalidPostalCodeError: "Please check the postal code for this address.",
+      cityRequiredError: "Please add the city before the postal code (e.g. Tokyo, 100-0001).",
+      dutiesNote: "Import duties and taxes are payable upon delivery.",
     },
 
     footer: {

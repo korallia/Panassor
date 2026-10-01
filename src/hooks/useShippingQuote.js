@@ -27,6 +27,15 @@ const CA_POSTAL_CODE_TAIL_REGEX =
 // pas sous le doigt du client quand Postes Canada arrive apres).
 const CARRIERS = ["purolator", "postes_canada"];
 
+// Code postal canadien complet (même règle que le serveur). Sinon, c'est
+// une adresse hors Canada : on demande le pays avant de calculer.
+const CA_POSTAL_CODE_REGEX =
+  /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\d[ABCEGHJ-NPRSTV-Z]\d$/i;
+
+export function isCanadianPostalCode(postalCode) {
+  return CA_POSTAL_CODE_REGEX.test(String(postalCode || "").replace(/[\s-]+/g, ""));
+}
+
 function sortByCarrier(options) {
   return [...options].sort(
     (a, b) => CARRIERS.indexOf(a.carrier) - CARRIERS.indexOf(b.carrier)
@@ -51,6 +60,22 @@ function parseShippingInput(rawValue) {
     };
   }
 
+  // Hors Canada sans virgule (« Tokyo 100-0001 », « London SW1A 1AA »,
+  // « 75001 Paris ») : les mots qui contiennent un chiffre, à la fin ou
+  // au début, sont le code postal; le reste est la ville.
+  const words = trimmedValue.split(/\s+/);
+  const hasDigit = (word) => /\d/.test(word);
+  let end = words.length;
+  while (end > 0 && hasDigit(words[end - 1])) end -= 1;
+  if (end > 0 && end < words.length) {
+    return { city: words.slice(0, end).join(" "), postalCode: words.slice(end).join(" ") };
+  }
+  let start = 0;
+  while (start < words.length && hasDigit(words[start])) start += 1;
+  if (start > 0 && start < words.length) {
+    return { city: words.slice(start).join(" "), postalCode: words.slice(0, start).join(" ") };
+  }
+
   return trimmedValue ? { city: "", postalCode: trimmedValue } : null;
 }
 
@@ -59,7 +84,20 @@ function parseShippingInput(rawValue) {
 // box (see backend/services/packing.service.js) instead of always using
 // the flat placeholder parcel.
 export function useShippingQuote(items = []) {
-  const [postalCode, setPostalCode] = useState("");
+  const [postalCode, setPostalCodeState] = useState("");
+  // Pays de destination, demandé seulement pour une adresse hors Canada.
+  const [country, setCountry] = useState("");
+  const [askCountry, setAskCountry] = useState(false);
+
+  function setPostalCode(value) {
+    setPostalCodeState(value);
+
+    // Redevenue une adresse canadienne : on cache le choix du pays.
+    const parsed = parseShippingInput(value);
+    if (parsed && isCanadianPostalCode(parsed.postalCode)) {
+      setAskCountry(false);
+    }
+  }
   const [status, setStatus] = useState("idle"); // idle | loading | error | success
   const [quote, setQuote] = useState(null);
   const [error, setError] = useState("");
@@ -78,6 +116,9 @@ export function useShippingQuote(items = []) {
   // Transporteurs dont la reponse n'est pas encore arrivee (pour afficher
   // "Chargement des tarifs Postes Canada..." sous les options deja la).
   const [pendingCarriers, setPendingCarriers] = useState([]);
+  // Transporteurs qui ne desservent pas le pays choisi (ex. Postes Canada
+  // vers la France) : on ne les affiche pas du tout.
+  const [notServedCarriers, setNotServedCarriers] = useState([]);
 
   // Ignore les reponses d'un ancien clic "Calculer" si le client a relance
   // entre-temps (autre code postal, panier modifie...).
@@ -90,7 +131,7 @@ export function useShippingQuote(items = []) {
     .sort()
     .join("|");
 
-  async function requestQuote() {
+  async function requestQuote(countryOverride) {
     const parsed = parseShippingInput(postalCode);
 
     if (!parsed) {
@@ -99,18 +140,56 @@ export function useShippingQuote(items = []) {
       return;
     }
 
+    const isDomestic = isCanadianPostalCode(parsed.postalCode);
+    const wantedCountry = isDomestic ? "CA" : countryOverride || country;
+
+    // Hors Canada sans pays choisi : on le demande avant de calculer.
+    if (!isDomestic) {
+      setAskCountry(true);
+
+      if (!wantedCountry) {
+        requestIdRef.current += 1;
+        setPendingCarriers([]);
+        setNotServedCarriers([]);
+        setQuote(null);
+        setDestination(null);
+        setStatus("needsCountry");
+        setError("");
+        hasQuoteRef.current = false;
+        return;
+      }
+    }
+
+    // Purolator et Postes Canada, au Canada comme ailleurs.
+    const carriersForRequest = CARRIERS;
+
     const { city, postalCode: parsedPostalCode } = parsed;
+
+    // Purolator exige la ville hors Canada.
+    if (!isDomestic && !city) {
+      requestIdRef.current += 1;
+      setPendingCarriers([]);
+      setNotServedCarriers([]);
+      setQuote(null);
+      setDestination(null);
+      setStatus("error");
+      setError("CITY_REQUIRED");
+      hasQuoteRef.current = false;
+      return;
+    }
 
     const requestId = ++requestIdRef.current;
     const isCurrent = () => requestId === requestIdRef.current;
 
     setStatus("loading");
     setError("");
-    setPendingCarriers(CARRIERS);
+    setPendingCarriers(carriersForRequest);
+    setNotServedCarriers([]);
 
     const payload = {
       postalCode: parsedPostalCode,
       city,
+      ...(isDomestic ? {} : { country: wantedCountry }),
       items: items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -121,9 +200,13 @@ export function useShippingQuote(items = []) {
     let lastError = null;
 
     await Promise.all(
-      CARRIERS.map(async (carrier) => {
+      carriersForRequest.map(async (carrier) => {
         try {
           const result = await getShippingQuote({ ...payload, carriers: [carrier] });
+
+          if (isCurrent() && result?.notServed?.length) {
+            setNotServedCarriers((current) => [...current, ...result.notServed]);
+          }
 
           if (!isCurrent() || !result?.options?.length) {
             return;
@@ -139,7 +222,7 @@ export function useShippingQuote(items = []) {
           };
 
           setQuote(merged);
-          setDestination({ city, postalCode: parsedPostalCode });
+          setDestination({ city, postalCode: parsedPostalCode, country: wantedCountry });
           setStatus("success");
           hasQuoteRef.current = true;
         } catch (err) {
@@ -190,6 +273,7 @@ export function useShippingQuote(items = []) {
   function resetQuote() {
     requestIdRef.current += 1;
     setPendingCarriers([]);
+    setNotServedCarriers([]);
     setQuote(null);
     setDestination(null);
     setStatus("idle");
@@ -200,11 +284,15 @@ export function useShippingQuote(items = []) {
   return {
     postalCode,
     setPostalCode,
+    country,
+    setCountry,
+    askCountry,
     status,
     quote,
     destination,
     error,
     pendingCarriers,
+    notServedCarriers,
     requestQuote,
     resetQuote,
   };

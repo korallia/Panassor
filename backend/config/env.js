@@ -159,4 +159,13 @@ export function validateEnv() {
       `Missing required environment variables: ${missingVariables.join(", ")}`
     );
   }
+
+  // Garde-fou (rapport 2026-09-26, #7) : en production, on refuse de
+  // démarrer si la vérification des webhooks Square est désactivée --
+  // sinon n'importe qui pourrait envoyer un faux « paiement réussi ».
+  if (env.nodeEnv === "production" && env.square.skipWebhookSignature) {
+    throw new Error(
+      "SQUARE_SKIP_WEBHOOK_SIGNATURE=true est interdit en production : retire-le du .env."
+    );
+  }
 }

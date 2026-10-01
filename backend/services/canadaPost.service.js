@@ -117,6 +117,32 @@ export async function getCanadaPostDomesticRates({
   dimensionsCm,
   serviceCodes = CANADA_POST_DOMESTIC_SERVICE_CODES,
 }) {
+  return getCanadaPostRates({
+    originPostalCode,
+    destination: {
+      domestic: {
+        postalCode: normalizePostalCode(destinationPostalCode),
+      },
+    },
+    weightKg,
+    dimensionsCm,
+    serviceCodes,
+  });
+}
+
+/**
+ * Même appel, pour n'importe quelle destination (Canada, États-Unis,
+ * international). `destination` est l'objet tel que Postes Canada
+ * l'attend ; `serviceCodes` = les services à tarifer.
+ */
+export async function getCanadaPostRates({
+  originPostalCode,
+  destination,
+  weightKg,
+  dimensionsCm,
+  serviceCodes,
+  tweakBody, // scripts de diagnostic seulement
+}) {
   assertCanadaPostConfig();
 
   const body = {
@@ -133,13 +159,11 @@ export async function getCanadaPostDomesticRates({
           }
         : {}),
     },
-    services: serviceCodes,
+    // Sans liste de services, Postes Canada renvoie tous ceux qui sont
+    // offerts pour ce colis (au lieu de refuser avec 9111).
+    ...(serviceCodes?.length ? { services: serviceCodes } : {}),
     originPostalCode: normalizePostalCode(originPostalCode),
-    destination: {
-      domestic: {
-        postalCode: normalizePostalCode(destinationPostalCode),
-      },
-    },
+    destination,
   };
 
   // customerNumber (Solutions for Small Business / commercial) gets
@@ -152,6 +176,8 @@ export async function getCanadaPostDomesticRates({
   if (env.canadaPost.contractNumber) {
     body.contractId = env.canadaPost.contractNumber;
   }
+
+  if (tweakBody) tweakBody(body);
 
   const postRates = async (accessToken) =>
     fetchWithRetry(
@@ -183,6 +209,13 @@ export async function getCanadaPostDomesticRates({
   }
 
   const data = await response.json().catch(() => null);
+
+  // Diagnostic (scripts de test seulement) : affiche la demande et la
+  // réponse brutes de Postes Canada.
+  if (process.env.CP_DEBUG_RAW === "1") {
+    console.log("   [demande]", JSON.stringify(body));
+    console.log("   [réponse]", response.status, JSON.stringify(data).slice(0, 1500));
+  }
 
   if (!response.ok) {
     const error = new Error(

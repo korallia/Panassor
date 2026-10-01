@@ -2,9 +2,9 @@ import { getShippingQuote } from "../services/shippingQuote.service.js";
 
 export async function postShippingQuote(req, res) {
   try {
-    const { postalCode, city, items = [], carriers } = req.body;
+    const { postalCode, city, country, items = [], carriers } = req.body;
 
-    const quote = await getShippingQuote({ postalCode, city, items, carriers });
+    const quote = await getShippingQuote({ postalCode, city, country, items, carriers });
 
     res.json(quote);
   } catch (error) {

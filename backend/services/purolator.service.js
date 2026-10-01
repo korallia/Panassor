@@ -1,4 +1,5 @@
 import { env } from "../config/env.js";
+import { PUROLATOR_SERVICE_LABELS } from "./internationalShipping.js";
 import { fetchWithRetry } from "../utils/fetchWithRetry.js";
 
 // Purolator's new (2026) REST API Portal: OAuth2 client_credentials over
@@ -48,12 +49,14 @@ function assertPurolatorConfig() {
 
 // Purolator wants postal codes formatted with a space (e.g. "A7A 4Y7"),
 // unlike Canada Post's Rating API which wants no space.
-function formatPostalCode(postalCode) {
+// Seulement pour le Canada : un code étranger à 6 caractères (ex. Inde
+// 110001) ne doit pas recevoir d'espace.
+function formatPostalCode(postalCode, country = "CA") {
   const normalized = String(postalCode || "")
     .replace(/\s+/g, "")
     .toUpperCase();
 
-  if (normalized.length !== 6) {
+  if (country !== "CA" || normalized.length !== 6) {
     return normalized;
   }
 
@@ -120,7 +123,7 @@ function buildAddress({ companyName, street, city, province, country, postalCode
     city,
     provinceStateCode: province,
     country,
-    postalZipCode: formatPostalCode(postalCode),
+    postalZipCode: formatPostalCode(postalCode, country),
   };
 }
 
@@ -268,7 +271,7 @@ export async function getPurolatorEstimate({
       carrier: "purolator",
       carrierLabel: "Purolator",
       serviceCode: estimate.serviceId,
-      serviceLabel: estimate.serviceId,
+      serviceLabel: PUROLATOR_SERVICE_LABELS[estimate.serviceId] || estimate.serviceId,
       priceCents: Math.round(Number(estimate.totalPrice || 0) * 100),
       expectedDeliveryDate: estimate.expectedDeliveryDate || null,
       expectedTransitDays: estimate.estimatedTransitDays ?? null,

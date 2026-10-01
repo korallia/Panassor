@@ -45,6 +45,7 @@ export const cartContent = {
       countryQuestion: "Adresse hors Canada : dans quel pays ?",
       countryPlaceholder: "Choisir un pays",
       invalidPostalCodeError: "Vérifiez le code postal de cette adresse.",
+      cityRequiredError: "Ajoutez la ville avant le code postal (ex. : Tokyo, 100-0001).",
       dutiesNote: "Les droits et taxes d'importation sont payables à la réception du colis.",
     },
 
@@ -106,6 +107,7 @@ export const cartContent = {
       countryQuestion: "Address outside Canada: which country?",
       countryPlaceholder: "Choose a country",
       invalidPostalCodeError: "Please check the postal code for this address.",
+      cityRequiredError: "Please add the city before the postal code (e.g. Tokyo, 100-0001).",
       dutiesNote: "Import duties and taxes are payable upon delivery.",
     },
 

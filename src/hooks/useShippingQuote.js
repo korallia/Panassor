@@ -60,6 +60,22 @@ function parseShippingInput(rawValue) {
     };
   }
 
+  // Hors Canada sans virgule (« Tokyo 100-0001 », « London SW1A 1AA »,
+  // « 75001 Paris ») : les mots qui contiennent un chiffre, à la fin ou
+  // au début, sont le code postal; le reste est la ville.
+  const words = trimmedValue.split(/\s+/);
+  const hasDigit = (word) => /\d/.test(word);
+  let end = words.length;
+  while (end > 0 && hasDigit(words[end - 1])) end -= 1;
+  if (end > 0 && end < words.length) {
+    return { city: words.slice(0, end).join(" "), postalCode: words.slice(end).join(" ") };
+  }
+  let start = 0;
+  while (start < words.length && hasDigit(words[start])) start += 1;
+  if (start > 0 && start < words.length) {
+    return { city: words.slice(start).join(" "), postalCode: words.slice(0, start).join(" ") };
+  }
+
   return trimmedValue ? { city: "", postalCode: trimmedValue } : null;
 }
 
@@ -148,6 +164,19 @@ export function useShippingQuote(items = []) {
     const carriersForRequest = CARRIERS;
 
     const { city, postalCode: parsedPostalCode } = parsed;
+
+    // Purolator exige la ville hors Canada.
+    if (!isDomestic && !city) {
+      requestIdRef.current += 1;
+      setPendingCarriers([]);
+      setNotServedCarriers([]);
+      setQuote(null);
+      setDestination(null);
+      setStatus("error");
+      setError("CITY_REQUIRED");
+      hasQuoteRef.current = false;
+      return;
+    }
 
     const requestId = ++requestIdRef.current;
     const isCurrent = () => requestId === requestIdRef.current;

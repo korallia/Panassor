@@ -182,6 +182,8 @@ function ShippingEstimator({ copy = {}, language, selectedShipping, onSelect, it
             ? copy.emptyPostalCodeError
             : error === "INVALID_POSTAL_CODE"
               ? copy.invalidPostalCodeError
+              : error === "CITY_REQUIRED"
+                ? copy.cityRequiredError
               : error === "TOO_MANY_REQUESTS"
                 ? copy.tooManyRequestsError
                 : copy.genericError}

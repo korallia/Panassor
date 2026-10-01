@@ -23,9 +23,17 @@ const DESTINATIONS = [
   { label: "Royaume-Uni (Londres)", country: "GB", province: "", city: "London", postalCode: "SW1A 1AA" },
   { label: "Allemagne (Berlin)", country: "DE", province: "", city: "Berlin", postalCode: "10115" },
   { label: "Australie (Sydney)", country: "AU", province: "NSW", city: "Sydney", postalCode: "2000" },
+  { label: "Japon (Tokyo, 100-0001)", country: "JP", province: "", city: "Tokyo", postalCode: "100-0001" },
+  { label: "Japon (Tokyo, 1000001)", country: "JP", province: "", city: "Tokyo", postalCode: "1000001" },
+  { label: "Japon (Chiyoda, 1000001)", country: "JP", province: "", city: "Chiyoda", postalCode: "1000001" },
 ];
+// PUROLATOR_ONLY=JP : ne teste que ce pays.
+const ONLY = process.env.PUROLATOR_ONLY;
+if (ONLY) DESTINATIONS.splice(0, DESTINATIONS.length, ...DESTINATIONS.filter((d) => d.country === ONLY));
 
-const SERVICE_IDS = ["PurolatorExpressInternational", "PurolatorExpressU.S.", "PurolatorGroundU.S."];
+const SERVICE_IDS = ONLY && ONLY !== "US"
+  ? ["PurolatorExpressInternational"]
+  : ["PurolatorExpressInternational", "PurolatorExpressU.S.", "PurolatorGroundU.S."];
 
 console.log(`Purolator : environnement ${process.env.PUROLATOR_ENVIRONMENT || "(non défini)"}\n`);
 
@@ -53,7 +61,7 @@ for (const destination of DESTINATIONS) {
         );
       }
     } catch (error) {
-      const detail = JSON.stringify(error.body?.errors || error.body || error.message).slice(0, 220);
+      const detail = JSON.stringify(error.body?.errors || error.body || error.message).slice(0, 800);
       console.log(`   (${serviceId}) refusé : ${detail}`);
     }
   }

@@ -161,6 +161,7 @@ export function normalizeCartItem(item, language = "fr") {
     colorName,
 
     optionId: item?.optionId ?? null,
+    optionQuantity: item?.optionQuantity ?? null,
     optionName:
       item?.[`optionName_${normalizedLanguage}`] || item?.optionName_fr || null,
 

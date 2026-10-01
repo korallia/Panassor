@@ -563,8 +563,8 @@ export async function fetchProductWithDetailsBySlug(slug) {
   }
 
   const optionsResult = await pool.query(
-    `SELECT id, label_fr, label_en, price_cents
-     FROM product_options WHERE product_id = $1 ORDER BY sort_order, id`,
+    `SELECT id, label_fr, label_en, price_cents, quantity, icon
+     FROM product_options WHERE product_id = $1 ORDER BY quantity, sort_order, id`,
     [product.id]
   );
 

@@ -13,6 +13,7 @@ import { getAssetUrl } from "../../../utils/assets";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductPanelTitle from "./ProductPanelTitle";
+import ProductOptionPicker from "./ProductOptionPicker";
 
 function formatPrice(priceCents, language = "fr", currency = "CAD") {
   if (priceCents == null) return "";
@@ -98,6 +99,7 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
       optionId: selectedOption?.id ?? null,
       optionName_fr: selectedOption?.label_fr || "",
       optionName_en: selectedOption?.label_en || "",
+      optionQuantity: selectedOption?.quantity ?? null,
       selectedItems: [],
       displaySnapshot: {
         name: productName,
@@ -121,30 +123,6 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
           />
 
           <div className="mt-8 max-w-[300px]">
-            {options.length > 0 && (
-              <div className="mb-6 grid grid-cols-2 gap-2">
-                {options.map((option) => {
-                  const isSelected = option.id === selectedOption?.id;
-
-                  return (
-                    <button
-                      key={option.id}
-                      type="button"
-                      aria-pressed={isSelected}
-                      onClick={() => setSelectedOptionId(option.id)}
-                      className={`border px-3 py-2 font-['EB_Garamond'] text-base transition ${
-                        isSelected
-                          ? "border-[#c89b3c] bg-[#24170d] text-[#e7c97b]"
-                          : "border-[#6f5423]/60 text-[#d7c8ad]/70 hover:border-[#b8964a] hover:text-[#d7c8ad]"
-                      }`}
-                    >
-                      {language === "en" ? option.label_en : option.label_fr}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
               {formatPrice(displayedPriceCents, language)}
             </p>
@@ -163,6 +141,23 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
               {addToCartLabel}
             </button>
           </div>
+
+          {options.length > 0 && (
+            <>
+              <OrnamentDivider
+                className="mt-8 w-52 justify-start"
+                width={64}
+                opacity={0.5}
+              />
+
+              <ProductOptionPicker
+                options={options}
+                selectedOption={selectedOption}
+                onSelect={setSelectedOptionId}
+                language={language}
+              />
+            </>
+          )}
 
           <OrnamentDivider
             className="mt-8 w-52 justify-start"

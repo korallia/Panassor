@@ -417,7 +417,11 @@ async function getInternationalQuote({ postalCode, city, country, items, wantedC
       console.error(
         `[shipping-quote] ${label} international (${country}) failed:`,
         result.reason?.message,
-        result.reason?.body ? JSON.stringify(result.reason.body).slice(0, 400) : ""
+        // Les « errors » d'abord : chez Purolator, un long bannerMessages
+        // les cachait dans le log tronqué.
+        result.reason?.body
+          ? JSON.stringify(result.reason.body.errors || result.reason.body).slice(0, 800)
+          : ""
       );
     }
   }

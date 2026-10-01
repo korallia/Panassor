@@ -107,7 +107,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
             })}
           </div>
 
-          <p className="mt-3 font-['EB_Garamond'] text-lg italic leading-none text-[#d7c8ad]/80">
+          <p className="mt-4 font-['EB_Garamond'] text-sm italic leading-none text-[#d7c8ad]/75">
             {label(selectedOption)}
           </p>
         </>

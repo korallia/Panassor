@@ -19,7 +19,10 @@ export const US_SERVICE_ID = "PurolatorGroundU.S.";
 // accepte ; la sandbox ne renvoie qu'une réponse d'exemple, les vrais
 // prix ne se voient qu'en production.
 export const CANADA_POST_US_SERVICE_CODES = ["USA.TP", "USA.EP"];
-export const CANADA_POST_WORLD_SERVICE_CODES = ["INT.TP", "INT.IP.SURF"];
+// Ordre de préférence : on affiche au plus 2 services parmi ceux que
+// Postes Canada offre réellement pour le colis et le pays.
+export const CANADA_POST_WORLD_SERVICE_CODES = ["INT.TP", "INT.IP.SURF", "INT.SP.AIR", "INT.IP.AIR"];
+export const CANADA_POST_MAX_OPTIONS = 2;
 
 export function canadaPostDestination(country, postalCode) {
   return country === "US"

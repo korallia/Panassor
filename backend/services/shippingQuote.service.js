@@ -8,6 +8,7 @@ import { computeParcelForCartItems } from "./packing.service.js";
 import {
   CANADA_POST_US_SERVICE_CODES,
   CANADA_POST_WORLD_SERVICE_CODES,
+  CANADA_POST_MAX_OPTIONS,
   canadaPostDestination,
   US_SERVICE_ID,
   WORLD_SERVICE_ID,
@@ -435,31 +436,25 @@ async function getCanadaPostInternationalRatesCached({ country, postalCode, parc
     return cached.rates;
   }
 
-  // Un appel par service : si Postes Canada juge un des services
-  // inapproprié pour ce colis (erreur 9111), il refuse TOUTE la demande.
-  // Séparément, on garde ceux qui marchent et on note les autres.
-  const results = await Promise.allSettled(
-    serviceCodes.map((serviceCode) =>
-      getCanadaPostRates({
-        originPostalCode: env.shippingOrigin.postalCode,
-        destination: canadaPostDestination(country, postalCode),
-        serviceCodes: [serviceCode],
-        ...parcel,
-      })
-    )
-  );
-
-  const rates = [];
-  results.forEach((result, index) => {
-    if (result.status === "fulfilled") {
-      rates.push(...result.value.filter((rate) => rate.serviceCode === serviceCodes[index]));
-    } else {
-      const code = result.reason?.body?.errors?.[0]?.errorCode || result.reason?.status;
-      console.warn(
-        `[shipping-quote] Canada Post ${serviceCodes[index]} (${country}) non offert : ${code} ${result.reason?.body?.errors?.[0]?.message || result.reason?.message}`
-      );
-    }
+  // Une seule demande SANS liste de services : Postes Canada renvoie ce
+  // qu'il offre vraiment pour ce colis. Avec une liste, un seul service
+  // inapproprié fait échouer toute la demande (erreur 9111).
+  const offered = await getCanadaPostRates({
+    originPostalCode: env.shippingOrigin.postalCode,
+    destination: canadaPostDestination(country, postalCode),
+    ...parcel,
   });
+
+  const rates = serviceCodes
+    .map((code) => offered.find((rate) => rate.serviceCode === code))
+    .filter(Boolean)
+    .slice(0, CANADA_POST_MAX_OPTIONS);
+
+  if (rates.length === 0 && offered.length > 0) {
+    console.warn(
+      `[shipping-quote] Canada Post (${country}) offre seulement : ${offered.map((r) => r.serviceCode).join(", ")}`
+    );
+  }
 
   if (rates.length === 0) {
     console.warn(

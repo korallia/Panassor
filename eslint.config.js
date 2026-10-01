@@ -3,7 +3,6 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
-import globals from "globals";
 
 
 export default defineConfig([
@@ -18,6 +17,14 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+  },
+  {
+    // Le serveur (backend/) tourne dans Node, pas dans le navigateur :
+    // process, Buffer, etc. existent.
+    files: ['backend/**/*.js'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
 ])

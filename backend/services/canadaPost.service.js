@@ -158,7 +158,9 @@ export async function getCanadaPostRates({
           }
         : {}),
     },
-    services: serviceCodes,
+    // Sans liste de services, Postes Canada renvoie tous ceux qui sont
+    // offerts pour ce colis (au lieu de refuser avec 9111).
+    ...(serviceCodes?.length ? { services: serviceCodes } : {}),
     originPostalCode: normalizePostalCode(originPostalCode),
     destination,
   };

@@ -17,6 +17,9 @@ const ICONS = {
   "droite-courbe": [[LINE, -3], [CURVE, 3]],
 };
 
+// Sans dessin précis (aiguilles de douleur) : 1 ou 2 aiguilles droites.
+const ICON_BY_QUANTITY = { 1: "droite", 2: "droite-droite" };
+
 function OptionIcon({ icon, isSelected }) {
   const strokes = ICONS[icon] || [];
 
@@ -47,6 +50,15 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
       ? `${quantity} ${quantity > 1 ? "needles" : "needle"}`
       : `${quantity} ${quantity > 1 ? "aiguilles" : "aiguille"}`;
 
+  // Une seule option par quantité (aiguilles de douleur) : pas besoin du
+  // choix « 1 aiguille / 2 aiguilles » en texte, les bulles suffisent.
+  const isSimple = quantities.every(
+    (quantity) => options.filter((option) => option.quantity === quantity).length === 1
+  );
+  const bubbleOptions = isSimple
+    ? [...options].sort((a, b) => a.quantity - b.quantity)
+    : groupOptions;
+
   // Changer de quantité choisit la première option de ce groupe.
   const selectQuantity = (quantity) => {
     const first = options.find((option) => option.quantity === quantity);
@@ -56,6 +68,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
   return (
     <div className="mt-5 max-w-[300px]">
       {/* 1 ou 2 : du texte, l'option choisie en or et soulignée. */}
+      {!isSimple && (
       <div
         className="flex gap-6"
         role="group"
@@ -81,10 +94,11 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
           );
         })}
       </div>
+      )}
 
-      {groupOptions.length > 1 && (
-        <div className="mt-6 flex flex-wrap gap-4">
-          {groupOptions.map((option) => {
+      {bubbleOptions.length > 1 && (
+        <div className={`${isSimple ? "-mt-px" : "mt-6"} flex flex-wrap gap-4`}>
+          {bubbleOptions.map((option) => {
             const isSelected = option.id === selectedOption?.id;
 
             return (
@@ -101,7 +115,10 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
                     : "border-[#6f5423] hover:border-[#c89b3c]"
                 }`}
               >
-                <OptionIcon icon={option.icon} isSelected={isSelected} />
+                <OptionIcon
+                  icon={option.icon || ICON_BY_QUANTITY[option.quantity]}
+                  isSelected={isSelected}
+                />
               </button>
             );
           })}

@@ -53,7 +53,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
   };
 
   return (
-    <div className="mt-6 max-w-[300px]">
+    <div className="mt-5 max-w-[300px]">
       {/* 1 ou 2 : du texte, l'option choisie en or et soulignée. */}
       <div
         className="flex gap-6"
@@ -83,7 +83,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
 
       {groupOptions.length > 1 && (
         <>
-          <div className="mt-5 flex flex-wrap gap-4">
+          <div className="mt-6 flex flex-wrap gap-4">
             {groupOptions.map((option) => {
               const isSelected = option.id === selectedOption?.id;
 
@@ -107,7 +107,7 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
             })}
           </div>
 
-          <p className="mt-5 font-['EB_Garamond'] text-sm italic leading-none text-[#d7c8ad]/75">
+          <p className="mt-[29px] font-['EB_Garamond'] text-sm italic leading-none text-[#d7c8ad]/75">
             {label(selectedOption)}
           </p>
         </>

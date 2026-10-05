@@ -160,9 +160,8 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
             </>
           )}
 
-
           <OrnamentDivider
-            className="mt-8 w-52 justify-start"
+            className={`${options.length > 0 ? "mt-[19px]" : "mt-8"} w-52 justify-start`}
             width={64}
             opacity={0.5}
           />

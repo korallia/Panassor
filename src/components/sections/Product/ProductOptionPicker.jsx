@@ -2,7 +2,8 @@
 // « 1 aiguille / 2 aiguilles » en texte, puis des pastilles pour les
 // options de cette quantité (1 : droite ou courbe; 2 : 2 droites,
 // 2 courbes ou 1 de chaque). Sans pastilles quand la quantité n'a
-// qu'une option (aiguilles de douleur).
+// qu'une option (aiguilles de douleur). Le nom de l'option choisie
+// s'affiche en sous-titre sous le nom du produit.
 
 const LINE = "M5 19 L19 5";
 const CURVE = "M5 19 Q7 6 19 5";
@@ -82,35 +83,29 @@ function ProductOptionPicker({ options, selectedOption, onSelect, language }) {
       </div>
 
       {groupOptions.length > 1 && (
-        <>
-          <div className="mt-6 flex flex-wrap gap-4">
-            {groupOptions.map((option) => {
-              const isSelected = option.id === selectedOption?.id;
+        <div className="mt-6 flex flex-wrap gap-4">
+          {groupOptions.map((option) => {
+            const isSelected = option.id === selectedOption?.id;
 
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  title={label(option)}
-                  aria-label={label(option)}
-                  aria-pressed={isSelected}
-                  onClick={() => onSelect(option.id)}
-                  className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border transition ${
-                    isSelected
-                      ? "border-[#e3c17a] ring-2 ring-[#e3c17a]/40"
-                      : "border-[#6f5423] hover:border-[#c89b3c]"
-                  }`}
-                >
-                  <OptionIcon icon={option.icon} isSelected={isSelected} />
-                </button>
-              );
-            })}
-          </div>
-
-          <p className="mt-[29px] font-['EB_Garamond'] text-sm italic leading-none text-[#d7c8ad]/75">
-            {label(selectedOption)}
-          </p>
-        </>
+            return (
+              <button
+                key={option.id}
+                type="button"
+                title={label(option)}
+                aria-label={label(option)}
+                aria-pressed={isSelected}
+                onClick={() => onSelect(option.id)}
+                className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border transition ${
+                  isSelected
+                    ? "border-[#e3c17a] ring-2 ring-[#e3c17a]/40"
+                    : "border-[#6f5423] hover:border-[#c89b3c]"
+                }`}
+              >
+                <OptionIcon icon={option.icon} isSelected={isSelected} />
+              </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );

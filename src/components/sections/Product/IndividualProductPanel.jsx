@@ -119,6 +119,13 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
           <ProductPanelTitle
             collectionName={collectionName}
             productName={productName}
+            subtitle={
+              selectedOption
+                ? language === "en"
+                  ? selectedOption.label_en
+                  : selectedOption.label_fr
+                : null
+            }
             description={productDescription}
           />
 

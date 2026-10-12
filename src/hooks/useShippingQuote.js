@@ -36,9 +36,13 @@ export function isCanadianPostalCode(postalCode) {
   return CA_POSTAL_CODE_REGEX.test(String(postalCode || "").replace(/[\s-]+/g, ""));
 }
 
-function sortByCarrier(options) {
+// Du moins cher au plus cher, peu importe le transporteur. À prix égal,
+// on garde l'ordre des transporteurs.
+function sortByPrice(options) {
   return [...options].sort(
-    (a, b) => CARRIERS.indexOf(a.carrier) - CARRIERS.indexOf(b.carrier)
+    (a, b) =>
+      (a.priceCents ?? 0) - (b.priceCents ?? 0) ||
+      CARRIERS.indexOf(a.carrier) - CARRIERS.indexOf(b.carrier)
   );
 }
 
@@ -215,7 +219,7 @@ export function useShippingQuote(items = []) {
           const known = new Set((merged?.options || []).map((option) => option.id));
           merged = {
             ...(merged || result),
-            options: sortByCarrier([
+            options: sortByPrice([
               ...(merged?.options || []),
               ...result.options.filter((option) => !known.has(option.id)),
             ]),

@@ -1,7 +1,7 @@
 # Migrations de la base
 
 Chaque fichier modifie la structure ou les données de la base, **une seule fois**,
-dans l'ordre des numéros. Pour un nouveau changement : créer `006_nom-court.sql`, etc.
+dans l'ordre des numéros. Pour un nouveau changement : créer `008_nom-court.sql`, etc.
 
 | # | Fichier | Date | Contenu |
 |---|---------|------|---------|
@@ -10,6 +10,8 @@ dans l'ordre des numéros. Pour un nouveau changement : créer `006_nom-court.sq
 | 003 | voleur-collection | 2026-09-26 | Produits, images, couleurs et kit du voleur |
 | 004 | numero-commande | 2026-09-29 | Numéro de commande donné seulement au paiement |
 | 005 | coupon-totaux | 2026-09-29 | Coupon et montants réellement facturés par Square |
+| 006 | etuis-et-ensembles | 2026-10-01 | Stock d'étuis sur les variantes de couleur des kits, composants des duos du voleur |
+| 007 | options-produit | 2026-10-01 | Options de produit avec leur prix (aiguilles 1 ou 2) |
 
 Toutes ont été appliquées en live (RDS).
 
@@ -36,5 +38,5 @@ const c = new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: { rej
 await c.connect();
 const r = await c.query(fs.readFileSync(process.argv[1], "utf8"));
 console.table([].concat(r).at(-1).rows);
-await c.end();' backend/db/migrations/005_coupon-totaux.sql
+await c.end();' backend/db/migrations/006_etuis-et-ensembles.sql
 ```

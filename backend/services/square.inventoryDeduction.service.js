@@ -44,9 +44,13 @@ export async function deductKitComponentInventory(squareOrder) {
     const lineQuantity = Number(lineItem.quantity || 1);
 
     const componentsResult = await db.query(
-      `SELECT kc.included_product_id, kc.quantity, p.customizable
+      `SELECT kc.included_product_id, kc.quantity,
+              -- Dans un ensemble (duo), pas d'outil au choix : toutes les
+              -- pièces sont décomptées, même les outils « personnalisables ».
+              (p.customizable AND kit.is_kit) AS customizable
        FROM kit_components kc
        JOIN products p ON p.id = kc.included_product_id
+       JOIN products kit ON kit.id = kc.kit_product_id
        WHERE kc.kit_product_id = $1`,
       [kitProductId]
     );

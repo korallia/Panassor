@@ -375,11 +375,21 @@ export async function fetchAllProducts() {
     FROM products p
     JOIN collections c
       ON c.id = p.collection_id
-    LEFT JOIN kit_components  ki
-      ON ki.included_product_id = p.id
-    LEFT JOIN products kit
-      ON kit.id = ki.kit_product_id
-      AND kit.collection_id = p.collection_id
+    -- Ordre de la pièce dans le KIT de sa collection. Une pièce peut aussi
+    -- faire partie d'un ensemble (ex. crochet dans « Crochet + tourne-
+    -- serrure ») : on ne garde qu'une ligne, celle du kit, sinon la pièce
+    -- apparaîtrait deux fois dans la liste.
+    LEFT JOIN LATERAL (
+      SELECT kc.sort_order
+      FROM kit_components kc
+      JOIN products kit
+        ON kit.id = kc.kit_product_id
+        AND kit.is_kit = TRUE
+        AND kit.collection_id = p.collection_id
+      WHERE kc.included_product_id = p.id
+      ORDER BY kc.sort_order
+      LIMIT 1
+    ) ki ON TRUE
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
@@ -552,8 +562,15 @@ export async function fetchProductWithDetailsBySlug(slug) {
     kitItems = await fetchKitItemsForProduct(product.id);
   }
 
+  const optionsResult = await pool.query(
+    `SELECT id, label_fr, label_en, price_cents, quantity, icon
+     FROM product_options WHERE product_id = $1 ORDER BY sort_order, id`,
+    [product.id]
+  );
+
   return {
     ...product,
+    options: optionsResult.rows,
     colors: typeof product.colors === "string" ? JSON.parse(product.colors) : (product.colors || []),
     images,
     kit_components: kitItems,

@@ -49,6 +49,7 @@ function buildCartKey(item) {
     item.type || "product",
     item.productId,
     item.colorKey || "no-color",
+    item.optionId ?? "no-option",
     selectedItemsKey || "no-selected-items",
   ].join("__");
 }

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useCart } from "../../../context/CartContext";
@@ -12,6 +13,7 @@ import { getAssetUrl } from "../../../utils/assets";
 
 import OrnamentDivider from "../../ui/OrnamentDivider";
 import ProductPanelTitle from "./ProductPanelTitle";
+import ProductOptionPicker from "./ProductOptionPicker";
 
 function formatPrice(priceCents, language = "fr", currency = "CAD") {
   if (priceCents == null) return "";
@@ -27,10 +29,18 @@ function formatPrice(priceCents, language = "fr", currency = "CAD") {
 function IndividualProductPanel({ product, collection, copy = {} }) {
   const { language } = useLanguage();
   const { addItem } = useCart();
+  // Produit à options (ex. aiguilles : 1 droite, 2 pareilles…) : chaque
+  // option a son propre prix. La première est choisie par défaut.
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
 
   if (!product || !collection) {
     return null;
   }
+
+  const options = product.options || [];
+  const selectedOption =
+    options.find((option) => option.id === selectedOptionId) || options[0] || null;
+  const displayedPriceCents = selectedOption ? selectedOption.price_cents : product.price_cents;
 
   const collectionName = t(collection, "name", language);
   const productName = t(product, "name", language);
@@ -86,11 +96,15 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
       quantity: 1,
       colorKey: null,
       colorName: "",
+      optionId: selectedOption?.id ?? null,
+      optionName_fr: selectedOption?.label_fr || "",
+      optionName_en: selectedOption?.label_en || "",
+      optionQuantity: selectedOption?.quantity ?? null,
       selectedItems: [],
       displaySnapshot: {
         name: productName,
         imageUrl: getAssetUrl(productImageUrl),
-        priceCents: product.price_cents,
+        priceCents: displayedPriceCents,
         meta: collectionName,
       },
     });
@@ -105,12 +119,19 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
           <ProductPanelTitle
             collectionName={collectionName}
             productName={productName}
+            subtitle={
+              selectedOption
+                ? language === "en"
+                  ? selectedOption.label_en
+                  : selectedOption.label_fr
+                : null
+            }
             description={productDescription}
           />
 
           <div className="mt-8 max-w-[300px]">
             <p className="font-['EB_Garamond'] text-4xl leading-none text-[#e7c97b]">
-              {formatPrice(product.price_cents, language)}
+              {formatPrice(displayedPriceCents, language)}
             </p>
 
             <OrnamentDivider
@@ -128,8 +149,26 @@ function IndividualProductPanel({ product, collection, copy = {} }) {
             </button>
           </div>
 
+          {/* Même place que les pastilles de couleur sur la page d'un kit. */}
+          {options.length > 0 && (
+            <>
+              <OrnamentDivider
+                className="mt-8 w-52 justify-start"
+                width={64}
+                opacity={0.5}
+              />
+
+              <ProductOptionPicker
+                options={options}
+                selectedOption={selectedOption}
+                onSelect={setSelectedOptionId}
+                language={language}
+              />
+            </>
+          )}
+
           <OrnamentDivider
-            className="mt-8 w-52 justify-start"
+            className={`${options.length > 0 ? "mt-[19px]" : "mt-8"} w-52 justify-start`}
             width={64}
             opacity={0.5}
           />

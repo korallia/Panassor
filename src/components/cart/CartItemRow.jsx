@@ -36,11 +36,16 @@ function CartItemRow({ item, copy, language, onUpdateQuantity, onRemove }) {
       ? item.colorName_en || item.colorName_fr
       : item.colorName_fr || item.colorName_en;
 
+  const optionName =
+    language === "en"
+      ? item.optionName_en || item.optionName_fr
+      : item.optionName_fr || item.optionName_en;
+
   const itemMeta = colorName
     ? language === "en"
       ? `${copy.item.color}: ${colorName}`
       : `${copy.item.color} : ${colorName}`
-    : "";
+    : optionName || "";
 
   const unitPriceCents = snapshot.priceCents || 0;
   const lineTotalCents = unitPriceCents * item.quantity;

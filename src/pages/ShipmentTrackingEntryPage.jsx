@@ -24,6 +24,7 @@ function getTrackingEntryAccessFromUrl() {
 const CARRIER_OPTIONS = [
   { value: "postes_canada", label: "Postes Canada" },
   { value: "purolator", label: "Purolator" },
+  { value: "poste_lettres", label: "Postes Canada — Poste-lettres (sans suivi)" },
 ];
 
 function formatMoney(cents) {
@@ -82,7 +83,9 @@ function ShipmentTrackingEntryPage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!trackingNumber.trim()) {
+    const isLetter = carrier === "poste_lettres";
+
+    if (!isLetter && !trackingNumber.trim()) {
       setSubmitError("Le numéro de tracking est requis.");
       return;
     }
@@ -93,8 +96,8 @@ function ShipmentTrackingEntryPage() {
     try {
       const result = await submitShipmentTrackingEntry(shipmentId, key, {
         carrier,
-        trackingNumber: trackingNumber.trim(),
-        trackingUrl: trackingUrl.trim() || undefined,
+        trackingNumber: isLetter ? "" : trackingNumber.trim(),
+        trackingUrl: isLetter ? undefined : trackingUrl.trim() || undefined,
       });
 
       setEntry((current) => ({ ...current, ...result }));
@@ -204,6 +207,12 @@ function ShipmentTrackingEntryPage() {
             </select>
           </label>
 
+          {carrier === "poste_lettres" ? (
+            <p style={{ fontSize: 14, marginBottom: 16 }}>
+              Envoi en lettre : pas de numéro de suivi. Le courriel dira au client de compter environ 2 semaines.
+            </p>
+          ) : (
+            <>
           <label style={{ display: "block", marginBottom: 12 }}>
             <span style={{ display: "block", fontSize: 13, marginBottom: 4 }}>
               Numéro de tracking
@@ -227,6 +236,8 @@ function ShipmentTrackingEntryPage() {
               style={{ width: "100%", padding: 8, fontSize: 15, boxSizing: "border-box" }}
             />
           </label>
+            </>
+          )}
 
           {submitError && (
             <p style={{ color: "#b00020", fontSize: 14 }}>{submitError}</p>

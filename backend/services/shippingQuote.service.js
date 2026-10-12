@@ -4,7 +4,7 @@ import {
   getPurolatorEstimate,
   PUROLATOR_DOMESTIC_SERVICE_ID,
 } from "./purolator.service.js";
-import { computeParcelForCartItems } from "./packing.service.js";
+import { computeParcelForCartItems, isEnvelopeCart } from "./packing.service.js";
 import {
   CANADA_POST_US_SERVICE_CODES,
   CANADA_POST_WORLD_SERVICE_CODES,
@@ -107,6 +107,19 @@ function buildTransitEtaLabels(transitDays) {
 // (see canadaPost.service.js / purolator.service.js) into the
 // {id, carrier, carrierLabel, serviceLabel, priceCents, etaLabel_fr,
 // etaLabel_en} shape ShippingEstimator.jsx expects.
+// Poste-lettres : enveloppe no 10, prix fixe (l'API de Postes Canada ne
+// calcule que les colis), aucun suivi, environ 2 semaines. Offert
+// seulement au Canada et quand tout le panier entre dans l'enveloppe.
+const LETTERMAIL_OPTION = {
+  id: "cp-lettre",
+  carrier: "poste_lettres",
+  carrierLabel: "Postes Canada",
+  serviceLabel: "Poste-lettres (sans suivi)",
+  priceCents: 300,
+  etaLabel_fr: "environ 2 semaines",
+  etaLabel_en: "about 2 weeks",
+};
+
 function toFrontendOption(rate) {
   return {
     id: rate.id,
@@ -338,6 +351,11 @@ export async function getShippingQuote({ postalCode, city, country, items = [], 
       "BODY:",
       JSON.stringify(purolatorResult.reason?.body, null, 2)
     );
+  }
+
+  // Lettre en premier : c'est l'option la moins chère.
+  if (wantedCarriers.includes("postes_canada") && (await isEnvelopeCart(items))) {
+    options.unshift({ ...LETTERMAIL_OPTION });
   }
 
   // If BOTH carriers failed, surface a real error instead of a silently

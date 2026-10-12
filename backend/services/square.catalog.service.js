@@ -92,7 +92,9 @@ export async function syncProductToSquare(productId) {
   if (variations.length === 0) {
     variations.push({
       type: "ITEM_VARIATION",
-      id: `#variation_default_${product.id}`,
+      // Réutilise la variation existante : en créer une nouvelle à chaque
+      // synchro faisait supprimer l'ancienne par Square, avec son stock.
+      id: product.square_default_variation_id || `#variation_default_${product.id}`,
       item_variation_data: {
         pricing_type: "FIXED_PRICING",
         price_money: { amount: Number(product.price_cents), currency: "CAD" },
@@ -328,22 +330,36 @@ async function findCollectionBySlug(slug) {
 //    (slug FR ou EN). Les autres produits ne sont pas envoyes a Square du
 //    tout -> leurs infos et leur inventaire ne peuvent pas etre touches.
 //  - dryRun : n'appelle pas Square, affiche seulement ce qui serait fait.
-export async function syncAllProductsToSquare({ collectionSlug, dryRun = false } = {}) {
+export async function syncAllProductsToSquare({ collectionSlug, productSlugs = [], dryRun = false } = {}) {
   let collection = null;
   if (collectionSlug) {
     collection = await findCollectionBySlug(collectionSlug);
   }
 
-  const result = await db.query(
-    `SELECT id, slug_fr, name_fr, is_kit, square_item_id FROM products
-     ${collection ? "WHERE collection_id = $1" : ""}
-     ORDER BY id`,
-    collection ? [collection.id] : []
-  );
+  // --product <slug> (répétable) : seulement ces produits.
+  const result = productSlugs.length
+    ? await db.query(
+        `SELECT id, slug_fr, name_fr, is_kit, square_item_id FROM products
+         WHERE slug_fr = ANY($1::text[]) ORDER BY id`,
+        [productSlugs]
+      )
+    : await db.query(
+        `SELECT id, slug_fr, name_fr, is_kit, square_item_id FROM products
+         ${collection ? "WHERE collection_id = $1" : ""}
+         ORDER BY id`,
+        collection ? [collection.id] : []
+      );
 
-  const scopeLabel = collection
-    ? `collection "${collection.slug_fr}" (${collection.name_fr})`
-    : "TOUS les produits";
+  if (productSlugs.length && result.rows.length !== productSlugs.length) {
+    const found = new Set(result.rows.map((row) => row.slug_fr));
+    throw new Error(`Produit(s) introuvable(s) : ${productSlugs.filter((s) => !found.has(s)).join(", ")}`);
+  }
+
+  const scopeLabel = productSlugs.length
+    ? `produit(s) ${productSlugs.join(", ")}`
+    : collection
+      ? `collection "${collection.slug_fr}" (${collection.name_fr})`
+      : "TOUS les produits";
 
   console.log(`\n${dryRun ? "[DRY-RUN] " : ""}Synchro Square : ${scopeLabel} -- ${result.rows.length} produit(s)`);
 
@@ -361,7 +377,7 @@ export async function syncAllProductsToSquare({ collectionSlug, dryRun = false }
 
   assertSquareConfig();
   await syncKitComponentModifierLists(
-    collection
+    collection || productSlugs.length
       ? { kitProductIds: result.rows.filter((row) => row.is_kit).map((row) => row.id) }
       : {}
   );

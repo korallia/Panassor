@@ -17,7 +17,7 @@ function ProductPanelTitle({ collectionName, productName, subtitle, description 
 
       {/* Sous-titre : l'option choisie (ex. « 1 droite + 1 courbe »), change avec les bulles. */}
       {subtitle && (
-        <p className="mt-3 font-['EB_Garamond'] text-xl italic leading-none text-[#c89b3c]">
+        <p className="mt-6 font-['IM_Fell_English_SC'] text-sm uppercase leading-none tracking-[0.24em] text-[#c89b3c]">
           {subtitle}
         </p>
       )}

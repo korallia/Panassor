@@ -19,7 +19,8 @@ import {
   updateShipmentTracking,
 } from "./shipments.repository.js";
 
-const TRACKING_ENTRY_CARRIERS = new Set(["postes_canada", "purolator"]);
+// poste_lettres : envoi en enveloppe, sans numéro de suivi.
+const TRACKING_ENTRY_CARRIERS = new Set(["postes_canada", "purolator", "poste_lettres"]);
 
 function trackingEntryError(status, message) {
   const error = new Error(message);
@@ -77,18 +78,21 @@ export async function submitShipmentTracking({
     throw trackingEntryError(400, "INVALID_CARRIER");
   }
 
-  if (!normalizedTrackingNumber) {
+  const isLetter = normalizedCarrier === "poste_lettres";
+
+  if (!normalizedTrackingNumber && !isLetter) {
     throw trackingEntryError(400, "MISSING_TRACKING_NUMBER");
   }
 
-  const resolvedTrackingUrl =
-    String(trackingUrl || "").trim() ||
-    buildTrackingUrl(normalizedCarrier, normalizedTrackingNumber);
+  const resolvedTrackingUrl = isLetter
+    ? null
+    : String(trackingUrl || "").trim() ||
+      buildTrackingUrl(normalizedCarrier, normalizedTrackingNumber);
 
   const updatedShipment = await updateShipmentTracking({
     shipmentId,
     carrier: normalizedCarrier,
-    trackingNumber: normalizedTrackingNumber,
+    trackingNumber: normalizedTrackingNumber || null,
     trackingUrl: resolvedTrackingUrl,
     source: "admin-tracking-form",
   });
@@ -97,7 +101,9 @@ export async function submitShipmentTracking({
     shipmentId,
     status: "shipped",
     source: "admin-tracking-form",
-    message: `Tracking entered via the admin form (${normalizedCarrier} ${normalizedTrackingNumber}).`,
+    message: isLetter
+      ? "Envoyé en Poste-lettres (sans suivi) via le formulaire admin."
+      : `Tracking entered via the admin form (${normalizedCarrier} ${normalizedTrackingNumber}).`,
   });
 
   const order = await getOrderForShipment(updatedShipment.order_id);

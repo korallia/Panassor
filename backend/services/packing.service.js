@@ -41,11 +41,14 @@ async function getProductsPackingInfoById(productIds) {
   return new Map(result.rows.map((row) => [row.id, row]));
 }
 
-async function getBoxTypesBySortOrder() {
+// is_letter = une enveloppe (Poste-lettres) : jamais utilisée pour un colis.
+async function getBoxTypesBySortOrder({ letter = false } = {}) {
   const result = await pool.query(
-    `SELECT slug, weight_grams, length_cm, width_cm, height_cm
+    `SELECT slug, weight_grams, length_cm, width_cm, height_cm, max_weight_grams
      FROM box_types
-     ORDER BY sort_order ASC`
+     WHERE is_letter = $1
+     ORDER BY sort_order ASC`,
+    [letter]
   );
 
   return result.rows;
@@ -59,6 +62,21 @@ function hasCompletePackingInfo(product) {
       product.width_cm &&
       product.height_cm
   );
+}
+
+// Chaque pièce doit entrer dans la boîte, pas seulement le volume total :
+// une aiguille de 20 cm n'entre pas dans une boîte de 15 cm. On compare les
+// mesures triées (la plus longue avec la plus longue, etc.).
+function sortedDims(thing) {
+  return [Number(thing.length_cm), Number(thing.width_cm), Number(thing.height_cm)].sort(
+    (a, b) => a - b
+  );
+}
+
+function itemFitsInBox(product, box) {
+  const item = sortedDims(product);
+  const inside = sortedDims(box);
+  return item.every((dim, index) => dim <= inside[index]);
 }
 
 /**
@@ -107,8 +125,11 @@ export async function computeParcelForCartItems(items = []) {
     totalVolumeCm3 += computeVolumeCm3(product) * VOLUME_SAFETY_MARGIN * item.quantity;
   }
 
+  const cartProducts = normalizedItems.map((item) => productsById.get(item.productId));
+
   const fittingBoxes = boxTypes
     .filter((box) => computeVolumeCm3(box) >= totalVolumeCm3)
+    .filter((box) => cartProducts.every((product) => itemFitsInBox(product, box)))
     .sort((a, b) => Number(a.weight_grams) - Number(b.weight_grams));
 
   let chosenBox = fittingBoxes[0];
@@ -134,4 +155,46 @@ export async function computeParcelForCartItems(items = []) {
     },
     boxSlug: chosenBox.slug,
   };
+}
+
+// Poste-lettres : le panier y a droit s'il entre dans l'enveloppe, calculé
+// exactement comme une boîte (mêmes mesures de produits, même marge de
+// volume, chaque pièce doit y entrer), avec en plus le poids maximal que
+// Postes Canada accepte en lettre (max_weight_grams).
+export async function isEnvelopeCart(items = []) {
+  const list = (Array.isArray(items) ? items : [])
+    .map((item) => ({
+      productId: Number(item?.productId),
+      quantity: Number(item?.quantity) > 0 ? Math.floor(Number(item.quantity)) : 1,
+    }))
+    .filter((item) => Number.isFinite(item.productId) && item.productId > 0);
+
+  if (!list.length) return false;
+
+  const [productsById, envelopes] = await Promise.all([
+    getProductsPackingInfoById([...new Set(list.map((item) => item.productId))]),
+    getBoxTypesBySortOrder({ letter: true }),
+  ]);
+  const envelope = envelopes[0];
+
+  if (!envelope) return false;
+
+  let totalGrams = Number(envelope.weight_grams);
+  let totalVolumeCm3 = 0;
+
+  for (const item of list) {
+    const product = productsById.get(item.productId);
+
+    if (!hasCompletePackingInfo(product) || !itemFitsInBox(product, envelope)) {
+      return false;
+    }
+
+    totalGrams += Number(product.weight_grams) * item.quantity;
+    totalVolumeCm3 += computeVolumeCm3(product) * VOLUME_SAFETY_MARGIN * item.quantity;
+  }
+
+  return (
+    totalVolumeCm3 <= computeVolumeCm3(envelope) &&
+    (!envelope.max_weight_grams || totalGrams <= Number(envelope.max_weight_grams))
+  );
 }

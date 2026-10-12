@@ -22,6 +22,7 @@ const BORDER = "#e4dcc8";
 const CARRIER_LABELS = {
   "postes_canada": "Postes Canada",
   purolator: "Purolator",
+  poste_lettres: "Postes Canada (Poste-lettres)",
 };
 
 function getCarrierLabel(carrier) {
@@ -106,12 +107,16 @@ function buildEmailHtml({
                 <p style="margin:0 0 4px; color:${MUTED}; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Commande #${orderId}</p>
                 <h1 style="margin:0 0 16px; color:${INK}; font-size:20px;">Ta commande est en route${greetingName ? `, ${greetingName}` : ""} !</h1>
                 <p style="margin:0 0 20px; color:${INK}; font-size:14px; line-height:1.6;">
-                  Bonne nouvelle -- ta commande vient d'être expédiée par ${carrierLabel}. Voici les détails pour la suivre :
+                  ${
+                    trackingNumber
+                      ? `Bonne nouvelle -- ta commande vient d'être expédiée par ${carrierLabel}. Voici les détails pour la suivre :`
+                      : `Bonne nouvelle -- ta commande vient d'être expédiée par ${carrierLabel}. Elle voyage en lettre, sans numéro de suivi : compte environ 2 semaines.`
+                  }
                 </p>
               </td>
             </tr>
 
-            <tr>
+            ${trackingNumber ? `<tr>
               <td style="padding:0 32px 20px;">
                 <table role="presentation" width="100%" style="border:1px solid ${BORDER}; border-radius:4px;">
                   <tr>
@@ -124,7 +129,7 @@ function buildEmailHtml({
                   </tr>
                 </table>
               </td>
-            </tr>
+            </tr>` : ""}
 
             ${
               trackingUrl
@@ -158,7 +163,11 @@ function buildEmailHtml({
                 <p style="margin:0 0 4px; color:${MUTED}; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Order #${orderId}</p>
                 <h1 style="margin:0 0 16px; color:${INK}; font-size:18px; font-weight:normal;">Your order is on its way${greetingName ? `, ${greetingName}` : ""}!</h1>
                 <p style="margin:0 0 16px; color:${INK}; font-size:13px; line-height:1.6;">
-                  Good news -- your order just shipped with ${carrierLabel}. Tracking details above (same number, both carriers use one tracking page per shipment).
+                  ${
+                    trackingNumber
+                      ? `Good news -- your order just shipped with ${carrierLabel}. Tracking details above (same number, both carriers use one tracking page per shipment).`
+                      : `Good news -- your order just shipped with ${carrierLabel}. It travels as a letter, without a tracking number: allow about 2 weeks.`
+                  }
                 </p>
               </td>
             </tr>
@@ -216,7 +225,7 @@ export async function sendTrackingEmail({
 
   const carrierLabel = getCarrierLabel(carrier);
   const resolvedTrackingUrl =
-    trackingUrl || buildTrackingUrl(carrier, trackingNumber);
+    trackingUrl || (trackingNumber ? buildTrackingUrl(carrier, trackingNumber) : null);
 
   const html = buildEmailHtml({
     recipientName,

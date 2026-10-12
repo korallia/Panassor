@@ -1,7 +1,7 @@
 # Migrations de la base
 
 Chaque fichier modifie la structure ou les données de la base, **une seule fois**,
-dans l'ordre des numéros. Pour un nouveau changement : créer `008_nom-court.sql`, etc.
+dans l'ordre des numéros. Pour un nouveau changement : créer `009_nom-court.sql`, etc.
 
 | # | Fichier | Date | Contenu |
 |---|---------|------|---------|
@@ -12,6 +12,7 @@ dans l'ordre des numéros. Pour un nouveau changement : créer `008_nom-court.sq
 | 005 | coupon-totaux | 2026-09-29 | Coupon et montants réellement facturés par Square |
 | 006 | etuis-et-ensembles | 2026-10-01 | Stock d'étuis sur les variantes de couleur des kits, composants des duos du voleur |
 | 007 | options-produit | 2026-10-01 | Options de produit avec leur prix (aiguilles 1 ou 2) |
+| 008 | enveloppe | 2026-10-12 | Enveloppe no 10 comme format d'emballage (option Poste-lettres à 3 $) |
 
 Toutes ont été appliquées en live (RDS).
 

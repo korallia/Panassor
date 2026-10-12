@@ -36,13 +36,13 @@ export function isCanadianPostalCode(postalCode) {
   return CA_POSTAL_CODE_REGEX.test(String(postalCode || "").replace(/[\s-]+/g, ""));
 }
 
-// Du moins cher au plus cher, peu importe le transporteur. À prix égal,
-// on garde l'ordre des transporteurs.
+// Postes Canada (lettre et colis) du moins cher au plus cher, puis
+// Purolator toujours en dernier, lui aussi trié par prix.
 function sortByPrice(options) {
+  const isPurolator = (option) => (option.carrier === "purolator" ? 1 : 0);
+
   return [...options].sort(
-    (a, b) =>
-      (a.priceCents ?? 0) - (b.priceCents ?? 0) ||
-      CARRIERS.indexOf(a.carrier) - CARRIERS.indexOf(b.carrier)
+    (a, b) => isPurolator(a) - isPurolator(b) || (a.priceCents ?? 0) - (b.priceCents ?? 0)
   );
 }
 

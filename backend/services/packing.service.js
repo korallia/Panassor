@@ -64,19 +64,37 @@ function hasCompletePackingInfo(product) {
   );
 }
 
-// Chaque pièce doit entrer dans la boîte, pas seulement le volume total :
-// une aiguille de 20 cm n'entre pas dans une boîte de 15 cm. On compare les
-// mesures triées (la plus longue avec la plus longue, etc.).
-function sortedDims(thing) {
-  return [Number(thing.length_cm), Number(thing.width_cm), Number(thing.height_cm)].sort(
-    (a, b) => a - b
-  );
+function normalizeItems(items) {
+  return (Array.isArray(items) ? items : [])
+    .map((item) => ({
+      productId: Number(item?.productId),
+      quantity: Number(item?.quantity) > 0 ? Math.floor(Number(item.quantity)) : 1,
+    }))
+    .filter((item) => Number.isFinite(item.productId) && item.productId > 0);
 }
 
-function itemFitsInBox(product, box) {
-  const item = sortedDims(product);
-  const inside = sortedDims(box);
-  return item.every((dim, index) => dim <= inside[index]);
+// Un ensemble (ex. clé vierge + lime) n'a pas de mesures à lui : on le
+// compte comme ses pièces. Les kits gardent leurs propres mesures (étui).
+async function expandEnsembles(items) {
+  const result = await pool.query(
+    `SELECT kc.kit_product_id, kc.included_product_id, kc.quantity
+     FROM kit_components kc
+     JOIN products ensemble ON ensemble.id = kc.kit_product_id AND ensemble.is_kit = false
+     WHERE kc.kit_product_id = ANY($1::int[])`,
+    [[...new Set(items.map((item) => item.productId))]]
+  );
+
+  if (!result.rows.length) return items;
+
+  return items.flatMap((item) => {
+    const pieces = result.rows.filter((row) => row.kit_product_id === item.productId);
+    return pieces.length
+      ? pieces.map((piece) => ({
+          productId: piece.included_product_id,
+          quantity: piece.quantity * item.quantity,
+        }))
+      : [item];
+  });
 }
 
 /**
@@ -85,12 +103,7 @@ function itemFitsInBox(product, box) {
  *   null means "we don't have enough real data yet -- use the flat placeholder instead".
  */
 export async function computeParcelForCartItems(items = []) {
-  const normalizedItems = (Array.isArray(items) ? items : [])
-    .map((item) => ({
-      productId: Number(item?.productId),
-      quantity: Number(item?.quantity) > 0 ? Math.floor(Number(item.quantity)) : 1,
-    }))
-    .filter((item) => Number.isFinite(item.productId) && item.productId > 0);
+  const normalizedItems = await expandEnsembles(normalizeItems(items));
 
   if (!normalizedItems.length) {
     return null;
@@ -125,11 +138,8 @@ export async function computeParcelForCartItems(items = []) {
     totalVolumeCm3 += computeVolumeCm3(product) * VOLUME_SAFETY_MARGIN * item.quantity;
   }
 
-  const cartProducts = normalizedItems.map((item) => productsById.get(item.productId));
-
   const fittingBoxes = boxTypes
     .filter((box) => computeVolumeCm3(box) >= totalVolumeCm3)
-    .filter((box) => cartProducts.every((product) => itemFitsInBox(product, box)))
     .sort((a, b) => Number(a.weight_grams) - Number(b.weight_grams));
 
   let chosenBox = fittingBoxes[0];
@@ -157,17 +167,11 @@ export async function computeParcelForCartItems(items = []) {
   };
 }
 
-// Poste-lettres : le panier y a droit s'il entre dans l'enveloppe, calculé
-// exactement comme une boîte (mêmes mesures de produits, même marge de
-// volume, chaque pièce doit y entrer), avec en plus le poids maximal que
-// Postes Canada accepte en lettre (max_weight_grams).
+// Poste-lettres : même calcul que pour une boîte (poids et volume), avec
+// une seule règle de plus : chaque pièce doit être assez mince pour
+// l'enveloppe (sinon une spatule y entrerait « en volume »).
 export async function isEnvelopeCart(items = []) {
-  const list = (Array.isArray(items) ? items : [])
-    .map((item) => ({
-      productId: Number(item?.productId),
-      quantity: Number(item?.quantity) > 0 ? Math.floor(Number(item.quantity)) : 1,
-    }))
-    .filter((item) => Number.isFinite(item.productId) && item.productId > 0);
+  const list = await expandEnsembles(normalizeItems(items));
 
   if (!list.length) return false;
 
@@ -185,9 +189,14 @@ export async function isEnvelopeCart(items = []) {
   for (const item of list) {
     const product = productsById.get(item.productId);
 
-    if (!hasCompletePackingInfo(product) || !itemFitsInBox(product, envelope)) {
-      return false;
-    }
+    if (!hasCompletePackingInfo(product)) return false;
+
+    const thickness = Math.min(
+      Number(product.length_cm),
+      Number(product.width_cm),
+      Number(product.height_cm)
+    );
+    if (thickness > Number(envelope.height_cm)) return false;
 
     totalGrams += Number(product.weight_grams) * item.quantity;
     totalVolumeCm3 += computeVolumeCm3(product) * VOLUME_SAFETY_MARGIN * item.quantity;

@@ -1,7 +1,7 @@
 # Migrations de la base
 
 Chaque fichier modifie la structure ou les données de la base, **une seule fois**,
-dans l'ordre des numéros. Pour un nouveau changement : créer `011_nom-court.sql`, etc.
+dans l'ordre des numéros. Pour un nouveau changement : créer `013_nom-court.sql`, etc.
 
 | # | Fichier | Date | Contenu |
 |---|---------|------|---------|
@@ -15,6 +15,8 @@ dans l'ordre des numéros. Pour un nouveau changement : créer `011_nom-court.sq
 | 008 | enveloppe | 2026-10-12 | Enveloppe no 10 comme format d'emballage (option Poste-lettres à 3 $) |
 | 009 | mesures-voleur-texte-aiguilles | 2026-10-12 | Poids et mesures des produits du voleur, nouveau texte des aiguilles de suture |
 | 010 | textes-kits | 2026-10-12 | Textes des trois kits : « garnie de tous les outils de la collection » |
+| 011 | atelier-users | 2026-10-14 | Utilisateurs de l'atelier (courriel + mot de passe en empreinte scrypt) |
+| 012 | role-atelier | 2026-10-14 | Utilisateur Postgres de l'atelier : catalogue en lecture, stock en écriture, rien d'autre |
 
 Toutes ont été appliquées en live (RDS).
 

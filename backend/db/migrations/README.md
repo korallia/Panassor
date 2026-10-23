@@ -1,7 +1,7 @@
 # Migrations de la base
 
 Chaque fichier modifie la structure ou les données de la base, **une seule fois**,
-dans l'ordre des numéros. Pour un nouveau changement : créer `013_nom-court.sql`, etc.
+dans l'ordre des numéros. Pour un nouveau changement : créer `015_nom-court.sql`, etc.
 
 | # | Fichier | Date | Contenu |
 |---|---------|------|---------|
@@ -17,6 +17,8 @@ dans l'ordre des numéros. Pour un nouveau changement : créer `013_nom-court.sq
 | 010 | textes-kits | 2026-10-12 | Textes des trois kits : « garnie de tous les outils de la collection » |
 | 011 | atelier-users | 2026-10-14 | Utilisateurs de l'atelier (courriel + mot de passe en empreinte scrypt) |
 | 012 | role-atelier | 2026-10-14 | Utilisateur Postgres de l'atelier : catalogue en lecture, stock en écriture, rien d'autre |
+| 013 | atelier-compte | 2026-10-14 | L'atelier peut changer le courriel et le mot de passe de la personne connectée |
+| 014 | stock | 2026-10-22 | Stock dans la base (table stock), ajouté et retiré depuis l'atelier — Neon seulement pour l'instant |
 
 Toutes ont été appliquées en live (RDS).
 

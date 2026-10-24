@@ -206,7 +206,7 @@ async function resolveVariationCatalogId(item) {
 
   if (colorId != null && Number.isFinite(colorId)) {
     const result = await db.query(
-      `SELECT square_variation_id FROM product_color_variants WHERE product_id = $1 AND color_id = $2`,
+      `SELECT square_variation_id FROM product_variants WHERE product_id = $1 AND color_id = $2`,
       [item.productId, colorId]
     );
     if (result.rows[0]?.square_variation_id) {

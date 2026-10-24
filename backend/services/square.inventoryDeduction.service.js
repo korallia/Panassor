@@ -4,7 +4,7 @@ import db from "../db/pool.js";
 
 async function getVariationIdForProduct(productId) {
   const variantResult = await db.query(
-    `SELECT square_variation_id FROM product_color_variants WHERE product_id = $1 AND square_variation_id IS NOT NULL LIMIT 1`,
+    `SELECT square_variation_id FROM product_variants WHERE product_id = $1 AND square_variation_id IS NOT NULL LIMIT 1`,
     [productId]
   );
   if (variantResult.rows[0]?.square_variation_id) {
@@ -23,7 +23,7 @@ async function findKitProductIdByVariationId(variationId) {
     `SELECT id FROM products WHERE square_default_variation_id = $1
      UNION
      SELECT p.id FROM products p
-     JOIN product_color_variants pcv ON pcv.product_id = p.id
+     JOIN product_variants pcv ON pcv.product_id = p.id
      WHERE pcv.square_variation_id = $1`,
     [variationId]
   );

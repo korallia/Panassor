@@ -1,7 +1,7 @@
 # Migrations de la base
 
 Chaque fichier modifie la structure ou les données de la base, **une seule fois**,
-dans l'ordre des numéros. Pour un nouveau changement : créer `017_nom-court.sql`, etc.
+dans l'ordre des numéros. Pour un nouveau changement : créer `018_nom-court.sql`, etc.
 
 | # | Fichier | Date | Contenu |
 |---|---------|------|---------|
@@ -21,6 +21,7 @@ dans l'ordre des numéros. Pour un nouveau changement : créer `017_nom-court.sq
 | 014 | stock | 2026-10-22 | Stock dans la base (table stock), ajouté et retiré depuis l'atelier — Neon seulement pour l'instant |
 | 015 | variantes-aiguilles | 2026-10-23 | Aiguilles comptées par sorte (Droite, Courbe, Aiguille) et ce que retire chaque option (variant_ids) — Neon seulement pour l'instant |
 | 016 | product-variants | 2026-10-23 | product_color_variants devient product_variants (couleurs et sortes) ; retrait de case_stock / case_minimum ; vue temporaire product_color_variants pour l'ancien code — Neon seulement pour l'instant |
+| 017 | historique-minimums | 2026-10-24 | Historique du stock (stock_movements, raisons : fabrication, perte, correction, vente) et table minimums — Neon seulement pour l'instant |
 
 Toutes ont été appliquées en live (RDS).
 

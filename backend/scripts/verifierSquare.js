@@ -1,7 +1,8 @@
 // scripts/verifierSquare.js — LECTURE SEULE : compare la base et Square.
 //
 // Usage (depuis la racine du projet, avec le .env de l'environnement voulu) :
-//   node backend/scripts/verifierSquare.js
+//   node backend/scripts/verifierSquare.js            -> seulement ce qui cloche
+//   node backend/scripts/verifierSquare.js --detail   -> TOUS les produits, ligne par ligne
 //
 // Pour chaque produit : est-ce qu'il existe sur Square, avec les bonnes
 // variations (couleurs, options) et les bons prix ? Et pour chaque kit : est-ce
@@ -13,6 +14,7 @@ import db from "../db/pool.js";
 import { squareFetch, assertSquareConfig } from "../services/square.service.js";
 
 assertSquareConfig();
+const detail = process.argv.includes("--detail");
 console.log(`Environnement Square : ${process.env.SQUARE_ENVIRONMENT || "(non defini)"}`);
 console.log(`Base : ${new URL(process.env.DATABASE_URL).hostname}\n`);
 
@@ -73,9 +75,11 @@ const square = await retrieve([
 
 let okCount = 0;
 const report = [];
+const lines = []; // le détail de chaque produit (--detail)
 
 for (const product of products) {
   const problems = [];
+  const checks = []; // [ok, texte] : ce qui a été comparé
   const item = product.square_item_id && square.get(product.square_item_id);
 
   if (product.price_cents == null) problems.push("pas de prix dans la base (jamais envoyé à Square)");
@@ -102,6 +106,7 @@ for (const product of products) {
       else {
         const amount = squareVariations.get(e.id).price_money?.amount;
         if (amount !== e.price) problems.push(`${e.label} : prix Square ${money(amount ?? 0)} ≠ base ${money(e.price)}`);
+        else checks.push(`${e.label} : ${money(e.price)} (base) = ${money(amount)} (Square)  [${e.id}]`);
       }
     }
     const known = new Set(expected.map((e) => e.id));
@@ -109,6 +114,7 @@ for (const product of products) {
       if (!known.has(id)) problems.push(`variation « ${data.name || id} » sur Square mais plus dans la base`);
     }
     if (item.item_data?.name !== product.name_fr) problems.push(`nom Square « ${item.item_data?.name} » ≠ base « ${product.name_fr} »`);
+    else checks.unshift(`article « ${product.name_fr} » trouvé sur Square  [${product.square_item_id}]`);
 
     // Kits : listes « outil au choix ».
     if (product.is_kit) {
@@ -122,6 +128,8 @@ for (const product of products) {
         for (const choice of toolChoices.filter((c) => c.kit_component_id === list.id)) {
           if (!choice.square_modifier_id || !squareModifiers.has(choice.square_modifier_id)) {
             problems.push(`outil « ${choice.tool} » : absent de la liste outil au choix sur Square`);
+          } else {
+            checks.push(`outil au choix « ${choice.tool} » présent dans la liste « ${list.slot} »`);
           }
         }
       }
@@ -130,9 +138,24 @@ for (const product of products) {
 
   if (problems.length === 0) okCount += 1;
   else report.push({ product, problems });
+  lines.push({ product, problems, checks });
 }
 
-for (const { product, problems } of report) {
+if (detail) {
+  let collection = null;
+  for (const { product, problems, checks } of lines) {
+    if (product.collection !== collection) {
+      collection = product.collection;
+      console.log(`\n=== ${collection}${product.status !== "published" ? ` (${product.status})` : ""} ===`);
+    }
+    console.log(`${problems.length ? "✗" : "✓"} ${product.name_fr}${product.is_kit ? "  [kit]" : ""}  [${product.slug_fr}]`);
+    for (const check of checks) console.log(`    ✓ ${check}`);
+    for (const problem of problems) console.log(`    ✗ ${problem}`);
+  }
+  console.log("");
+}
+
+if (!detail) for (const { product, problems } of report) {
   const where = `${product.collection}${product.status !== "published" ? ` (${product.status})` : ""}`;
   console.log(`✗ ${product.name_fr}  [${product.slug_fr} · ${where}]`);
   for (const problem of problems) console.log(`    - ${problem}`);

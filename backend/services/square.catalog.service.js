@@ -26,7 +26,9 @@ export async function syncProductToSquare(productId) {
               )
             ) FILTER (WHERE pcv.id IS NOT NULL) as variants
      FROM products p
-     LEFT JOIN product_color_variants pcv ON pcv.product_id = p.id
+     -- Seulement les variantes de couleur : celles sans couleur (aiguilles
+     -- Droite / Courbe…) servent au stock et ne vont jamais dans Square.
+     LEFT JOIN product_variants pcv ON pcv.product_id = p.id AND pcv.color_id IS NOT NULL
      LEFT JOIN colors c ON c.id = pcv.color_id
      WHERE p.id = $1
      GROUP BY p.id`,
@@ -173,7 +175,7 @@ export async function syncProductToSquare(productId) {
     const savedVariation = saved.item_data?.variations?.find((v) => v.id === mapping.object_id);
     variantRealIds.set(localVariantId, mapping.object_id);
     await db.query(
-      `UPDATE product_color_variants SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
+      `UPDATE product_variants SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
       [mapping.object_id, savedVariation?.version || null, localVariantId]
     );
   }
@@ -202,7 +204,7 @@ export async function syncProductToSquare(productId) {
       variantRealIds.set(variant.id, realVariationId);
 
       await db.query(
-        `UPDATE product_color_variants SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
+        `UPDATE product_variants SET square_variation_id = $1, square_variation_version = $2 WHERE id = $3`,
         [realVariationId, savedVariation?.version || null, variant.id]
       );
     }
@@ -252,7 +254,7 @@ export async function syncProductToSquare(productId) {
         variant.color_name || `${product.name_fr} - couleur ${variant.color_id}`
       );
       console.log(`>>> OK image variante ${variant.id}: ${imageId}`);
-      await db.query(`UPDATE product_color_variants SET square_image_id = $1 WHERE id = $2`, [
+      await db.query(`UPDATE product_variants SET square_image_id = $1 WHERE id = $2`, [
         imageId,
         variant.id,
       ]);

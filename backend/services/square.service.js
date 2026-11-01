@@ -78,7 +78,7 @@ export async function squareFetch(path, options = {}) {
 // right now.
 // `staleIdMap` (mutated in place) records original id -> temp id for
 // every real id replaced, so the caller can later translate its OWN
-// stored ids (products.square_item_id, product_color_variants.square_
+// stored ids (products.square_item_id, product_variants.square_
 // variation_id, kit_components.square_modifier_id, etc.) into whatever
 // Square actually assigned this time -- see upsertCatalogObject below.
 function convertToFreshCatalogObject(node, staleIdMap) {

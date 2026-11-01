@@ -17,6 +17,9 @@
 //                       (product_options.variant_ids, migration 015)
 //   ensemble (duo) → toutes ses pièces
 //
+// Une vente retire TOUJOURS ce qu'elle a vendu, même s'il n'y en avait plus :
+// le stock devient négatif (migration 018) et la note dit « manquait N ».
+//
 // Square renvoie souvent le même paiement plusieurs fois : si la commande a
 // déjà une ligne « vente » dans l'historique, on ne retire rien de nouveau.
 import pool from "../db/pool.js";
@@ -212,12 +215,9 @@ export async function deductAtelierStockForSquareOrder(squareOrder, orderNumber 
     for (const [stockId, { quantity, sources }] of byStock) {
       const stock = await client.query(`SELECT quantity FROM stock WHERE id = $1 FOR UPDATE`, [stockId]);
       const before = stock.rows[0]?.quantity ?? 0;
-      const after = Math.max(before - quantity, 0);
-      if (after === before) {
-        console.warn(`>>> Vente ${squareOrder.id} : ligne de stock ${stockId} déjà à 0, rien à retirer (vendu ${quantity}).`);
-        continue;
-      }
-      const missing = quantity - (before - after);
+      // La vente passe peu importe le stock : il peut devenir négatif (migration 018).
+      const after = before - quantity;
+      const missing = Math.min(quantity, Math.max(0, quantity - Math.max(before, 0)));
       const note = [label, [...sources].join(", "), missing > 0 ? `manquait ${missing}` : null]
         .filter(Boolean)
         .join(" · ");

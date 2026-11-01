@@ -15,7 +15,7 @@
 //                       choisit pas encore ses aiguilles dans un kit
 //   option vendue (aiguilles seules) → ce que l'option dit de retirer
 //                       (product_options.variant_ids, migration 015)
-// Pas encore : ensembles.
+//   ensemble (duo) → toutes ses pièces
 //
 // Square renvoie souvent le même paiement plusieurs fois : si la commande a
 // déjà une ligne « vente » dans l'historique, on ne retire rien de nouveau.
@@ -121,6 +121,29 @@ async function removalsForLineItem(lineItem) {
       const toolId = match.rows[0]?.tool_product_id;
       if (!toolId) continue;
       removals.push(...(await removalsForKitPiece(toolId, count, source)));
+    }
+    return removals;
+  }
+
+  // Ensemble vendu (duo du voleur : Crochet + tourne-serrure…) : toutes ses
+  // pièces, sans outil au choix (composition dans kit_components, migration 006).
+  const ensembleResult = await pool.query(
+    `SELECT p.id, p.name_fr
+     FROM products p
+     WHERE p.square_default_variation_id = $1
+       AND NOT p.is_kit
+       AND EXISTS (SELECT 1 FROM kit_components kc WHERE kc.kit_product_id = p.id)`,
+    [variationId]
+  );
+  const ensemble = ensembleResult.rows[0];
+  if (ensemble) {
+    const removals = [];
+    const components = await pool.query(
+      `SELECT included_product_id, quantity FROM kit_components WHERE kit_product_id = $1`,
+      [ensemble.id]
+    );
+    for (const component of components.rows) {
+      removals.push(...(await removalsForKitPiece(component.included_product_id, (component.quantity || 1) * count, ensemble.name_fr)));
     }
     return removals;
   }

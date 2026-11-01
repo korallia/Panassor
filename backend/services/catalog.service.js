@@ -70,7 +70,7 @@ const PRODUCT_COLUMNS_WITH_IMAGE = `
           'price_delta_cents', COALESCE(sub_pcv.price_delta_cents, 0)
         )
       )
-      FROM product_color_variants sub_pcv
+      FROM product_variants sub_pcv
       JOIN colors c_var ON c_var.id = sub_pcv.color_id
       WHERE sub_pcv.product_id = p.id
     ),
@@ -128,7 +128,7 @@ export async function fetchMainKitProductByCollectionId(collectionId) {
       AND pi.is_main = TRUE
     LEFT JOIN colors col
       ON col.id = pi.color_id
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = p.id
       AND pcv.color_id = pi.color_id
     WHERE p.collection_id = $1
@@ -181,7 +181,7 @@ export async function fetchKitItemsByKitProductId(kitProductId) {
               'price_delta_cents', COALESCE(sub_pcv.price_delta_cents, 0)
             )
           )
-          FROM product_color_variants sub_pcv
+          FROM product_variants sub_pcv
           JOIN colors c_var ON c_var.id = sub_pcv.color_id
           WHERE sub_pcv.product_id = included.id
         ),
@@ -195,7 +195,7 @@ export async function fetchKitItemsByKitProductId(kitProductId) {
       AND pi.is_main = TRUE
     LEFT JOIN colors col
       ON col.id = pi.color_id
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = included.id
       AND pcv.color_id = pi.color_id
     WHERE ki.kit_product_id = $1
@@ -218,7 +218,7 @@ export async function fetchProductsByCollectionId(collectionId) {
       AND pi.is_main = TRUE
     LEFT JOIN colors col
       ON col.id = pi.color_id
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = p.id
       AND pcv.color_id = pi.color_id
     WHERE p.collection_id = $1
@@ -304,7 +304,7 @@ export async function fetchCustomizableProducts() {
               'price_delta_cents', COALESCE(sub_pcv.price_delta_cents, 0)
             )
           )
-          FROM product_color_variants sub_pcv
+          FROM product_variants sub_pcv
           JOIN colors c_var ON c_var.id = sub_pcv.color_id
           WHERE sub_pcv.product_id = p.id
         ),
@@ -316,7 +316,7 @@ export async function fetchCustomizableProducts() {
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = p.id
       AND pcv.color_id = pi.color_id
     WHERE p.customizable = TRUE
@@ -366,7 +366,7 @@ export async function fetchAllProducts() {
               'price_delta_cents', COALESCE(sub_pcv.price_delta_cents, 0)
             )
           )
-          FROM product_color_variants sub_pcv
+          FROM product_variants sub_pcv
           JOIN colors c_var ON c_var.id = sub_pcv.color_id
           WHERE sub_pcv.product_id = p.id
         ),
@@ -393,7 +393,7 @@ export async function fetchAllProducts() {
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
       AND pi.is_main = TRUE
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = p.id
       AND pcv.color_id = pi.color_id
     WHERE c.status = 'published'
@@ -447,7 +447,7 @@ export async function fetchProductBySlug(slug) {
               'price_delta_cents', COALESCE(pcv.price_delta_cents, 0)
             )
           )
-          FROM product_color_variants pcv
+          FROM product_variants pcv
           JOIN colors col ON col.id = pcv.color_id
           WHERE pcv.product_id = p.id
         ),
@@ -478,7 +478,7 @@ export async function fetchProductImages(productId) {
       pi.is_main,
       COALESCE(pcv.price_delta_cents, 0) AS price_delta_cents
     FROM product_images pi
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = pi.product_id
       AND pcv.color_id = pi.color_id
     WHERE pi.product_id = $1
@@ -523,7 +523,7 @@ export async function fetchKitItemsForProduct(productId) {
               'price_delta_cents', COALESCE(sub_pcv.price_delta_cents, 0)
             )
           )
-          FROM product_color_variants sub_pcv
+          FROM product_variants sub_pcv
           JOIN colors c_var ON c_var.id = sub_pcv.color_id
           WHERE sub_pcv.product_id = included.id
         ),
@@ -535,7 +535,7 @@ export async function fetchKitItemsForProduct(productId) {
     LEFT JOIN product_images pi
       ON pi.product_id = included.id
       AND pi.is_main = TRUE
-    LEFT JOIN product_color_variants pcv
+    LEFT JOIN product_variants pcv
       ON pcv.product_id = included.id
       AND pcv.color_id = pi.color_id
     WHERE ki.kit_product_id = $1

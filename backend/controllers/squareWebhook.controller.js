@@ -8,7 +8,6 @@ import {
 } from "../services/orders.service.js";
 import { extractSquareShipmentRecipient } from "../services/shipping.service.js";
 import { ensureShipmentForOrderId } from "../services/shipments/shipmentCreation.service.js";
-import { deductKitComponentInventory } from "../services/square.inventoryDeduction.service.js";
 import { deductAtelierStockForSquareOrder } from "../services/stock.sales.service.js";
 
 export async function handleSquareWebhook(req, res) {
@@ -51,17 +50,6 @@ export async function handleSquareWebhook(req, res) {
     try {
       const squareOrder = await getSquareOrder(payment.order_id);
        if (payment.status === "COMPLETED") {
-        try {
-          await deductKitComponentInventory(squareOrder);
-        } catch (inventoryError) {
-          // Déjà décompté lors d'un envoi précédent du même paiement : normal.
-          if (inventoryError?.errors?.[0]?.code === "IDEMPOTENCY_KEY_REUSED") {
-            console.log(`Inventaire déjà décompté pour la commande Square ${squareOrder?.id}.`);
-          } else {
-            console.warn("Failed to deduct kit component inventory:", inventoryError);
-          }
-        }
-
         // Stock de l'atelier : les produits réguliers vendus sont retirés.
         try {
           await deductAtelierStockForSquareOrder(squareOrder, updatedOrder?.order_number);

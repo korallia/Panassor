@@ -72,7 +72,7 @@ export async function syncProductToSquare(productId) {
         amount: Number(product.price_cents) + Number(variant.price_delta_cents || 0),
         currency: "CAD",
       },
-      track_inventory: true,
+      track_inventory: false,
       ...(variant.square_image_id && { image_ids: [variant.square_image_id] }),
     },
   }));
@@ -86,7 +86,7 @@ export async function syncProductToSquare(productId) {
         name: option.label_fr,
         pricing_type: "FIXED_PRICING",
         price_money: { amount: Number(option.price_cents), currency: "CAD" },
-        track_inventory: true,
+        track_inventory: false,
       },
     });
   }
@@ -100,7 +100,7 @@ export async function syncProductToSquare(productId) {
       item_variation_data: {
         pricing_type: "FIXED_PRICING",
         price_money: { amount: Number(product.price_cents), currency: "CAD" },
-        track_inventory: true,
+        track_inventory: false,
       },
     });
   }

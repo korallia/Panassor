@@ -10,9 +10,9 @@
 //   produit régulier (outil / pièce vendu seul) → lui-même
 //   kit d'une couleur → l'étui de cette couleur, les pièces fixes du kit,
 //                       et l'outil choisi par le client (modificateur Square)
-//   aiguilles dans un kit → la recette de leur option PAR DÉFAUT
-//                       (suture : « 1 droite + 1 courbe ») ; le client ne
-//                       choisit pas encore ses aiguilles dans un kit
+//   aiguilles dans un kit → la recette de l'option choisie à la caisse
+//                       (modificateur Square, migration 019), sinon celle de
+//                       l'option PAR DÉFAUT (suture : « 1 droite + 1 courbe »)
 //   option vendue (aiguilles seules) → ce que l'option dit de retirer
 //                       (product_options.variant_ids, migration 015)
 //   ensemble (duo) → toutes ses pièces
@@ -55,15 +55,18 @@ async function removalsForOption(option, multiplier, source) {
 }
 
 // Une pièce d'un kit (ou l'outil choisi) : si le produit a des options
-// (aiguilles), le kit contient son option PAR DÉFAUT (la première, migration
-// 007 : « 1 droite + 1 courbe ») et on retire sa recette. Sinon, le produit lui-même.
-async function removalsForKitPiece(productId, multiplier, source) {
-  const defaultOption = await pool.query(
+// (aiguilles), on retire la recette de l'option choisie à la caisse
+// (modificateur Square, migration 019), sinon celle de l'option PAR DÉFAUT
+// (la première, migration 007 : « 1 droite + 1 courbe »). Sans options : le produit lui-même.
+async function removalsForKitPiece(productId, multiplier, source, modifierIds = []) {
+  const option = await pool.query(
     `SELECT product_id, quantity, variant_ids, label_fr FROM product_options
-     WHERE product_id = $1 ORDER BY sort_order, id LIMIT 1`,
-    [productId]
+     WHERE product_id = $1
+     ORDER BY (square_modifier_id = ANY($2::text[])) IS TRUE DESC, sort_order, id
+     LIMIT 1`,
+    [productId, modifierIds]
   );
-  if (defaultOption.rows[0]) return removalsForOption(defaultOption.rows[0], multiplier, source);
+  if (option.rows[0]) return removalsForOption(option.rows[0], multiplier, source);
   const own = await ownStockRow(productId);
   if (own) return [{ stockId: own.id, quantity: multiplier, source }];
   console.warn(`>>> Pièce ${productId} d'un kit : ni stock propre ni option par défaut, rien retiré.`);
@@ -93,6 +96,7 @@ async function removalsForLineItem(lineItem) {
   if (kit) {
     const source = kit.color ? `${kit.name_fr} (${kit.color})` : kit.name_fr;
     const removals = [];
+    const modifierIds = (lineItem.modifiers || []).map((modifier) => modifier.catalog_object_id).filter(Boolean);
 
     // 1. L'étui de la couleur vendue.
     const leather = await pool.query(
@@ -111,7 +115,7 @@ async function removalsForLineItem(lineItem) {
       [kit.kit_id]
     );
     for (const component of components.rows) {
-      removals.push(...(await removalsForKitPiece(component.included_product_id, (component.quantity || 1) * count, source)));
+      removals.push(...(await removalsForKitPiece(component.included_product_id, (component.quantity || 1) * count, source, modifierIds)));
     }
 
     // 3. L'outil choisi par le client (modificateur Square de la ligne).

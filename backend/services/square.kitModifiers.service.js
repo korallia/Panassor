@@ -31,6 +31,79 @@ export async function syncKitComponentModifierLists({ kitProductIds } = {}) {
   for (const component of components) {
     results.push(await syncModifierListForComponent(component, tools));
   }
+  results.push(...(await syncOptionModifierLists({ kitProductIds: filterByKits ? kitProductIds : null })));
+  return results;
+}
+
+// Produits à options DANS un kit (aiguilles de suture) : une liste de choix
+// Square par produit, partagée par tous les kits qui le contiennent.
+// Les choix viennent de product_options : les options de la même quantité
+// que l'option par défaut (la première : « 1 droite + 1 courbe » → les options
+// de 2 aiguilles). Moins de 2 choix (aiguilles de douleur) : pas de liste.
+async function syncOptionModifierLists({ kitProductIds } = {}) {
+  const productsResult = await db.query(
+    `SELECT DISTINCT p.id, p.name_fr, p.square_modifier_list_id, p.square_modifier_list_version
+     FROM kit_components kc
+     JOIN products p ON p.id = kc.included_product_id AND NOT p.customizable
+     JOIN products kit ON kit.id = kc.kit_product_id AND kit.is_kit
+     WHERE EXISTS (SELECT 1 FROM product_options o WHERE o.product_id = p.id)
+       ${kitProductIds ? "AND kc.kit_product_id = ANY($1::int[])" : ""}`,
+    kitProductIds ? [kitProductIds] : []
+  );
+
+  const results = [];
+  for (const product of productsResult.rows) {
+    const optionsResult = await db.query(
+      `SELECT id, label_fr, quantity, square_modifier_id
+       FROM product_options WHERE product_id = $1 ORDER BY sort_order, id`,
+      [product.id]
+    );
+    const [defaultOption] = optionsResult.rows;
+    const choices = optionsResult.rows.filter((option) => option.quantity === defaultOption.quantity);
+    if (choices.length < 2) continue;
+
+    const data = await upsertCatalogObject({
+      type: "MODIFIER_LIST",
+      id: product.square_modifier_list_id || `#modifierlist_options_${product.id}`,
+      ...(product.square_modifier_list_version && { version: Number(product.square_modifier_list_version) }),
+      modifier_list_data: {
+        name: product.name_fr,
+        selection_type: "SINGLE",
+        modifiers: choices.map((option, index) => ({
+          type: "MODIFIER",
+          id: option.square_modifier_id || `#option_modifier_${option.id}`,
+          modifier_data: {
+            name: option.label_fr,
+            price_money: { amount: 0, currency: "CAD" },
+            ordinal: index + 1,
+            // L'option par défaut est déjà cochée à la caisse.
+            on_by_default: index === 0,
+          },
+        })),
+      },
+    });
+
+    const saved = data.catalog_object;
+    await db.query(
+      `UPDATE products SET square_modifier_list_id = $1, square_modifier_list_version = $2 WHERE id = $3`,
+      [saved.id, saved.version, product.id]
+    );
+
+    // Les ids que Square a donnés aux choix → product_options.square_modifier_id.
+    for (const mapping of data.id_mappings || []) {
+      const match = mapping.client_object_id?.match(/^#option_modifier_(\d+)$/);
+      if (!match) continue;
+      await db.query(`UPDATE product_options SET square_modifier_id = $1 WHERE id = $2`, [mapping.object_id, Number(match[1])]);
+    }
+    // Un ancien id qui n'existait plus sur Square (changement d'environnement).
+    const staleIdToRealId = data.staleIdToRealId || {};
+    for (const option of choices) {
+      const realId = option.square_modifier_id && staleIdToRealId[option.square_modifier_id];
+      if (realId) await db.query(`UPDATE product_options SET square_modifier_id = $1 WHERE id = $2`, [realId, option.id]);
+    }
+
+    results.push({ productId: product.id, modifierListId: saved.id });
+  }
   return results;
 }
 
@@ -109,11 +182,18 @@ async function syncModifierListForComponent(component, tools) {
   return { componentId: component.id, modifierListId: saved.id };
 }
 
-export async function getModifierListIdsForKit(kitProductId) {
+// Les listes de choix d'un kit : outils au choix (kit_components) et
+// options des pièces du kit (aiguilles : products.square_modifier_list_id).
+// required = false pour les aiguilles : sans choix, c'est l'option par défaut.
+export async function getModifierListsForKit(kitProductId) {
   const result = await db.query(
-    `SELECT square_modifier_id FROM kit_components 
-     WHERE kit_product_id = $1 AND square_modifier_id IS NOT NULL`,
+    `SELECT square_modifier_id AS id, true AS required FROM kit_components
+     WHERE kit_product_id = $1 AND square_modifier_id IS NOT NULL
+     UNION
+     SELECT p.square_modifier_list_id, false FROM kit_components kc
+     JOIN products p ON p.id = kc.included_product_id
+     WHERE kc.kit_product_id = $1 AND p.square_modifier_list_id IS NOT NULL AND NOT p.customizable`,
     [kitProductId]
   );
-  return result.rows.map((r) => r.square_modifier_id);
+  return result.rows;
 }

@@ -2,7 +2,7 @@ import { squareFetch, assertSquareConfig, getSquareBaseUrl, upsertCatalogObject 
 import { env } from "../config/env.js";
 import { randomUUID } from "crypto";
 import db from "../db/pool.js";
-import { syncKitComponentModifierLists, getModifierListIdsForKit } from "./square.kitModifiers.service.js";
+import { syncKitComponentModifierLists, getModifierListsForKit } from "./square.kitModifiers.service.js";
 
 function escapeHtml(text) {
   return text
@@ -50,7 +50,7 @@ export async function syncProductToSquare(productId) {
   const images = imagesResult.rows;
   const mainImage = images.find((i) => i.is_main) || images.find((i) => i.color_id === null) || null;
 
-  const modifierListIds = await getModifierListIdsForKit(product.id);
+  const modifierLists = product.is_kit ? await getModifierListsForKit(product.id) : [];
 
   // Options du produit (ex. aiguilles « 1 droite », « 2 pareilles ») :
   // chacune devient une variation Square avec son propre prix.
@@ -114,10 +114,12 @@ export async function syncProductToSquare(productId) {
       description_html: product.description_fr ? `<p>${escapeHtml(product.description_fr)}</p>` : undefined,
       variations,
       ...(product.square_image_id && { image_ids: [product.square_image_id] }),
-      ...(modifierListIds.length > 0 && {
-        modifier_list_info: modifierListIds.map((id) => ({
+      ...(modifierLists.length > 0 && {
+        modifier_list_info: modifierLists.map(({ id, required }) => ({
           modifier_list_id: id,
-          min_selected_modifiers: 1,
+          // Outil au choix : obligatoire. Aiguilles : déjà cochées par défaut,
+          // mais pas obligatoires (une commande du site n'envoie pas ce choix).
+          min_selected_modifiers: required ? 1 : 0,
           max_selected_modifiers: 1,
           enabled: true,
         })),

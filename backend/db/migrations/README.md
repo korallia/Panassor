@@ -23,6 +23,7 @@ dans l'ordre des numéros. Pour un nouveau changement : créer `018_nom-court.sq
 | 016 | product-variants | 2026-10-23 | product_color_variants devient product_variants (couleurs et sortes) ; retrait de case_stock / case_minimum ; vue temporaire product_color_variants pour l'ancien code — Neon seulement pour l'instant |
 | 017 | historique-minimums | 2026-10-24 | Historique du stock (stock_movements, raisons : fabrication, perte, correction, vente) et table minimums — Neon seulement pour l'instant |
 | 018 | stock-negatif | 2026-11-01 | Le stock peut devenir négatif : une vente Square retire toujours ce qu'elle a vendu (les retraits à la main restent bloqués à 0 par l'atelier) |
+| 019 | aiguilles-dans-kits | 2026-11-04 | Choix des aiguilles dans un kit sur Square : product_options.square_modifier_id (l'option choisie dans un kit) et products.square_modifier_list_id / _version (la liste de choix du produit) |
 
 Toutes ont été appliquées en live (RDS).
 
